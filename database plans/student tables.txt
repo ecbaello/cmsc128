@@ -1,0 +1,121 @@
+
+
+Student Database
+
+--
+Background Information
+--
+
+*upbguidance_student_background
+Student ID
+Student Number
+Course Block
+LName
+FName
+MName
+Enrollment Status // Active, Inactive, Graduate, LOA
+Nickname
+Sex
+Age
+Date of Birth
+Place of Birth
+Nationality
+Citizenship
+Religion
+Address while in UP Baguio, 
+Tel. No. (While in UP Baguio)
+Cell/Mobile Phone No.
+E-Mail Address
+Permanent Home Address
+Tel. No. (Permanent Home)
+
+--
+Family Data
+--
+
+*upbguidance_student_family
+Student ID
+Guardian ID
+Emergency Contact ID
+Parent ID
+Child ID
+
+*upbguidance_student_family_parent
+Parent ID
+Association with Student
+Name
+Age
+Living or Deceased
+Birthplace
+Address
+Contact No.
+Religion
+Occupation
+Monthly Income
+Name of Employer
+Address of Employer
+Highest Grade/Degree Completed
+School or College
+Dialect/Languages Spoken at Home
+
+*upbguidance_student_family_child
+Child ID
+Name
+Sex
+Age
+Civil Status
+Educational Attainment
+Occupation
+Residence
+
+--
+Educational Background
+--
+*upbguidance_student_education
+
+Student ID
+Elementary School Graduated From
+Location of Elementary School
+High School Graduated From
+Location of High School
+Type of High School
+Number of Students In High School Graduating Class
+Rank In High School
+Overall School Average
+Honors Received
+Other Honors Received
+First Choice of Campus
+Reason/s for First Choice
+Second Choice of Campus
+Reason/s for Second Choice
+
+--
+Financial Information
+--
+Student ID
+Family's Annual Income
+Family's Income Sources
+Expected Monthly Allowance
+Sources of Allowance
+
+--
+Vocational Plans
+--
+Student ID
+Course
+Major
+Course Satisfaction
+Course Intention //finish at UP Baguio
+Intended School to Transfer
+Plans After Graduation
+
+--
+Leisure
+--
+Student ID
+Recreation/Social Activities
+Clubs/Organizations
+Intended Clubs/Organizations
+Special Interests/Hobbies
+Reading Preference
+Essay?

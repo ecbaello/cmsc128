@@ -1,0 +1,5 @@
+Versions
+
+Codeigniter 3.1.7
+Angular 1.6.7
+JQuery 3.3.1
