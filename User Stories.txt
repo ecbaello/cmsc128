@@ -1,0 +1,9 @@
+--
+Feb 07, 2018
+--
+Student Information Inputter
+Test Maker 
+	- multiple choice only
+Student Status (for student information)
+	- e.g. active, graduate, loa ...
+Print Functionality (for student information)
