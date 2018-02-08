@@ -7,6 +7,14 @@ class MY_Controller extends CI_Controller {
 		parent::__construct();
 	}
 	
+}
+
+class BaseController extends CI_Controller{
+	
+	public function __construct(){
+		parent::__construct();
+	}
+	
 	public function index(){
 		$this->load->view('header');
 		$this->body();
@@ -15,5 +23,4 @@ class MY_Controller extends CI_Controller {
 	
 	public function body(){
 	}
-	
 }
