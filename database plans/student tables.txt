@@ -6,7 +6,7 @@ Student Database
 Background Information
 --
 
-*upbguidance_student_background
+*upbguidance_student
 Student ID
 Student Number
 Course Block

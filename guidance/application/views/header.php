@@ -21,7 +21,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<md-toolbar>
 		<div layout="column" layout-align="start start" layout-padding style="background-color:maroon" >
 			<span class="md-display-1">University of the Philippines Baguio</span>
-			<span>Student Information</span>
+			<span>Student Registry</span>
 		</div>
     </md-toolbar>
 </header>

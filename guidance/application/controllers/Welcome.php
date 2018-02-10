@@ -20,6 +20,7 @@ class Welcome extends BaseController {
 	 */
 	public function body()
 	{
+		$this->load->model('StudentInformationModel');
 		$this->load->view('tempbody');
 	}
 	
