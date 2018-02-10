@@ -17,14 +17,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 </head>
 
-<header>
-	<md-toolbar>
-		<div layout="column" layout-align="start start" layout-padding style="background-color:maroon" >
-			<span class="md-display-1">University of the Philippines Baguio</span>
-			<span>Student Registry</span>
-		</div>
-    </md-toolbar>
-</header>
+<body layout="column" layout-fill>
 
-<body layout="column">
+	<header>
+		<md-toolbar layout="row" layout-align="start center" layout-padding style="background-color:maroon" >
+			<img style="width:10%;min-width:75px" src="<?=base_url().'logos/up.png'?>"/>
+			<div layout="column" layout-align="start stretch" flex>
+				<span class="md-display-1" >University of the Philippines Baguio</span>
+				<span style="background-color:green">Student Registry</span>
+			</div>
+		</md-toolbar>
+	</header>
 
+	<main layout="column" flex="noshrink">
