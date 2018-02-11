@@ -5,8 +5,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</main>
 	<footer style="background-color:lightgray">
 		<div layout="row" layout-align="space-between center">
-			<span class="md-button" href="<?=base_url()?>">Admin</span>
-			<span layout-padding>Copyright © 2018 UPB Table Tennis | All Rights Reserved</span>
+			<a class="md-button" style="font-size:0.7em" href="<?=base_url().'admin'?>">Admin</a>
+			<span layout-padding style="font-size:0.7em">Copyright © 2018 UPB Table Tennis | All Rights Reserved</span>
 		</div>
 	</footer>
 </body>

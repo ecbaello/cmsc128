@@ -1,0 +1,25 @@
+--
+Model
+--
+Model ID (pk)
+Model Title
+
+--
+Table
+--
+Model ID (fk)
+Table ID (pk)
+Table Title
+Table Name
+
+--
+Field
+--
+Table ID (fk)
+Field ID (pk)
+Field Title
+Field Name
+Field Input Type
+Field Input Required
+
+
