@@ -106,11 +106,11 @@ class BaseModel extends CI_Controller{
 		}
 		
 		//Remove placeholder field
-		$this->db->where(self::TableRegistryPKName,$tableID);
+		/*$this->db->where(self::TableRegistryPKName,$tableID);
 		$result = $this->db->get(self::FieldRegistryTableName)->result_array();
 		if(count($result)== 0){
 			$this->dbforge->drop_column($tableName,self::PlaceholderField);
-		}
+		}*/
 		
 		//Register field
 		//Check if title is set
@@ -163,6 +163,8 @@ class BaseModel extends CI_Controller{
 	
 	public function createRegistry(){
 
+		if($this->db->table_exists(self::ModelRegistryPKName) && $this->db->table_exists(self::TableRegistryTableName) && $this->db->table_exists(self::FieldRegistryTableName)) return;
+	
 		//Create model registry table
 		$this->dbforge->add_field(self::ModelRegistryPKName.' int unsigned not null auto_increment unique');
 		$this->dbforge->add_field(self::ModelTitleFieldName.' varchar(50) not null unique');

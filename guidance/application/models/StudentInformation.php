@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class StudentInformationModel extends BaseModel{
+class StudentInformation extends BaseModel{
 	 
 	const BaseTableName = DB_PREFIX.'student'; 
 	const FamilyDataTableName = DB_PREFIX.'student_family';
