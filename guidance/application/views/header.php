@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
 <html lang="en" ng-app="app">
 
-<head>
+<head ng-controller="url_helper" ng-init="(init('<?=base_url()?>'))">
 	<title>University of the Philippines Baguio Student Registry</title>
 	
 	<link rel="shortcut icon" href="<?= base_url().'logos/up.png' ?>" type="image/x-icon">

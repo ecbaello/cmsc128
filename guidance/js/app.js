@@ -4,3 +4,15 @@ var app = angular.module("app", ['ngMaterial'])
     .primaryPalette('red')
     .accentPalette('green');
 });
+
+app.controller('url_helper',function($scope,$rootScope){
+	$scope.init = function(baseURL){
+		$rootScope.baseURL = baseURL;
+	}
+});
+
+app.controller('tests',function($scope,$rootScope){
+	$scope.init = function(){
+		alert($rootScope.baseURL);
+	}		
+});
