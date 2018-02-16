@@ -20,6 +20,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script src="<?= base_url().'js/angular-material.min.js' ?>"></script>
 	<script src="<?= base_url().'js/app.js' ?>"></script>
 	
+	<style>
+		.md-no-margin{
+			margin:0;
+		}
+		.md-no-padding{
+			padding:0;
+		}
+		
+	</style>
+	
 </head>
 
 <body layout="column" layout-fill>

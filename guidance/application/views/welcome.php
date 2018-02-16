@@ -4,11 +4,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div flex layout="row" layout-align="start center" layout-padding>
 	<span>Welcome to the University of the Philippines Baguio Student Registry.</span>
 </div>
-<div layout="row" layout-align="center center" flex>
+<div layout="row" layout-align="center start" flex>
 	<md-content>
-		<md-button href="<?= base_url().'/studentinfo'?>">
+		<md-button href="<?= base_url().'studentinfo'?>">
 			<md-card>
-				<md-card-title layout="row" layout-align="center center" style="background-color:maroon">
+				<md-card-title layout-padding layout="row" layout-align="center center" style="background-color:maroon" class="md-no-margin md-no-padding">
 					<md-content style="min-width:200px;background-color:inherit">Student Information</md-content>
 				</md-card-title>
 				<md-card-content class="md-primary">
@@ -19,9 +19,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</md-card>
 		</md-button>
 
-		<md-button href="<?= base_url().'/studentinfo'?>">
+		<md-button href="<?= base_url().'tests'?>">
 			<md-card>
-				<md-card-title layout="row" layout-align="center center" style="background-color:maroon">
+				<md-card-title  class="md-no-margin md-no-padding" layout-padding layout="row" layout-align="center center" style="background-color:maroon">
 					<md-content style="min-width:200px;background-color:inherit">Tests</md-content>
 				</md-card-title>
 				<md-card-content class="md-primary">

@@ -20,7 +20,7 @@ class Main extends BaseController {
 	 */
 	public function body()
 	{
-		$this->load->view("welcome_message");
+		$this->load->view("welcome");
 	}
 	
 }
