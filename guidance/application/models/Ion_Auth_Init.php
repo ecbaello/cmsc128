@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class IonAuthInit extends CI_Model{
+class Ion_Auth_Init extends CI_Model{
 	 
 	const UsersTableName = DB_PREFIX."auth_users";
 	const GroupsTableName = DB_PREFIX."auth_groups";

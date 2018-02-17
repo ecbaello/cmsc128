@@ -1,11 +1,10 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Main extends BaseController {
+class Manage extends StudentInfoController {
 
 	public function body()
 	{
-		$this->load->view('sampletest');
 	}
 	
 }

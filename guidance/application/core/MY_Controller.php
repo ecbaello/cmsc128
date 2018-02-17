@@ -13,8 +13,7 @@ class BaseController extends CI_Controller{
 	
 	public function __construct(){
 		parent::__construct();
-		$this->load->model("ionauthinit");
-		$this->load->model("studentinformation");
+		$this->load->model("ion_auth_init");
 	}
 	
 	public function index(){
@@ -25,4 +24,13 @@ class BaseController extends CI_Controller{
 	
 	public function body(){
 	}
+}
+
+class StudentInfoController extends BaseController {
+
+	public function __construct(){
+		parent::__construct();
+		$this->load->model('student_information');
+	}
+	
 }

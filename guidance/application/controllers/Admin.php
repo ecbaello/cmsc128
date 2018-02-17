@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Main extends BaseController {
+class Admin extends BaseController {
 
 	public function body()
 	{

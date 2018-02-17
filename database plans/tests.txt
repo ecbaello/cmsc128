@@ -1,0 +1,30 @@
+--
+Test
+--
+Test ID(pk)
+Test Title (unique)
+
+--
+Questions
+--
+Test ID(fk)
+Question ID (pk)
+Question Title (unique per test)
+Question Body
+
+--
+Answers
+--
+Question ID (fk)
+Answer
+Answer Weight \\to be used with some formula
+
+--
+User Answers
+--
+Question ID (fk)
+Student Number
+Question ID
+Answer
+
+

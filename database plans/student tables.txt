@@ -1,6 +1,5 @@
 
-
-Student Database
+Student Information
 
 --
 Background Information

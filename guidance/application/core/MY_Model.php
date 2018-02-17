@@ -67,21 +67,8 @@ class BaseModel extends CI_Controller{
 		if(!isset($fieldData['constraints'])){
 			$fieldData['constraints'] = '';
 		}
-		
-		//Getting table ID
-		$this->db->select(self::TableRegistryPKName);
-		$this->db->from(self::TableRegistryTableName);
-		$this->db->where(array(
-			self::TableNameFieldName => $tableName
-		));
-		$result = $this->db->get()->result_array();
-		
-		if(count($result)!=1) {
-			log_message('error','Add Field: Multiple/No table(s) found.');
-			return;
-		}
-		
-		$tableID = $result[0][self::TableRegistryPKName];
+
+		$tableID = $this->getTableID($tableName);
 		
 		//Check first if column exists
 		$this->db->where(self::FieldNameFieldName,$fieldData['name']);
@@ -127,18 +114,7 @@ class BaseModel extends CI_Controller{
 			return;
 		}
 		
-		//Getting model ID
-		$this->db->select(self::ModelRegistryPKName);
-		$this->db->from(self::ModelRegistryTableName);
-		$this->db->where(array(
-			self::ModelTitleFieldName => $modelTitle
-		));
-		$result = $this->db->get()->result_array();
-		if(count($result)!=1) {
-			log_message('error','Add Table: Multiple/No model(s) found.');
-			return;
-		}
-		$modelID = $result[0][self::ModelRegistryPKName];
+		$modelID = $this->getModelID($modelTitle);
 		
 		//Check for uniqueness of title
 		$data = array(
@@ -187,13 +163,71 @@ class BaseModel extends CI_Controller{
 		$this->dbforge->add_field(self::FieldRegistryPKName.' int unsigned not null auto_increment unique');
 		$this->dbforge->add_field(self::FieldTitleFieldName.' varchar(50) not null');
 		$this->dbforge->add_field(self::FieldNameFieldName.' varchar(50) not null');
-		$this->dbforge->add_field(self::FieldInputTypeFieldName.' varchar(50) not null default "'.InputType::HIDDEN.'"');
+		$this->dbforge->add_field(self::FieldInputTypeFieldName.' int not null default '.InputType::HIDDEN);
 		$this->dbforge->add_field(self::FieldInputRequiredFieldName.' boolean not null');
 		$this->dbforge->add_field('primary key ('.self::FieldRegistryPKName.')');
 		$this->dbforge->add_field('foreign key ('.self::TableRegistryPKName.') references '.self::TableRegistryTableName.'('.self::TableRegistryPKName.')');
 
 		$this->dbforge->create_table(self::FieldRegistryTableName,true);
 		
+	}
+	
+	public function getFields($tableName,$whereQuery=array()){
+		$tableID = $this->getTableID($tableName);
+		
+		$this->db->select(self::FieldNameFieldName.','.self::FieldTitleFieldName.','.self::FieldInputTypeFieldName.','.self::FieldInputRequiredFieldName);
+		$this->db->where(self::TableRegistryPKName,$tableID);
+		foreach($whereQuery as $index=>$key){
+			$this->db->where($index,$key);
+		}
+		$result = $this->db->get(self::FieldRegistryTableName)->result_array();
+		
+		return $result;
+	}
+	
+	public function getModelID($modelTitle){
+		$this->db->select(self::ModelRegistryPKName);
+		$this->db->from(self::ModelRegistryTableName);
+		$this->db->where(array(
+			self::ModelTitleFieldName => $modelTitle
+		));
+		$result = $this->db->get()->result_array();
+		if(count($result)!=1) {
+			log_message('error','Get Model ID: Multiple/No model(s) found.');
+			return;
+		}
+		return($result[0][self::ModelRegistryPKName]);
+	}
+	
+	public function getTableID($tableName){
+		
+		$this->db->select(self::TableRegistryPKName);
+		$this->db->from(self::TableRegistryTableName);
+		$this->db->where(array(
+			self::TableNameFieldName => $tableName
+		));
+		$result = $this->db->get()->result_array();
+		
+		if(count($result)!=1) {
+			log_message('error','Get Table ID: Multiple/No table(s) found.');
+			return;
+		}
+		
+		return($result[0][self::TableRegistryPKName]);
+		
+	}
+	
+	public function getTables($modelTitle,$whereQuery=array()){
+		
+		$modelID = $this->getModelID($modelTitle);
+		
+		$this->db->select(self::TableTitleFieldName.','.self::TableNameFieldName);
+		$this->db->where(self::ModelRegistryPKName,$modelID);
+		foreach($whereQuery as $index=>$key){
+			$this->db->where($index,$key);
+		}
+		$result = $this->db->get(self::TableRegistryTableName)->result_array();
+		return $result;
 	}
 	
 	private function registerModel(){
