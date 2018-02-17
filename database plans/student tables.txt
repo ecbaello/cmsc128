@@ -38,6 +38,7 @@ Guardian ID
 Emergency Contact ID
 Parent ID
 Child ID
+Parent Status
 
 *upbguidance_student_family_parent
 Parent ID
@@ -66,6 +67,16 @@ Civil Status
 Educational Attainment
 Occupation
 Residence
+
+*upbguidance_student_family_guardian
+Name
+Address
+Contact No.
+
+*upbguidance_student_family_emergency_contact
+Name
+Address
+Contact No.
 
 --
 Educational Background

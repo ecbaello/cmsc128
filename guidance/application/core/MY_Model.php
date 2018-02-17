@@ -9,11 +9,6 @@ class MY_Model extends CI_Model {
 	
 }
 
-abstract class InputType{
-	const HIDDEN = 0;
-	const TEXT = 1;
-}
-
 class BaseModel extends CI_Controller{
 	
 	const ModelRegistryTableName = DB_PREFIX."dbmeta_model_registry";
@@ -59,7 +54,7 @@ class BaseModel extends CI_Controller{
 		
 		//Default values
 		if(!isset($fieldData['input_type'])){
-			$fieldData['input_type'] = InputType::HIDDEN;
+			$fieldData['input_type'] = 'hidden';
 		}
 		if(!isset($fieldData['input_required'])){
 			$fieldData['input_required'] = false;
@@ -139,7 +134,7 @@ class BaseModel extends CI_Controller{
 	
 	public function createRegistry(){
 
-		if($this->db->table_exists(self::ModelRegistryPKName) && $this->db->table_exists(self::TableRegistryTableName) && $this->db->table_exists(self::FieldRegistryTableName)) return;
+		if($this->db->table_exists(self::ModelRegistryTableName) && $this->db->table_exists(self::TableRegistryTableName) && $this->db->table_exists(self::FieldRegistryTableName)) return;
 	
 		//Create model registry table
 		$this->dbforge->add_field(self::ModelRegistryPKName.' int unsigned not null auto_increment unique');
@@ -163,7 +158,7 @@ class BaseModel extends CI_Controller{
 		$this->dbforge->add_field(self::FieldRegistryPKName.' int unsigned not null auto_increment unique');
 		$this->dbforge->add_field(self::FieldTitleFieldName.' varchar(50) not null');
 		$this->dbforge->add_field(self::FieldNameFieldName.' varchar(50) not null');
-		$this->dbforge->add_field(self::FieldInputTypeFieldName.' int not null default '.InputType::HIDDEN);
+		$this->dbforge->add_field(self::FieldInputTypeFieldName.' varchar(15) not null default "hidden"');
 		$this->dbforge->add_field(self::FieldInputRequiredFieldName.' boolean not null');
 		$this->dbforge->add_field('primary key ('.self::FieldRegistryPKName.')');
 		$this->dbforge->add_field('foreign key ('.self::TableRegistryPKName.') references '.self::TableRegistryTableName.'('.self::TableRegistryPKName.')');

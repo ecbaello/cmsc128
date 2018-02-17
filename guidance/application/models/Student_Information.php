@@ -57,7 +57,7 @@ class Student_Information extends BaseModel{
 				'title'=>'Student Number',
 				'type'=>'varchar(20)',
 				'constraints'=>'not null',
-				'input_type'=>InputType::TEXT
+				'input_type'=>'text'
 			));
 		}
 		if(!$this->db->table_exists(self::FinancialInfoTableName)){
@@ -75,9 +75,17 @@ class Student_Information extends BaseModel{
 			$this->addField(self::FinancialInfoTableName,array(
 				'name'=>'family_annual_income',
 				'title'=>'Family\'s Annual Income',
-				'type'=>'varchar(20)',
+				'type'=>'varchar(30)',
 				'constraints'=>'not null',
-				'input_type'=>InputType::TEXT
+				'input_type'=>'text'
+			));
+			
+			$this->addField(self::FinancialInfoTableName,array(
+				'name'=>'family_income_sources',
+				'title'=>'Family\'s Income Sources',
+				'type'=>'varchar(100)',
+				'constraints'=>'not null',
+				'input_type'=>'text'
 			));
 		}
 		

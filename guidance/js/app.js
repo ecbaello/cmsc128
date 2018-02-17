@@ -1,7 +1,7 @@
 var app = angular.module("app", ['ngMaterial'])
 .config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
-    .primaryPalette('red')
+    .primaryPalette('deep-purple')
     .accentPalette('green');
 });
 
@@ -25,15 +25,15 @@ app.controller('tests',function($scope,$rootScope){
 
 app.controller('student_add',function($scope,$rootScope,$http){
 	
-	$scope.currCategory = '';
+	$scope.currCategoryKey = 0;
+	$scope.currCategory = {};
 	$scope.tableData = {};
 	
 	$scope.init = function(){
 		$http.get($rootScope.baseURL+'/studentinfo/add/get/tables')
 		.then(function(response){
 			$scope.tableData = response.data;
-			console.log(response.data);
-			$scope.currCategory = response.data[0].Table.Title;
+			$scope.currCategory = response.data[$scope.currCategoryKey];
 		});
 	}
 	
@@ -41,8 +41,9 @@ app.controller('student_add',function($scope,$rootScope,$http){
 		alert(msg);
 	}
 	
-	$scope.changeCategory = function(category){
-		$scope.currCategory = category;
+	$scope.changeCategory = function(categoryKey){
+		$scope.currCategoryKey = categoryKey;
+		$scope.currCategory = $scope.tableData[categoryKey];
 	}
 	
 });
