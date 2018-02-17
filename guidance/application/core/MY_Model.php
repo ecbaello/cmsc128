@@ -89,7 +89,7 @@ class BaseModel extends CI_Controller{
 		}
 		
 		if($isFK){
-			$this->db->query('alter table '.$tableName.' add foreign key ('.$fieldName['name'].') references '.$FKReference['table_name'].'('.$FKReference['field_name'].')');
+			$this->db->query('alter table '.$tableName.' add foreign key ('.$fieldData['name'].') references '.$FKReference['table_name'].'('.$FKReference['field_name'].')');
 		}
 		
 		//Remove placeholder field

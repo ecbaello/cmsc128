@@ -43,23 +43,43 @@ class Student_Information extends BaseModel{
 		$this->dbforge->add_field('address_perma varchar(30)');
 		$this->dbforge->add_field('telno_perma varchar(30)');
 		*/
-		$this->addTable($this->ModelTitle,self::BaseTableName,'Background Information');
-		
-		$this->addField(self::BaseTableName,array(
-			'name'=>'student_id',
-			'type'=>'int',
-			'constraints'=>'not null auto_increment unique',
-		),true);
-		
-		$this->addField(self::BaseTableName,array(
-			'name'=>'student_number',
-			'title'=>'Student Number',
-			'type'=>'varchar(20)',
-			'constraints'=>'not null',
-			'input_type'=>InputType::TEXT
-		));
-		
-		
+		if(!$this->db->table_exists(self::BaseTableName)){
+			$this->addTable($this->ModelTitle,self::BaseTableName,'Background Information');
+			
+			$this->addField(self::BaseTableName,array(
+				'name'=>'student_id',
+				'type'=>'int',
+				'constraints'=>'not null auto_increment unique',
+			),true);
+			
+			$this->addField(self::BaseTableName,array(
+				'name'=>'student_number',
+				'title'=>'Student Number',
+				'type'=>'varchar(20)',
+				'constraints'=>'not null',
+				'input_type'=>InputType::TEXT
+			));
+		}
+		if(!$this->db->table_exists(self::FinancialInfoTableName)){
+			$this->addTable($this->ModelTitle,self::FinancialInfoTableName,'Financial Information');
+			
+			$this->addField(self::FinancialInfoTableName,array(
+				'name'=>'student_id',
+				'type'=>'int',
+				'constraints'=>'not null auto_increment unique',
+			),false,true,array(
+				'field_name'=>'student_id',
+				'table_name'=>self::BaseTableName
+			));
+			
+			$this->addField(self::FinancialInfoTableName,array(
+				'name'=>'family_annual_income',
+				'title'=>'Family\'s Annual Income',
+				'type'=>'varchar(20)',
+				'constraints'=>'not null',
+				'input_type'=>InputType::TEXT
+			));
+		}
 		
 	}
 	

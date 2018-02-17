@@ -23,20 +23,26 @@ app.controller('tests',function($scope,$rootScope){
 	}
 });
 
-app.controller('student',function($scope,$rootScope,$http){
+app.controller('student_add',function($scope,$rootScope,$http){
 	
+	$scope.currCategory = '';
 	$scope.tableData = {};
 	
 	$scope.init = function(){
-		$http.get($rootScope.baseURL+'/studentinfo/data/tables')
+		$http.get($rootScope.baseURL+'/studentinfo/add/get/tables')
 		.then(function(response){
 			$scope.tableData = response.data;
+			console.log(response.data);
+			$scope.currCategory = response.data[0].Table.Title;
 		});
 	}
 	
-	$scope.bump = function(){
-		alert($scope.tableData);
-		console.log($scope.tableData);
+	$scope.alert = function(msg){
+		alert(msg);
+	}
+	
+	$scope.changeCategory = function(category){
+		$scope.currCategory = category;
 	}
 	
 });
