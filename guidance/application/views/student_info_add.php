@@ -11,6 +11,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<md-button layout-fill style="text-align:left" ng-repeat="(key,value) in tableData"  ng-click="changeCategory(key)" ng-class="{'md-primary md-raised':key == currCategoryKey}">
 			<span layout-padding>{{value.Table.Title}}</span>
 		</md-button>
+		<md-button layout-fill style="text-align:left" ng-click="alert(' ')" >
+			<span layout-padding>Test</span>
+		</md-button>
 	</md-content>
 	
 	<div layout="column" layout-align="start start" flex layout-padding layout-fill>
@@ -21,11 +24,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div>
 		<div layout-fill class="md-no-padding">
 			<form>
-				<div>
-					<md-input-container ng-repeat="(key,value) in currCategory.Fields" layout="row" ng-if="value['Input Type'] != 'hidden'">
+				<div ng-repeat="(key,value) in currCategory.Fields" ng-if="value['Input Type'] != 'hidden'" layout="row" >
+					<md-input-container ng-if="value['Input Type'] != 'AET'" class="md-no-margin" layout-fill>
 						<label>{{value.Title}}</label>
-						<input type="{{value['Input Type']}}" required="{{value['Input Required']}}"/>
+						<input ng-model="input[currCategory.Table.Name][value.Name]" type="{{value['Input Type']}}" ng-required="{{value['Input Required']}}"/>
 					</md-input-container>
+					<div ng-if="value['Input Type'] == 'AET'" class="">
+						<span>{{value.AET.Table.Title}}</span>
+						<span ng-if></span>
+						<div layout="row">
+						</div>
+					</div>
 				</div>
 			</form>
 		</div>

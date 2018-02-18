@@ -30,11 +30,34 @@ class Add extends StudentInfoController {
 			$fields = array();
 			
 			foreach($fieldsTemp as $field){
+				$AETData = array();
+				if($field[BaseModel::FieldInputTypeFieldName]=='AET'){
+					$AETFieldsTemp = $this->student_information->getFields($field[BaseModel::FieldNameFieldName]);
+					$AETFields = array();
+					foreach($AETFieldsTemp as $AETField){
+						array_push($AETFields,array(
+							'Title' => $AETField[BaseModel::FieldTitleFieldName],
+							'Name' => $AETField[BaseModel::FieldNameFieldName],
+							'Input Type'=>$AETField[BaseModel::FieldInputTypeFieldName],
+							'Input Required'=>$AETField[BaseModel::FieldInputRequiredFieldName],
+						));
+					}
+					
+					$AETData = array(
+						'Table'=>array(
+							'Title'=>$field[BaseModel::FieldTitleFieldName],
+							'Name'=>$field[BaseModel::FieldNameFieldName],
+							'AET Cardinality Field Name' => $this->student_information->getAETCardinalityFieldName($table[BaseModel::TableNameFieldName],$field[BaseModel::FieldNameFieldName])
+						),
+						'Fields' => $AETFields
+					);
+				}
 				array_push($fields,array(
 					'Title' => $field[BaseModel::FieldTitleFieldName],
 					'Name' => $field[BaseModel::FieldNameFieldName],
 					'Input Type'=>$field[BaseModel::FieldInputTypeFieldName],
 					'Input Required'=>$field[BaseModel::FieldInputRequiredFieldName],
+					'AET'=>$AETData
 				));
 			}
 			

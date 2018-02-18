@@ -29,16 +29,20 @@ app.controller('student_add',function($scope,$rootScope,$http){
 	$scope.currCategory = {};
 	$scope.tableData = {};
 	
+	$scope.input = {};
+	
 	$scope.init = function(){
 		$http.get($rootScope.baseURL+'/studentinfo/add/get/tables')
 		.then(function(response){
 			$scope.tableData = response.data;
 			$scope.currCategory = response.data[$scope.currCategoryKey];
+			console.log($scope.tableData);
 		});
 	}
 	
 	$scope.alert = function(msg){
 		alert(msg);
+		console.log($scope.input);
 	}
 	
 	$scope.changeCategory = function(categoryKey){

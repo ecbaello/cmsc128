@@ -1,58 +1,42 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Student_Information extends BaseModel{
+class Student_Information extends AssociativeEntityModel{
 	 
-	const BaseTableName = DB_PREFIX.'student'; 
+	const BaseTableTableName = DB_PREFIX.'student'; 
+	
 	const FamilyDataTableName = DB_PREFIX.'student_family';
+	const FamilyParentTableName = DB_PREFIX.'student_family_parent';
+	const FamilyChildrenTableName = DB_PREFIX.'student_family_children';
+	const FamilyGuardianTableName = DB_PREFIX.'student_family_guardian';
+	
 	const EducationalBGTableName = DB_PREFIX.'student_education';
 	const FinancialInfoTableName = DB_PREFIX.'student_finance';
 	const VocationalPlansTableName = DB_PREFIX.'student_vocation';
 	const LeisureInfoTableName = DB_PREFIX.'student_leisure';
-	
-	const BasePKName = "student_id";
-	
+
+	const BaseTablePKName = "student_id";
+		
 	public $ModelTitle = "Student Information";
 	
 	public function __construct(){
 		parent::__construct();
+		$this->createModel();
 	}
 	
 	public function createModel(){
 		
-		/*$this->dbforge->add_field(self::BasePKName.' int not null auto_increment unique');
-		$this->dbforge->add_field('student_number varchar(20) not null');
-		$this->dbforge->add_field('course varchar(30)');
-		$this->dbforge->add_field('block varchar(30)');
-		$this->dbforge->add_field('last_name varchar(30) not null');
-		$this->dbforge->add_field('first_name varchar(30) not null');
-		$this->dbforge->add_field('middle_name varchar(30)');
-		$this->dbforge->add_field('enrollment_status varchar(20)');
-		$this->dbforge->add_field('nickname varchar(30)');
-		$this->dbforge->add_field('sex varchar(20) not null');
-		$this->dbforge->add_field('age int');
-		$this->dbforge->add_field('date_of_birth date not null');
-		$this->dbforge->add_field('place_of_birth varchar(50)');
-		$this->dbforge->add_field('nationality varchar(20)');
-		$this->dbforge->add_field('citizenship varchar(20)');
-		$this->dbforge->add_field('religion varchar(20)');
-		$this->dbforge->add_field('address_upb varchar(50)');
-		$this->dbforge->add_field('telno_upb varchar(20)');
-		$this->dbforge->add_field('mobile_number int');
-		$this->dbforge->add_field('email varchar(30)');
-		$this->dbforge->add_field('address_perma varchar(30)');
-		$this->dbforge->add_field('telno_perma varchar(30)');
-		*/
-		if(!$this->db->table_exists(self::BaseTableName)){
-			$this->addTable($this->ModelTitle,self::BaseTableName,'Background Information');
+		//Bacgkround Information 
+		if(!$this->db->table_exists(self::BaseTableTableName)){
+			$this->addTable($this->ModelTitle,self::BaseTableTableName,'Background Information');
 			
-			$this->addField(self::BaseTableName,array(
+			$this->addField(self::BaseTableTableName,array(
 				'name'=>'student_id',
 				'type'=>'int',
 				'constraints'=>'not null auto_increment unique',
 			),true);
 			
-			$this->addField(self::BaseTableName,array(
+			$this->addField(self::BaseTableTableName,array(
 				'name'=>'student_number',
 				'title'=>'Student Number',
 				'type'=>'varchar(20)',
@@ -60,16 +44,104 @@ class Student_Information extends BaseModel{
 				'input_type'=>'text'
 			));
 		}
+		
+		//Family Data
+		if(!$this->db->table_exists(self::FamilyDataTableName)){
+			
+			$this->addTable($this->ModelTitle,self::FamilyDataTableName, 'Family Data');
+			
+			$this->addField(self::FamilyDataTableName,array(
+				'name'=>'student_id',
+				'type'=>'int',
+				'constraints'=>'not null',
+			),false,true,array(
+				'field_name'=>'student_id',
+				'table_name'=>self::BaseTableTableName
+			));
+			
+			$this->addField(self::FamilyDataTableName,array(
+				'name'=>'parents_marital_status',
+				'title'=>'Parent\'s Marital Status',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text'
+			));
+			
+			$this->addField(self::FamilyDataTableName,array(
+				'name'=>'family_parent_cadinality',
+				'title'=>'',
+				'type'=>'int',
+				'constraints'=>'not null default 2',
+				'input_type'=>'hidden'
+			));
+			
+			$this->addField(self::FamilyDataTableName,array(
+				'name'=>'family_children_cardinality',
+				'title'=>'Number of Children in Family',
+				'type'=>'int',
+				'constraints'=>'not null default 1',
+				'input_type'=>'number'
+			));
+			
+			$this->addField(self::FamilyDataTableName,array(
+				'name'=>'guardian_cardinality',
+				'title'=>'',
+				'type'=>'int',
+				'constraints'=>'not null default 1',
+				'input_type'=>'hidden'
+			));
+			
+			$this->addField(self::FamilyDataTableName,array(
+				'name'=>'emergency_contact_cardinality',
+				'title'=>'',
+				'type'=>'int',
+				'constraints'=>'not null default 1',
+				'input_type'=>'hidden'
+			));
+			
+			//Associated Entities
+			
+			//Parent
+			$this->addAET(self::FamilyParentTableName,'Parents');
+			
+			$this->addField(self::FamilyParentTableName,array(
+				'name'=>'student_id',
+				'type'=>'int',
+				'constraints'=>'not null',
+			),false,true,array(
+				'field_name'=>'student_id',
+				'table_name'=>self::BaseTableTableName
+			));
+			
+			$this->addField(self::FamilyParentTableName,array(
+				'name'=>'parent_id',
+				'type'=>'int',
+				'constraints'=>'not null auto_increment unique',
+			),true);
+			
+			$this->addField(self::FamilyParentTableName,array(
+				'name'=>'parent_student_relationship',
+				'title'=>'Relationship With Student',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text'
+			));
+			
+			$this->addAETField(self::FamilyDataTableName,self::FamilyParentTableName,'family_parent_cadinality');
+			
+		}
+		
+		//Financial Information
 		if(!$this->db->table_exists(self::FinancialInfoTableName)){
 			$this->addTable($this->ModelTitle,self::FinancialInfoTableName,'Financial Information');
 			
 			$this->addField(self::FinancialInfoTableName,array(
 				'name'=>'student_id',
 				'type'=>'int',
-				'constraints'=>'not null auto_increment unique',
+				'constraints'=>'not null',
 			),false,true,array(
 				'field_name'=>'student_id',
-				'table_name'=>self::BaseTableName
+				'table_name'=>self::BaseTableTableName
 			));
 			
 			$this->addField(self::FinancialInfoTableName,array(
@@ -89,6 +161,13 @@ class Student_Information extends BaseModel{
 			));
 		}
 		
+	}
+	
+	public function getStudentID($studentNumber){
+		$this->db->select(self::BasePKName);
+		$this->db->where('student_number',$studentNumber);
+		$result = $this->db->get(self::BaseTableTableName)->result_array();
+		return $result[0][self::BasePKName];
 	}
 	
 }

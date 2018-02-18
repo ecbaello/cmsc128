@@ -34,13 +34,12 @@ Family Data
 
 *upbguidance_student_family
 Student ID
-Guardian ID
-Emergency Contact ID
-Parent ID
-Child ID
 Parent Status
+Number of Parents
+Number of Children in Family
 
 *upbguidance_student_family_parent
+Student ID
 Parent ID
 Association with Student
 Name
@@ -59,6 +58,7 @@ School or College
 Dialect/Languages Spoken at Home
 
 *upbguidance_student_family_child
+Student ID
 Child ID
 Name
 Sex
@@ -69,11 +69,13 @@ Occupation
 Residence
 
 *upbguidance_student_family_guardian
+Student ID
 Name
 Address
 Contact No.
 
 *upbguidance_student_family_emergency_contact
+Student ID
 Name
 Address
 Contact No.
