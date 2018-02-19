@@ -24,14 +24,6 @@ class BaseController extends CI_Controller{
 	
 	public function body(){
 	}
-}
-
-class StudentInfoController extends BaseController {
-
-	public function __construct(){
-		parent::__construct();
-		$this->load->model('student_information');
-	}
 	
 	protected function responseJSON($isSuccessful,$msg){
 		echo json_encode(array(
@@ -40,4 +32,16 @@ class StudentInfoController extends BaseController {
 		));
 	}
 	
+	protected function isInputValid($input,$inputType){
+		return true;
+	}
+}
+
+class StudentInfoController extends BaseController {
+
+	public function __construct(){
+		parent::__construct();
+		$this->load->model('student_information');
+	}
+
 }

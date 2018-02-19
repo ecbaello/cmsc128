@@ -42,6 +42,18 @@ class Add extends StudentInfoController {
 		
 		$data= $input['data'];
 		
+		/*
+		To Insert
+		{
+			Table_Name,
+			Fields
+			{
+				Field Name => Data				
+			}
+		}
+		*/
+		$toInsert = array();
+		
 		//Check for data completeness
 		$tableData = $this->getTableData(true);
 		foreach($tableData as $table){
@@ -65,18 +77,35 @@ class Add extends StudentInfoController {
 							continue;
 					
 						if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ] )){
-							$this->responseJSON(false,'Incomplete Data. Please fill-in the required fields');
+							$this->responseJSON(false,'Incomplete Data. Please fill-in the required fields in '.$field['AET']['Table']['Title']);
 							return;
 						}
 						
-						if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][ $AETField['Name'] ] )){
-							$this->responseJSON(false,'Incomplete Data. Please fill-in the required field: '.$AETField['Title']);
-							return;
+						//getting cardinality
+						if(isset($data[ $table['Table']['Name'] ][ $field['AET']['Cardinality Field Name'] ])){
+							$cardinality = $data[ $table['Table']['Name'] ][ $field['AET']['Cardinality Field Name'] ];
+						}else{
+							$cardinality = $field['AET']['Default Cardinality'];
+						}
+						
+						for($i = 0 ; $i<$cardinality ; $i++){
+							
+							if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i])){
+								$this->responseJSON(false,'Incomplete Data. Please fill-in the required fields in '.$field['AET']['Table']['Title']);
+								return;
+							}
+							
+							if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i][ $AETField['Name'] ] )){
+								$this->responseJSON(false,'Incomplete Data. Please fill-in the required field: '.$AETField['Title']);
+								return;
+							}
 						}
 					}
 				}
 			}
 		}
+		
+		//Inserting Data
 		
 		$this->responseJSON(true,'Added Student');
 		return;
@@ -142,5 +171,7 @@ class Add extends StudentInfoController {
 			echo json_encode($data);
 		return $data;
 	}
+	
+	
 	
 }

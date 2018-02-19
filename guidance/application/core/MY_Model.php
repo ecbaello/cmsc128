@@ -182,6 +182,17 @@ class BaseModel extends CI_Controller{
 		return $result[0][self::FieldRegistryPKName];
 	}
 	
+	public function getFieldTitle($tableName,$fieldName){
+		$tableID = $this->getTableID($tableName);
+		
+		$this->db->select(self::FieldTitleFieldName);
+		$this->db->where(self::TableRegistryPKName,$tableID);
+		$this->db->where(self::FieldNameFieldName,$fieldName);
+		$result = $this->db->get(self::FieldRegistryTableName)->result_array();
+		
+		return $result[0][self::FieldTitleFieldName];
+	}
+	
 	public function getFields($tableName,$whereQuery=array()){
 		$tableID = $this->getTableID($tableName);
 		
@@ -251,8 +262,23 @@ class BaseModel extends CI_Controller{
 	public function insert($tableName,$fields = array()){
 		//fields: field_name => field_data
 		
-		$this->db->insert($tableName,$fields);
+		if(!$this->db->insert($tableName,$fields)){
+			return $this->parseError($tableName,$this->db->error());
+		}
 		
+	}
+	
+	private function parseError($tableName,$error=array()){
+		$msg='';
+		switch($error['code']){
+			case '1062':
+				preg_match('/for key \'(.+)\'/',$error['message'],$matches);
+				$msg = $this->getTableTitle($tableName).'. Duplicate entry for '.$this->getFieldTitle($tableName,$matches[1]);
+				break;
+			default:
+				$msg = 'Unknown Error';
+		}
+		return $msg;
 	}
 	
 	private function registerField($tableID,$fieldData = array()){
