@@ -57,12 +57,16 @@ app.controller('student_add',function($scope,$rootScope,$http){
 					if(table.Fields[key2].Name == AETName){
 						var field = table.Fields[key2];
 						var cardinalityField = field.AET['Cardinality Field Name'];
+						
 						if(!(table.Table.Name in $scope.input)){
 							number = field.AET['Default Cardinality'];
+							$scope.input[table.Table.Name] = {};
+							$scope.input[table.Table.Name][cardinalityField] = parseInt(number);
 							break;
 						}
 						if(!(cardinalityField in $scope.input[table.Table.Name])){
 							number = field.AET['Default Cardinality'];
+							$scope.input[table.Table.Name][cardinalityField] = parseInt(number);
 							break;
 						}else{
 							number = $scope.input[table.Table.Name][cardinalityField];

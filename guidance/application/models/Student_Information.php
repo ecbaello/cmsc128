@@ -164,7 +164,8 @@ class Student_Information extends AssociativeEntityModel{
 				'title'=>'Name',
 				'type'=>'varchar(30)',
 				'constraints'=>'not null',
-				'input_type'=>'text'
+				'input_type'=>'text',
+				'input_required'=>TRUE
 			));
 			$this->addField(self::FamilyChildrenTableName,array(
 				'name'=>'age',

@@ -51,12 +51,29 @@ class Add extends StudentInfoController {
 				return;
 			}
 			foreach($table['Fields'] as $field){
-				if($field['Input Required'] == false)
-					continue;
-				
-				if(!isset( $data[$table['Table']['Name']][$field['Name']] )){
-					$this->responseJSON(false,'Incomplete Data. Please fill-in the required field: '.$field['Title']);
-					return;
+				if($field['Input Type'] != 'AET'){
+					if($field['Input Required'] == false)
+						continue;
+					
+					if(!isset( $data[$table['Table']['Name']][$field['Name']] )){
+						$this->responseJSON(false,'Incomplete Data. Please fill-in the required field: '.$field['Title']);
+						return;
+					}
+				}else{
+					foreach($field['AET']['Fields'] as $AETField){
+						if($AETField['Input Required'] == false)
+							continue;
+					
+						if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ] )){
+							$this->responseJSON(false,'Incomplete Data. Please fill-in the required fields');
+							return;
+						}
+						
+						if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][ $AETField['Name'] ] )){
+							$this->responseJSON(false,'Incomplete Data. Please fill-in the required field: '.$AETField['Title']);
+							return;
+						}
+					}
 				}
 			}
 		}

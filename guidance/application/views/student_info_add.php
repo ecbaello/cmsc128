@@ -35,7 +35,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div layout="column" ng-repeat="(k,v) in value.AET.Fields" class="md-no-padding">
 									<md-input-container class="md-no-margin">
 										<label>{{v.Title}}</label>
-										<input ng-model="input[currCategory.Table.Name][value.Name][i][v.Name]" type="{{v['Input Type']}}"  ng-required="{{v['Input Required']}}" ng-pattern="value['Input Regex']"/>
+										<input ng-model="input[currCategory.Table.Name][value.Name][i][v.Name]" type="{{v['Input Type']}}"  ng-required="{{v['Input Required']}}" ng-pattern="v['Input Regex']"/>
 									</md-input-container>
 								</div>
 							</div>
