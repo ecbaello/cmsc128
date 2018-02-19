@@ -28,6 +28,7 @@ class BaseModel extends CI_Controller{
 	const FieldNameFieldName = "field_name";
 	const FieldInputTypeFieldName = "field_input_type";
 	const FieldInputRequiredFieldName = "field_input_required";
+	const FieldInputRegexFieldName = "field_input_regex";
 	
 	public $ModelTitle = "";
 	
@@ -43,7 +44,7 @@ class BaseModel extends CI_Controller{
 	public function addField($tableName,$fieldData = array(),$isPK = false, $isFK = false, $FKReference = array()){
 		
 		//FKReference: field_name, table_name
-		//fieldData: name,type,title,constraints,input_type,input_required
+		//fieldData: name,type,title,constraints,input_type,input_required,input_regex
 		
 		//Error Checking
 		if(!isset($fieldData['name']) || !isset($fieldData['type'])){
@@ -57,6 +58,9 @@ class BaseModel extends CI_Controller{
 		}
 		if(!isset($fieldData['input_required'])){
 			$fieldData['input_required'] = false;
+		}
+		if(!isset($fieldData['input_regex'])){
+			$fieldData['input_regex'] = NULL;
 		}
 		if(!isset($fieldData['constraints'])){
 			$fieldData['constraints'] = '';
@@ -158,7 +162,8 @@ class BaseModel extends CI_Controller{
 		$this->dbforge->add_field(self::FieldTitleFieldName.' varchar(50) not null');
 		$this->dbforge->add_field(self::FieldNameFieldName.' varchar(50) not null');
 		$this->dbforge->add_field(self::FieldInputTypeFieldName.' varchar(15) not null default "hidden"');
-		$this->dbforge->add_field(self::FieldInputRequiredFieldName.' boolean not null');
+		$this->dbforge->add_field(self::FieldInputRegexFieldName.' varchar(15)');
+		$this->dbforge->add_field(self::FieldInputRequiredFieldName.' boolean not null default FALSE');
 		$this->dbforge->add_field('primary key ('.self::FieldRegistryPKName.')');
 		$this->dbforge->add_field('foreign key ('.self::TableRegistryPKName.') references '.self::TableRegistryTableName.'('.self::TableRegistryPKName.')');
 
@@ -180,7 +185,7 @@ class BaseModel extends CI_Controller{
 	public function getFields($tableName,$whereQuery=array()){
 		$tableID = $this->getTableID($tableName);
 		
-		$this->db->select(self::FieldNameFieldName.','.self::FieldTitleFieldName.','.self::FieldInputTypeFieldName.','.self::FieldInputRequiredFieldName);
+		$this->db->select(self::FieldNameFieldName.','.self::FieldTitleFieldName.','.self::FieldInputTypeFieldName.','.self::FieldInputRequiredFieldName.','.self::FieldInputRegexFieldName);
 		$this->db->where(self::TableRegistryPKName,$tableID);
 		foreach($whereQuery as $index=>$key){
 			$this->db->where($index,$key);
@@ -245,14 +250,15 @@ class BaseModel extends CI_Controller{
 	
 	private function registerField($tableID,$fieldData = array()){
 		
-		// fieldData : title, name, input_type, input_required
+		// fieldData : title, name, input_type, input_required, regex
 		
 		$data = array(
 			self::TableRegistryPKName => $tableID,
 			self::FieldTitleFieldName => $fieldData['title'],
 			self::FieldNameFieldName => $fieldData['name'],
 			self::FieldInputTypeFieldName => $fieldData['input_type'],
-			self::FieldInputRequiredFieldName => $fieldData['input_required']
+			self::FieldInputRequiredFieldName => $fieldData['input_required'],
+			self::FieldInputRegexFieldName => $fieldData['input_regex']
 		);
 		
 		$this->db->insert(self::FieldRegistryTableName,$data);

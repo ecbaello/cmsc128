@@ -41,7 +41,9 @@ class Student_Information extends AssociativeEntityModel{
 				'title'=>'Student Number',
 				'type'=>'varchar(20)',
 				'constraints'=>'not null',
-				'input_type'=>'text'
+				'input_type'=>'text',
+				'input_required'=>'true',
+				'input_regex'=>'^\d{4}-\d{5}$'
 			));
 		}
 		

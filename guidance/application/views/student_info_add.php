@@ -23,11 +23,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</h2>
 		</div>
 		<div layout-fill class="md-no-padding">
-			<form>
-				<div ng-repeat="(key,value) in currCategory.Fields" ng-if="value['Input Type'] != 'hidden'" layout="row" >
+			<form name="{{currCategory.Table.Name}}">
+				<div ng-repeat="(key,value) in currCategory.Fields" layout="row" >
 					<md-input-container ng-if="value['Input Type'] != 'AET'" class="md-no-margin" layout-fill>
 						<label>{{value.Title}}</label>
-						<input ng-model="input[currCategory.Table.Name][value.Name]" type="{{value['Input Type']}}" ng-required="{{value['Input Required']}}"/>
+						<input ng-model="input[currCategory.Table.Name][value.Name]" type="{{value['Input Type']}}" name="{{value.Name}}" ng-required="{{value['Input Required']}}" ng-pattern="value['Input Regex']"/>
 					</md-input-container>
 					<div ng-if="value['Input Type'] == 'AET'" class="">
 						<span>{{value.AET.Table.Title}}</span>

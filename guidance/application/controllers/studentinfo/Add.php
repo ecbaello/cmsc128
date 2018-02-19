@@ -30,16 +30,21 @@ class Add extends StudentInfoController {
 			$fields = array();
 			
 			foreach($fieldsTemp as $field){
+				
+				if($field[BaseModel::FieldInputTypeFieldName] == 'hidden') continue;
+				
 				$AETData = array();
 				if($field[BaseModel::FieldInputTypeFieldName]=='AET'){
 					$AETFieldsTemp = $this->student_information->getFields($field[BaseModel::FieldNameFieldName]);
 					$AETFields = array();
 					foreach($AETFieldsTemp as $AETField){
+						if($AETField[BaseModel::FieldInputTypeFieldName] == 'hidden') continue;
 						array_push($AETFields,array(
 							'Title' => $AETField[BaseModel::FieldTitleFieldName],
 							'Name' => $AETField[BaseModel::FieldNameFieldName],
 							'Input Type'=>$AETField[BaseModel::FieldInputTypeFieldName],
 							'Input Required'=>$AETField[BaseModel::FieldInputRequiredFieldName],
+							'Input Regex'=>$AETField[BaseModel::FieldInputRegexFieldName]
 						));
 					}
 					
@@ -52,11 +57,13 @@ class Add extends StudentInfoController {
 						'Fields' => $AETFields
 					);
 				}
+				
 				array_push($fields,array(
 					'Title' => $field[BaseModel::FieldTitleFieldName],
 					'Name' => $field[BaseModel::FieldNameFieldName],
 					'Input Type'=>$field[BaseModel::FieldInputTypeFieldName],
 					'Input Required'=>$field[BaseModel::FieldInputRequiredFieldName],
+					'Input Regex'=>$field[BaseModel::FieldInputRegexFieldName],
 					'AET'=>$AETData
 				));
 			}

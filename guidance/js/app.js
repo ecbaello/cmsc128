@@ -45,7 +45,22 @@ app.controller('student_add',function($scope,$rootScope,$http){
 		console.log($scope.input);
 	}
 	
+	$scope.validate = function(){
+		console.log($scope.input[$scope.tableData[0].name]['student_number']);
+	}
+	
 	$scope.changeCategory = function(categoryKey){
+		var object = $scope.tableData[0];
+		if(!(object.Table.Name in $scope.input)){
+			alert(object.Table.Title+' should be filled up first.');
+			return;
+		}
+		for(var field in object.Table.Field){
+			if(!(field in $scope.input[object.Table.Name])){
+				alert(object.Table.Title+' should be filled up first.');
+				return;
+			}
+		}
 		$scope.currCategoryKey = categoryKey;
 		$scope.currCategory = $scope.tableData[categoryKey];
 	}
