@@ -1,7 +1,7 @@
 --
 Base
 --
-Entity Association ID => \Input Type = 'AET', Field Name = AET Name, Field Title = AET Title
+Associated Entity Table ID => \Input Type = 'AET', Field Name = AET Name, Field Title = AET Title
 Associated Entity Cardinality Field
 Data ...
 
@@ -12,12 +12,6 @@ Base Table ID
 Associated Entity Table ID
 Entity Association ID
 Cardinality Field ID
-
---
-Associated Entity
---
-Entity Association ID
-Data ...
 
 --
 Table Registry

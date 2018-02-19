@@ -248,6 +248,13 @@ class BaseModel extends CI_Controller{
 		return $result;
 	}
 	
+	public function insert($tableName,$fields = array()){
+		//fields: field_name => field_data
+		
+		$this->db->insert($tableName,$fields);
+		
+	}
+	
 	private function registerField($tableID,$fieldData = array()){
 		
 		// fieldData : title, name, input_type, input_required, regex
@@ -309,6 +316,7 @@ class AssociativeEntityModel extends BaseModel{
 	const AETCardinalityFieldIDFieldName = 'aet_cardinality_field_id';
 	
 	const AETRegistryPKName = 'aet_id';
+	const AETDefaultCardinalityFieldName = 'default_cardinality';
 	
 	public function __construct(){
 		parent::__construct();
@@ -333,12 +341,12 @@ class AssociativeEntityModel extends BaseModel{
 		
 	}
 	
-	public function addAETField($tableName,$AETName,$AETCardinalityFieldName){
+	public function addAETField($tableName,$AETName,$AETCardinalityFieldName,$defaultCardinality=1){
 		$baseTableID = $this->getTableID($tableName);
 		$AETID = $this->getTableID($AETName);
 		$cardinalityFieldID = $this->getFieldID($tableName,$AETCardinalityFieldName);
 		
-		$this->registerAET($baseTableID,$AETID,$cardinalityFieldID);
+		$this->registerAET($baseTableID,$AETID,$cardinalityFieldID,$defaultCardinality);
 
 		$this->addField($tableName,array(
 			'name'=>$AETName,
@@ -355,6 +363,7 @@ class AssociativeEntityModel extends BaseModel{
 			$this->dbforge->add_field(self::AETIDFieldName.' int unsigned not null');
 			$this->dbforge->add_field(self::AETCardinalityFieldIDFieldName.' int unsigned not null');
 			$this->dbforge->add_field(self::AETRegistryPKName.' int unsigned not null auto_increment unique');
+			$this->dbforge->add_field(self::AETDefaultCardinalityFieldName.' int unsigned not null');
 			
 			$this->dbforge->add_field('primary key ('.self::AETRegistryPKName.')');
 			
@@ -385,12 +394,24 @@ class AssociativeEntityModel extends BaseModel{
 		return $result[0][BaseModel::FieldNameFieldName];
 	}
 	
-	private function registerAET($baseTableID,$AETID,$AETCardinalityFieldID){
+	public function getAETDefaultCardinality($baseTableName,$AETTableName){
+		$baseTableID = $this->getTableID($baseTableName);
+		$AETID = $this->getTableID($AETTableName);
+		
+		$this->db->select(self::AETDefaultCardinalityFieldName);
+		$this->db->where(self::BaseTableIDFieldName,$baseTableID);
+		$this->db->where(self::AETIDFieldName,$AETID);
+		$result = $this->db->get(self::AETRegistryTableName)->result_array();
+		return $result[0][self::AETDefaultCardinalityFieldName];
+	}
+	
+	private function registerAET($baseTableID,$AETID,$AETCardinalityFieldID,$defaultCardinality){
 		
 		$data = array(
 			self::BaseTableIDFieldName => $baseTableID,
 			self::AETIDFieldName => $AETID,
-			self::AETCardinalityFieldIDFieldName => $AETCardinalityFieldID
+			self::AETCardinalityFieldIDFieldName => $AETCardinalityFieldID,
+			self::AETDefaultCardinalityFieldName => $defaultCardinality
 		);
 		
 		$this->db->insert(self::AETRegistryTableName,$data);

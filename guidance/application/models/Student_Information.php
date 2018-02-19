@@ -16,6 +16,7 @@ class Student_Information extends AssociativeEntityModel{
 	const LeisureInfoTableName = DB_PREFIX.'student_leisure';
 
 	const BaseTablePKName = "student_id";
+	const ReferenceFieldFieldName = "student_number";
 		
 	public $ModelTitle = "Student Information";
 	
@@ -37,13 +38,22 @@ class Student_Information extends AssociativeEntityModel{
 			),true);
 			
 			$this->addField(self::BaseTableTableName,array(
-				'name'=>'student_number',
+				'name'=>self::ReferenceFieldFieldName,
 				'title'=>'Student Number',
-				'type'=>'varchar(20)',
+				'type'=>'varchar(15)',
+				'constraints'=>'not null unique',
+				'input_type'=>'text',
+				'input_required'=>TRUE,
+				'input_regex'=>'^\d{4}-\d{5}$'
+			));
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>'last_name',
+				'title'=>'Last Name',
+				'type'=>'varchar(30)',
 				'constraints'=>'not null',
 				'input_type'=>'text',
-				'input_required'=>'true',
-				'input_regex'=>'^\d{4}-\d{5}$'
+				'input_required'=>TRUE,
 			));
 		}
 		
@@ -70,7 +80,7 @@ class Student_Information extends AssociativeEntityModel{
 			));
 			
 			$this->addField(self::FamilyDataTableName,array(
-				'name'=>'family_parent_cadinality',
+				'name'=>'family_parent_cardinality',
 				'title'=>'',
 				'type'=>'int',
 				'constraints'=>'not null default 2',
@@ -129,7 +139,42 @@ class Student_Information extends AssociativeEntityModel{
 				'input_type'=>'text'
 			));
 			
-			$this->addAETField(self::FamilyDataTableName,self::FamilyParentTableName,'family_parent_cadinality');
+			$this->addAETField(self::FamilyDataTableName,self::FamilyParentTableName,'family_parent_cardinality',2);
+			
+			//Children
+			$this->addAET(self::FamilyChildrenTableName,'Children In Family');
+			
+			$this->addField(self::FamilyChildrenTableName,array(
+				'name'=>'student_id',
+				'type'=>'int',
+				'constraints'=>'not null',
+			),false,true,array(
+				'field_name'=>'student_id',
+				'table_name'=>self::BaseTableTableName
+			));
+			
+			$this->addField(self::FamilyChildrenTableName,array(
+				'name'=>'child_id',
+				'type'=>'int',
+				'constraints'=>'not null auto_increment unique',
+			),true);
+			
+			$this->addField(self::FamilyChildrenTableName,array(
+				'name'=>'name',
+				'title'=>'Name',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text'
+			));
+			$this->addField(self::FamilyChildrenTableName,array(
+				'name'=>'age',
+				'title'=>'Age',
+				'type'=>'int',
+				'constraints'=>'not null',
+				'input_type'=>'number'
+			));
+			
+			$this->addAETField(self::FamilyDataTableName,self::FamilyChildrenTableName,'family_children_cardinality',1);
 			
 		}
 		
@@ -165,11 +210,11 @@ class Student_Information extends AssociativeEntityModel{
 		
 	}
 	
-	public function getStudentID($studentNumber){
-		$this->db->select(self::BasePKName);
-		$this->db->where('student_number',$studentNumber);
+	public function getBasePK($ReferenceFieldFieldName){
+		$this->db->select(self::BaseTablePKName);
+		$this->db->where(self::ReferenceFieldFieldName,$studentNumber);
 		$result = $this->db->get(self::BaseTableTableName)->result_array();
-		return $result[0][self::BasePKName];
+		return $result[0][self::BaseTablePKName];
 	}
 	
 }

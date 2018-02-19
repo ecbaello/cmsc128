@@ -33,4 +33,11 @@ class StudentInfoController extends BaseController {
 		$this->load->model('student_information');
 	}
 	
+	protected function responseJSON($isSuccessful,$msg){
+		echo json_encode(array(
+			'success'=>$isSuccessful,
+			'msg'=>$msg
+		));
+	}
+	
 }

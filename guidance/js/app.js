@@ -31,8 +31,11 @@ app.controller('student_add',function($scope,$rootScope,$http){
 	
 	$scope.input = {};
 	
+	var csrfTokenName = '';
+	var csrfHash = '';
+	
 	$scope.init = function(){
-		$http.get($rootScope.baseURL+'/studentinfo/add/get/tables')
+		$http.get($rootScope.baseURL+'studentinfo/add/get/tables')
 		.then(function(response){
 			$scope.tableData = response.data;
 			$scope.currCategory = response.data[$scope.currCategoryKey];
@@ -40,18 +43,49 @@ app.controller('student_add',function($scope,$rootScope,$http){
 		});
 	}
 	
-	$scope.alert = function(msg){
-		alert(msg);
-		console.log($scope.input);
+	$scope.setCSRF = function(name,hash){
+		csrfTokenName = name;
+		csrfHash = hash;
 	}
 	
-	$scope.validate = function(){
-		console.log($scope.input[$scope.tableData[0].name]['student_number']);
+	$scope.getCardinality = function(baseTableName,AETName){
+		var number = 1;
+		for(key in $scope.tableData){
+			if($scope.tableData[key].Table.Name == baseTableName){
+				var table = $scope.tableData[key];
+				for(key2 in table.Fields){
+					if(table.Fields[key2].Name == AETName){
+						var field = table.Fields[key2];
+						var cardinalityField = field.AET['Cardinality Field Name'];
+						if(!(table.Table.Name in $scope.input)){
+							number = field.AET['Default Cardinality'];
+							break;
+						}
+						if(!(cardinalityField in $scope.input[table.Table.Name])){
+							number = field.AET['Default Cardinality'];
+							break;
+						}else{
+							number = $scope.input[table.Table.Name][cardinalityField];
+							
+							var validNumber = true;
+							validNumber = validNumber && !isNaN(parseInt(number));
+							validNumber = validNumber && !( (parseFloat(number)%1 != 0) || parseFloat(number)<1);
+							
+							$scope.input[table.Table.Name][cardinalityField] = number = validNumber?number:1;
+							
+							break;
+						}
+					}
+				}
+			}
+		}
+		return new Array(parseInt(number));
 	}
+
 	
 	$scope.changeCategory = function(categoryKey){
 		var object = $scope.tableData[0];
-		if(!(object.Table.Name in $scope.input)){
+		/*if(!(object.Table.Name in $scope.input)){
 			alert(object.Table.Title+' should be filled up first.');
 			return;
 		}
@@ -60,9 +94,41 @@ app.controller('student_add',function($scope,$rootScope,$http){
 				alert(object.Table.Title+' should be filled up first.');
 				return;
 			}
-		}
+		}*/
 		$scope.currCategoryKey = categoryKey;
 		$scope.currCategory = $scope.tableData[categoryKey];
+	}
+	
+	$scope.submit = function(){
+		
+		var data = {
+			'data':$scope.input,
+			[csrfTokenName]:csrfHash
+		};
+		data = JSON.stringify(data);
+		
+		success = function(response) {
+			var responseData = {};
+			responseData = response.data;
+			console.log(responseData);
+			if(!('success' in responseData) || !('msg' in responseData)){
+				alert('Something is missing');
+				return;
+			}
+			
+			alert((responseData.success ? 'Success: ':'Error: ')+responseData.msg);
+		}
+		
+		error = function(response){
+			alert('Something went wrong');
+		}
+		
+		$http({
+			method: 'GET',
+			url: $rootScope.baseURL+'studentinfo/add/post/'+encodeURIComponent(data)
+		}).then(success,error);
+		
+		console.log($rootScope.baseURL+'studentinfo/add/post/'+encodeURIComponent(data));
 	}
 	
 });

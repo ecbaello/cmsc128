@@ -21,7 +21,51 @@ class Add extends StudentInfoController {
 		
 	}
 	
-	private function getTableData(){
+	public function post($input=null){
+		if($input == null)
+			return;
+		
+		$input = urldecode($input);
+		$input = json_decode($input,true);
+		
+		$csrfTokenName = $this->security->get_csrf_token_name();
+		$csrfHash = $this->security->get_csrf_hash();
+		
+		if(!isset($input[$csrfTokenName])){
+			$this->responseJSON(false,'Missing CSRF Validation');
+			return;
+		}
+		if($input[$csrfTokenName]!=$csrfHash){
+			$this->responseJSON(false,'Invalid CSRF Token');
+			return;
+		}
+		
+		$data= $input['data'];
+		
+		//Check for data completeness
+		$tableData = $this->getTableData(true);
+		foreach($tableData as $table){
+			
+			if(!isset($data[$table['Table']['Name']])){
+				$this->responseJSON(false,'Incomplete Data. Please fill-up at least one field in the category: '.$table['Table']['Title']);
+				return;
+			}
+			foreach($table['Fields'] as $field){
+				if($field['Input Required'] == false)
+					continue;
+				
+				if(!isset( $data[$table['Table']['Name']][$field['Name']] )){
+					$this->responseJSON(false,'Incomplete Data. Please fill-in the required field: '.$field['Title']);
+					return;
+				}
+			}
+		}
+		
+		$this->responseJSON(true,'Added Student');
+		return;
+	}
+	
+	private function getTableData($returnOnly = false){
 		$tables = $this->student_information->getTables($this->student_information->ModelTitle);
 		$data = array();
 		foreach($tables as $table){
@@ -51,9 +95,10 @@ class Add extends StudentInfoController {
 					$AETData = array(
 						'Table'=>array(
 							'Title'=>$field[BaseModel::FieldTitleFieldName],
-							'Name'=>$field[BaseModel::FieldNameFieldName],
-							'AET Cardinality Field Name' => $this->student_information->getAETCardinalityFieldName($table[BaseModel::TableNameFieldName],$field[BaseModel::FieldNameFieldName])
+							'Name'=>$field[BaseModel::FieldNameFieldName]
 						),
+						'Cardinality Field Name' => $this->student_information->getAETCardinalityFieldName($table[BaseModel::TableNameFieldName],$field[BaseModel::FieldNameFieldName]),
+						'Default Cardinality'=>$this->student_information->getAETDefaultCardinality($table[BaseModel::TableNameFieldName],$field[BaseModel::FieldNameFieldName]),
 						'Fields' => $AETFields
 					);
 				}
@@ -76,7 +121,9 @@ class Add extends StudentInfoController {
 				'Fields'=>$fields
 			));
 		}
-		echo json_encode($data);
+		if(!$returnOnly)
+			echo json_encode($data);
+		return $data;
 	}
 	
 }
