@@ -106,7 +106,7 @@ app.controller('student_add',function($scope,$rootScope,$http){
 			[csrfTokenName]:csrfHash
 		};
 		data = JSON.stringify(data);
-		
+		console.log($scope.input);
 		success = function(response) {
 			var responseData = {};
 			responseData = response.data;

@@ -30,12 +30,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<md-content ng-if="value['Input Type'] == 'AET'">
 						<span>{{value.AET.Table.Title}}</span>
 						<div layout="column">
-							<div flex layout-align="start center" layout-padding ng-repeat="x in getCardinality(currCategory.Table.Name,value.AET.Table.Name) track by $index">
+							<div flex layout-align="start center" layout-padding ng-repeat="(i,x) in getCardinality(currCategory.Table.Name,value.AET.Table.Name) track by $index">
 								<span>{{$index+1}}</span>
 								<div layout="column" ng-repeat="(k,v) in value.AET.Fields" class="md-no-padding">
 									<md-input-container class="md-no-margin">
 										<label>{{v.Title}}</label>
-										<input ng-model="input[currCategory.Table.Name][value.Name][v.Name]" type="{{v['Input Type']}}"  ng-required="{{v['Input Required']}}" ng-pattern="value['Input Regex']"/>
+										<input ng-model="input[currCategory.Table.Name][value.Name][i][v.Name]" type="{{v['Input Type']}}"  ng-required="{{v['Input Required']}}" ng-pattern="value['Input Regex']"/>
 									</md-input-container>
 								</div>
 							</div>
