@@ -276,7 +276,7 @@ class BaseModel extends CI_Controller{
 				$msg = $this->getTableTitle($tableName).'. Duplicate entry for '.$this->getFieldTitle($tableName,$matches[1]);
 				break;
 			default:
-				$msg = 'Unknown Error';
+				$msg = $error['message'];
 		}
 		return $msg;
 	}
@@ -358,8 +358,7 @@ class AssociativeEntityModel extends BaseModel{
 		}
 		
 		//Create table
-		$this->dbforge->add_field(self::AETRegistryPKName.' int unsigned not null');
-		$this->dbforge->add_field('foreign key ('.self::AETRegistryPKName.') references '.self::AETRegistryTableName.'('.self::AETRegistryPKName.')');
+		$this->dbforge->add_field(self::PlaceholderField.' int');
 		$this->dbforge->create_table($tableName);
 		
 		//Register table
@@ -388,10 +387,7 @@ class AssociativeEntityModel extends BaseModel{
 			$this->dbforge->add_field(self::BaseTableIDFieldName.' int unsigned not null');
 			$this->dbforge->add_field(self::AETIDFieldName.' int unsigned not null');
 			$this->dbforge->add_field(self::AETCardinalityFieldIDFieldName.' int unsigned not null');
-			$this->dbforge->add_field(self::AETRegistryPKName.' int unsigned not null auto_increment unique');
 			$this->dbforge->add_field(self::AETDefaultCardinalityFieldName.' int unsigned not null');
-			
-			$this->dbforge->add_field('primary key ('.self::AETRegistryPKName.')');
 			
 			$this->dbforge->add_field('foreign key ('.self::BaseTableIDFieldName.') references '.BaseModel::TableRegistryTableName.'('.BaseModel::TableRegistryPKName.')');
 			

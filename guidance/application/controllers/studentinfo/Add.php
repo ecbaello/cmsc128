@@ -22,11 +22,22 @@ class Add extends StudentInfoController {
 	}
 	
 	public function post($input=null){
+		
+		/*print('<pre>');
+		print_r($this->getTableData(true));
+		print('</pre>');
+		die();*/
+		
 		if($input == null)
 			return;
 		
 		$input = urldecode($input);
 		$input = json_decode($input,true);
+		
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			$this->responseJSON(false,'Invalid JSON');
+			return;
+		}
 		
 		$csrfTokenName = $this->security->get_csrf_token_name();
 		$csrfHash = $this->security->get_csrf_hash();
@@ -48,64 +59,115 @@ class Add extends StudentInfoController {
 			Table_Name,
 			Fields
 			{
-				Field Name => Data				
+				Field Name => Data
 			}
 		}
 		*/
+		
 		$toInsert = array();
 		
-		//Check for data completeness
+		//Validate Data
 		$tableData = $this->getTableData(true);
-		foreach($tableData as $table){
+		foreach($tableData as $tableIndex=>$table){
 			
 			if(!isset($data[$table['Table']['Name']])){
 				$this->responseJSON(false,'Incomplete Data. Please fill-up at least one field in the category: '.$table['Table']['Title']);
 				return;
 			}
+			$toInsertFields = array();
+			
 			foreach($table['Fields'] as $field){
 				if($field['Input Type'] != 'AET'){
-					if($field['Input Required'] == false)
-						continue;
 					
-					if(!isset( $data[$table['Table']['Name']][$field['Name']] )){
+					//If field is not an AET
+						
+					if($field['Input Required'] == true && !isset( $data[$table['Table']['Name']][$field['Name']] )){
+						//if input is required but no input found, show error
 						$this->responseJSON(false,'Incomplete Data. Please fill-in the required field: '.$field['Title']);
 						return;
-					}
-				}else{
-					foreach($field['AET']['Fields'] as $AETField){
-						if($AETField['Input Required'] == false)
-							continue;
-					
-						if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ] )){
-							$this->responseJSON(false,'Incomplete Data. Please fill-in the required fields in '.$field['AET']['Table']['Title']);
+					}else if (isset( $data[$table['Table']['Name']][$field['Name']] )){
+						//if input required, and input found, add to insert
+						
+						if(!$this->isInputValid($data[$table['Table']['Name']][$field['Name']],$field['Input Type'],$field['Input Regex'])){
+							$this->responseJSON(false,'Invalid Data at '.$field['Title']);
 							return;
 						}
+						$toInsertFields[$field['Name']]=$data[$table['Table']['Name']][$field['Name']];
+					}
+					
+				}else{
+					
+					//If field is an AET
+					foreach($field['AET']['Fields'] as $AETField){
 						
-						//getting cardinality
-						if(isset($data[ $table['Table']['Name'] ][ $field['AET']['Cardinality Field Name'] ])){
-							$cardinality = $data[ $table['Table']['Name'] ][ $field['AET']['Cardinality Field Name'] ];
-						}else{
-							$cardinality = $field['AET']['Default Cardinality'];
-						}
+						$toInsertAETFields = array();
+					
+						if($AETField['Input Required']==true && !isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ] )){
+							$this->responseJSON(false,'Incomplete Data. Please fill-in the required fields in '.$field['AET']['Table']['Title']);
+							return;
+						}else if(isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ] )){
 						
-						for($i = 0 ; $i<$cardinality ; $i++){
-							
-							if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i])){
-								$this->responseJSON(false,'Incomplete Data. Please fill-in the required fields in '.$field['AET']['Table']['Title']);
-								return;
+							//getting cardinality
+							if(isset($data[ $table['Table']['Name'] ][ $field['AET']['Cardinality Field Name'] ])){
+								$cardinality = $data[ $table['Table']['Name'] ][ $field['AET']['Cardinality Field Name'] ];
+							}else{
+								$cardinality = $field['AET']['Default Cardinality'];
 							}
 							
-							if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i][ $AETField['Name'] ] )){
-								$this->responseJSON(false,'Incomplete Data. Please fill-in the required field: '.$AETField['Title']);
-								return;
+							for($i = 0 ; $i<$cardinality ; $i++){
+								
+								if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i])){
+									$this->responseJSON(false,'Incomplete Data. Please fill-in the required fields in '.$field['AET']['Table']['Title']);
+									return;
+								}
+								
+								if(isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i][ $AETField['Name'] ] )){
+									if(!$this->isInputValid($data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i][ $AETField['Name'] ],$AETField['Input Type'],$AETField['Input Regex'])){
+										$this->responseJSON(false,'Invalid Data at '.$AETField['Title']);
+										return;
+									}
+									
+									$toInsertAETFields[$AETField['Name']]=$data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i][ $AETField['Name'] ];
+								}
+								if(count($toInsertAETFields)>0){
+									array_push($toInsert, array(
+										'Table_Name'=>$field['Name'],
+										'Fields'=>$toInsertAETFields
+									));
+								}
 							}
-						}
+						}					
+						
 					}
 				}
 			}
+			
+			if(count($toInsertFields)>0){
+				array_push($toInsert,array(
+					'Table_Name'=> $table['Table']['Name'],
+					'Fields'=>$toInsertFields
+				));
+			}	
 		}
 		
-		//Inserting Data
+		$referenceField = '';
+		foreach($toInsert as $index=>$value){
+			if($index == 0){
+				$referenceField=$value['Fields'][Student_Information::ReferenceFieldFieldName];
+				$result = $this->student_information->insert($value['Table_Name'],$value['Fields']);
+				if($result !== null){
+					$this->responseJSON(false,$result);
+					return;
+				}
+			}else{
+				$value['Fields'][Student_Information::BaseTablePKName]=$this->student_information->getBasePK($referenceField);
+				$result = $this->student_information->insert($value['Table_Name'],$value['Fields']);
+				if($result !== null){
+					$this->responseJSON(false,$result);
+					return;
+				}
+			}
+		}
 		
 		$this->responseJSON(true,'Added Student');
 		return;

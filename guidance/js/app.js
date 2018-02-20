@@ -23,7 +23,7 @@ app.controller('tests',function($scope,$rootScope){
 	}
 });
 
-app.controller('student_add',function($scope,$rootScope,$http){
+app.controller('student_add',function($scope,$rootScope,$http,$window){
 	
 	$scope.currCategoryKey = 0;
 	$scope.currCategory = {};
@@ -121,6 +121,10 @@ app.controller('student_add',function($scope,$rootScope,$http){
 			}
 			
 			alert((responseData.success ? 'Success: ':'Error: ')+responseData.msg);
+			
+			if(responseData.success){
+				$window.location.reload();
+			}
 		}
 		
 		error = function(response){

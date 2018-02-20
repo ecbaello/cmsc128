@@ -32,7 +32,7 @@ class BaseController extends CI_Controller{
 		));
 	}
 	
-	protected function isInputValid($input,$inputType){
+	protected function isInputValid($input,$inputType,$regex){
 		return true;
 	}
 }
