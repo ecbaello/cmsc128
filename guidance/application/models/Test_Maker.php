@@ -20,10 +20,10 @@ class Test_Maker extends BaseModel{
 			$this->addTable($this->ModelTitle,self::TestsTableName,'Tests');
 			$this->addField(self::TestsTableName,array(
 				'name'=>self::TestsPKName,
-				'title'=>'Test ID',
 				'type'=>'int',
-				'constraints'=>'not null auto_increment'
+				'constraints'=>'not null auto_increment unique'
 			),true);
+			
 			$this->addField(self::TestsTableName,array(
 				'name'=>'test_title',
 				'title'=>'Test Title',
@@ -31,7 +31,7 @@ class Test_Maker extends BaseModel{
 				'constraints'=>'not null unique',
 				'input_type'=>'text',
 				'input_required'=>true
-			),true);
+			));
 		}
 		
 		//Create Questions Table
@@ -39,9 +39,8 @@ class Test_Maker extends BaseModel{
 			$this->addTable($this->ModelTitle,self::QuestionsTableName,'Questions');
 			$this->addField(self::QuestionsTableName,array(
 				'name'=>self::QuestionsPKName,
-				'title'=>'Question ID',
 				'type'=>'int',
-				'constraints'=>'not null auto_increment'
+				'constraints'=>'not null auto_increment unique'
 			),true);
 			$this->addField(self::QuestionsTableName,array(
 				'name'=>'question_body',
@@ -53,10 +52,9 @@ class Test_Maker extends BaseModel{
 			));
 			$this->addField(self::QuestionsTableName,array(
 				'name'=>self::TestsPKName,
-				'title'=>'Test ID',
 				'type'=>'int',
 				'constraints'=>'not null'
-			),false,false,array(
+			),false,true,array(
 				'table_name'=>self::TestsTableName,
 				'field_name'=>self::TestsPKName
 			));
