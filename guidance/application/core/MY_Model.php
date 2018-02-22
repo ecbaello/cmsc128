@@ -38,9 +38,8 @@ class BaseModel extends CI_Controller{
 		$this->load->dbforge();
 		
 		$this->createRegistry();
-		
-		$this->preModelCreation();
 		$this->registerModel();
+		$this->preModelCreation();
 		$this->createModel();
 	}
 	
@@ -309,11 +308,13 @@ class BaseModel extends CI_Controller{
 		//Check if function is called from BaseModel
 		if($this->ModelTitle == "") return; 
 		
+		
+		
 		//Check if model exists
 		$this->db->select(self::ModelTitleFieldName);
+		$this->db->where(self::ModelTitleFieldName,$this->ModelTitle);
 		$this->db->from(self::ModelRegistryTableName);
 		$result = $this->db->get()->result_array();
-		
 		if(count($result)>0){
 			return;
 		}
