@@ -22,12 +22,6 @@ class Add extends StudentInfoController {
 	}
 	
 	public function post($input=null){
-		
-		/*print('<pre>');
-		print_r($this->getTableData(true));
-		print('</pre>');
-		die();*/
-		
 		if($input == null)
 			return;
 		
@@ -96,47 +90,45 @@ class Add extends StudentInfoController {
 					}
 					
 				}else{
-					
 					//If field is an AET
-					foreach($field['AET']['Fields'] as $AETField){
-						
-						$toInsertAETFields = array();
+					//getting cardinality
+					if(isset($data[ $table['Table']['Name'] ][ $field['AET']['Cardinality Field Name'] ])){
+						$cardinality = $data[ $table['Table']['Name'] ][ $field['AET']['Cardinality Field Name'] ];
+					}else{
+						$cardinality = $field['AET']['Default Cardinality'];
+					}
 					
-						if($AETField['Input Required']==true && !isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ] )){
-							$this->responseJSON(false,'Incomplete Data. Please fill-in the required fields in '.$field['AET']['Table']['Title']);
-							return;
-						}else if(isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ] )){
+					for($i = 0 ; $i<$cardinality ; $i++){
 						
-							//getting cardinality
-							if(isset($data[ $table['Table']['Name'] ][ $field['AET']['Cardinality Field Name'] ])){
-								$cardinality = $data[ $table['Table']['Name'] ][ $field['AET']['Cardinality Field Name'] ];
-							}else{
-								$cardinality = $field['AET']['Default Cardinality'];
-							}
-							
-							for($i = 0 ; $i<$cardinality ; $i++){
-								
-								if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i])){
-									$this->responseJSON(false,'Incomplete Data. Please fill-in the required fields in '.$field['AET']['Table']['Title']);
-									return;
-								}
-								
+						if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i])){
+							$this->responseJSON(false,'Incomplete Data. Please fill-in at least one field in '.$field['AET']['Table']['Title']);
+							return;
+						}
+						$toInsertAETFields = array();
+						foreach($field['AET']['Fields'] as $AETField){
+						
+							if($AETField['Input Required']==true && !isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ] )){
+								$this->responseJSON(false,'Incomplete Data. Please fill-in the required fields in '.$field['AET']['Table']['Title']);
+								return;
+							}else if(isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ] )){
+									
 								if(isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i][ $AETField['Name'] ] )){
 									if(!$this->isInputValid($data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i][ $AETField['Name'] ],$AETField['Input Type'],$AETField['Input Regex'])){
 										$this->responseJSON(false,'Invalid Data at '.$AETField['Title']);
 										return;
 									}
-									
 									$toInsertAETFields[$AETField['Name']]=$data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i][ $AETField['Name'] ];
 								}
-								if(count($toInsertAETFields)>0){
-									array_push($toInsert, array(
-										'Table_Name'=>$field['Name'],
-										'Fields'=>$toInsertAETFields
-									));
-								}
-							}
-						}					
+
+							}					
+							
+						}
+						if(count($toInsertAETFields)>0){
+							array_push($toInsert, array(
+								'Table_Name'=>$field['Name'],
+								'Fields'=>$toInsertAETFields
+							));
+						}
 						
 					}
 				}
@@ -151,6 +143,7 @@ class Add extends StudentInfoController {
 		}
 		
 		$referenceField = '';
+		//print('<pre>');print_r($toInsert);print('</pre>');die();
 		foreach($toInsert as $index=>$value){
 			if($index == 0){
 				$referenceField=$value['Fields'][Student_Information::ReferenceFieldFieldName];

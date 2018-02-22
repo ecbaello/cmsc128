@@ -212,7 +212,27 @@ class Student_Information extends AssociativeEntityModel{
 		$this->db->select(self::BaseTablePKName);
 		$this->db->where(self::ReferenceFieldFieldName,$studentNumber);
 		$result = $this->db->get(self::BaseTableTableName)->result_array();
-		return $result[0][self::BaseTablePKName];
+		return isset($result[0][self::BaseTablePKName])?$result[0][self::BaseTablePKName]:null;
+	}
+	
+	public function getStudentData($tableName,$studentNumber,$isAET=false){
+		$pk = $this->getBasePK($studentNumber);
+		if($pk == null)
+			return;
+		$fields = $this->getFields($tableName);
+		$select= array();
+		foreach($fields as $field){
+			if($field[BaseModel::FieldInputTypeFieldName] == 'hidden' || $field[BaseModel::FieldInputTypeFieldName] == 'AET')
+				continue;
+			array_push($select,$field[BaseModel::FieldNameFieldName]);
+		}
+		$this->db->select(implode(' , ',$select));
+		$this->db->where(self::BaseTablePKName,$pk);
+		$result = $this->db->get($tableName)->result_array();
+		if($isAET){
+			return $result;
+		}
+		return isset($result[0])?$result[0]:null;
 	}
 	
 }

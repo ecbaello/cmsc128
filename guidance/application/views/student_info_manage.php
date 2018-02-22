@@ -2,16 +2,19 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
 
+<div ng-controller="student_add" >
+<div layout="row" layout-padding >
+	<span>Search Student:</span>
+	<input ng-model="searchInput" type="text" placeholder='Input Student Number'/>
+	<button ng-click="search()"><i class="fas fa-search" style=""></i></button>
+</div>
 
-<div ng-controller="student_add" layout="row" layout-align="center start" flex ng-init="init()">
+<div layout="row" layout-align="center start" flex ng-init="init()">
 	<md-content layout="column" layout-align="start start" flex='20'>
-		<md-toolbar layout-padding style="background-color:darkgray">
-			<span class="md-headline">Add Student</span>
-		</md-toolbar>
 		<md-button layout-fill style="text-align:left" ng-repeat="(key,value) in tableData"  ng-click="changeCategory(key)" ng-class="{'md-primary md-raised':key == currCategoryKey}">
 			<span layout-padding>{{value.Table.Title}}</span>
 		</md-button>
-		<md-button class="md-raised md-primary" ng-click="submit()">Submit</md-button>
+		<md-button class="md-raised md-primary" ng-disabled="true" ng-click="submit()">Submit</md-button>
 	</md-content>
 	
 	<div layout="column" layout-align="start start" flex layout-padding layout-fill>
@@ -47,4 +50,5 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div>
 	</div>
 	
+</div>
 </div>

@@ -28,7 +28,7 @@ app.controller('student_add',function($scope,$rootScope,$http,$window){
 	$scope.currCategoryKey = 0;
 	$scope.currCategory = {};
 	$scope.tableData = {};
-	
+	$scope.searchInput = ''; //manage
 	$scope.input = {};
 	
 	var csrfTokenName = '';
@@ -103,6 +103,36 @@ app.controller('student_add',function($scope,$rootScope,$http,$window){
 		$scope.currCategory = $scope.tableData[categoryKey];
 	}
 	
+	$scope.search = function(){
+		
+		if($scope.searchInput == '')
+			return;
+		
+		success = function(response) {
+			var responseData = {};
+			responseData = response.data;
+			console.log(responseData);
+			if(!('success' in responseData) && !('msg' in responseData)){
+				alert('Something is missing');
+			}
+			
+			if(responseData.success){
+				$scope.input = {};
+				$scope.input = responseData.data;
+			}else{
+				alert('Error: '+responseData.msg);
+			}
+		}
+		
+		error = function(response){
+			alert('Something went wrong');
+		}
+		$http({
+			method: 'GET',
+			url: $rootScope.baseURL+'studentinfo/manage/getstudentdata/'+encodeURIComponent($scope.searchInput)
+		}).then(success,error);
+	}
+	
 	$scope.submit = function(){
 		
 		var data = {
@@ -138,5 +168,4 @@ app.controller('student_add',function($scope,$rootScope,$http,$window){
 		
 		console.log($rootScope.baseURL+'studentinfo/add/post/'+encodeURIComponent(data));
 	}
-	
 });

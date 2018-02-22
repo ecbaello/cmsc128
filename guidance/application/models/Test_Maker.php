@@ -17,7 +17,7 @@ class Test_Maker extends BaseModel{
 		
 		//Create Tests Table
 		if(!$this->db->table_exists(self::TestsTableName)){
-			$this->addTable($this->ModelTitle,self::TestsTableName,'Tests');
+			$this->addTable($this->ModelTitle,self::TestsTableName,'Test');
 			$this->addField(self::TestsTableName,array(
 				'name'=>self::TestsPKName,
 				'type'=>'int',
@@ -36,7 +36,7 @@ class Test_Maker extends BaseModel{
 		
 		//Create Questions Table
 		if(!$this->db->table_exists(self::QuestionsTableName)){
-			$this->addTable($this->ModelTitle,self::QuestionsTableName,'Questions');
+			$this->addTable($this->ModelTitle,self::QuestionsTableName,'Question');
 			$this->addField(self::QuestionsTableName,array(
 				'name'=>self::QuestionsPKName,
 				'type'=>'int',
