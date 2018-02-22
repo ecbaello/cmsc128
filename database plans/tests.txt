@@ -9,7 +9,6 @@ Questions
 --
 Test ID(fk)
 Question ID (pk)
-Question Title (unique per test)
 Question Body
 
 --

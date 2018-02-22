@@ -38,13 +38,16 @@ class BaseModel extends CI_Controller{
 		$this->load->dbforge();
 		
 		$this->createRegistry();
+		
+		$this->preModelCreation();
 		$this->registerModel();
+		$this->createModel();
 	}
 	
 	public function addField($tableName,$fieldData = array(),$isPK = false, $isFK = false, $FKReference = array()){
 		
-		//FKReference: field_name, table_name
-		//fieldData: name,type,title,constraints,input_type,input_required,input_regex
+		//FKReference: field_name*, table_name*
+		//fieldData: name*,type*,title*,constraints,input_type,input_required,input_regex
 		
 		//Error Checking
 		if(!isset($fieldData['name']) || !isset($fieldData['type'])){
@@ -281,6 +284,10 @@ class BaseModel extends CI_Controller{
 		return $msg;
 	}
 	
+	protected function preModelCreation(){
+		return;
+	}
+	
 	private function registerField($tableID,$fieldData = array()){
 		
 		// fieldData : title, name, input_type, input_required, regex
@@ -343,11 +350,6 @@ class AssociativeEntityModel extends BaseModel{
 	
 	const AETRegistryPKName = 'aet_id';
 	const AETDefaultCardinalityFieldName = 'default_cardinality';
-	
-	public function __construct(){
-		parent::__construct();
-		$this->createAETRegistry();
-	}
 	
 	public function addAET($tableName,$tableTitle){
 		
@@ -425,6 +427,10 @@ class AssociativeEntityModel extends BaseModel{
 		$this->db->where(self::AETIDFieldName,$AETID);
 		$result = $this->db->get(self::AETRegistryTableName)->result_array();
 		return $result[0][self::AETDefaultCardinalityFieldName];
+	}
+	
+	protected function preModelCreation(){
+		$this->createAETRegistry();
 	}
 	
 	private function registerAET($baseTableID,$AETID,$AETCardinalityFieldID,$defaultCardinality){

@@ -45,3 +45,12 @@ class StudentInfoController extends BaseController {
 	}
 
 }
+
+class TestsController extends BaseController {
+
+	public function __construct(){
+		parent::__construct();
+		$this->load->model('test_maker');
+	}
+
+}

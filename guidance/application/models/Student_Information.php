@@ -20,11 +20,6 @@ class Student_Information extends AssociativeEntityModel{
 		
 	public $ModelTitle = "Student Information";
 	
-	public function __construct(){
-		parent::__construct();
-		$this->createModel();
-	}
-	
 	public function createModel(){
 		
 		//Bacgkround Information 

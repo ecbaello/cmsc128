@@ -1,11 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
-
-
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-?><!DOCTYPE html>
 <div flex layout="row" layout-align="center center" layout-padding>
 	<span class="md-headline">Student Information</span>
 </div>
