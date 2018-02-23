@@ -43,6 +43,14 @@ class Student_Information extends AssociativeEntityModel{
 			));
 			
 			$this->addField(self::BaseTableTableName,array(
+				'name'=>'course_block',
+				'title'=>'Course Block',
+				'type'=>'varchar(30)',
+				'input_type'=>'text',
+				'input_required'=>FALSE,
+			));
+			
+			$this->addField(self::BaseTableTableName,array(
 				'name'=>'last_name',
 				'title'=>'Last Name',
 				'type'=>'varchar(30)',
@@ -50,6 +58,79 @@ class Student_Information extends AssociativeEntityModel{
 				'input_type'=>'text',
 				'input_required'=>TRUE,
 			));
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>'first_name',
+				'title'=>'First Name',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>TRUE,
+			));
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>'middle_name',
+				'title'=>'Middle Name',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>TRUE,
+			));
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>'nickname',
+				'title'=>'Nickname',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>FALSE
+			));
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>'sex',
+				'title'=>'Sex',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>TRUE,
+			));
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>'birthdate',
+				'title'=>'Date of Birth',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>TRUE,
+			));
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>'birthplace',
+				'title'=>'Place of Birth',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>FALSE,
+			));
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>'nationality',
+				'title'=>'Nationality',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>FALSE,
+			));
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>'citizenship',
+				'title'=>'Citizenship',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>FALSE,
+			));
+			
 		}
 		
 		//Family Data

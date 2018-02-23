@@ -28,6 +28,8 @@ class Add extends StudentInfoController {
 		$input = urldecode($input);
 		$input = json_decode($input,true);
 		
+		//print('<pre>');print_r($input);print('</pre>');die();
+		
 		if (json_last_error() !== JSON_ERROR_NONE) {
 			$this->responseJSON(false,'Invalid JSON');
 			return;
