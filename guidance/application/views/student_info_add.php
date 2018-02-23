@@ -31,7 +31,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<span>{{value.AET.Table.Title}}</span>
 						<div layout="column" layout-padding layout-margin>
 							<div style="border:1px solid lightgray" flex layout-align="start center" ng-repeat="(i,x) in getCardinality(currCategory.Table.Name,value.AET.Table.Name) track by $index">
-								<span>{{$index+1}}</span>
+								<span>#{{$index+1}}</span>
 								<div layout="column" ng-repeat="(k,v) in value.AET.Fields" class="md-no-padding">
 									<md-input-container class="md-no-margin">
 										<label>{{v.Title}}</label>
