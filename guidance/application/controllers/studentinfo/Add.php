@@ -119,9 +119,7 @@ class Add extends StudentInfoController {
 									}
 									$toInsertAETFields[$AETField['Name']]=$data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i][ $AETField['Name'] ];
 								}
-
 							}					
-							
 						}
 						if(count($toInsertAETFields)>0){
 							array_push($toInsert, array(
@@ -129,7 +127,6 @@ class Add extends StudentInfoController {
 								'Fields'=>$toInsertAETFields
 							));
 						}
-						
 					}
 				}
 			}
