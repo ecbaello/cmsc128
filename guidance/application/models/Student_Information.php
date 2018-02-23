@@ -73,8 +73,7 @@ class Student_Information extends AssociativeEntityModel{
 				'title'=>'Middle Name',
 				'type'=>'varchar(30)',
 				'constraints'=>'not null',
-				'input_type'=>'text',
-				'input_required'=>TRUE,
+				'input_type'=>'text'
 			));
 			
 			$this->addField(self::BaseTableTableName,array(
@@ -206,6 +205,15 @@ class Student_Information extends AssociativeEntityModel{
 				'type'=>'varchar(30)',
 				'constraints'=>'not null',
 				'input_type'=>'text'
+			));
+			
+			$this->addField(self::FamilyParentTableName,array(
+				'name'=>'name',
+				'title'=>'Name',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>TRUE
 			));
 			
 			$this->addAETField(self::FamilyDataTableName,self::FamilyParentTableName,'family_parent_cardinality',2);
