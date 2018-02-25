@@ -5,7 +5,8 @@ class Add extends StudentInfoController {
 
 	public function body()
 	{
-		$this->load->view('student_info_add');
+		//$this->load->view('student_info_add');
+		$this->load->view('student_info_form',array('mode'=>'add'));
 	}
 	
 	public function get($data){
@@ -123,19 +124,19 @@ class Add extends StudentInfoController {
 				
 			if($field[BaseModel::FieldInputTypeFieldName] == 'hidden') continue;
 			
-			$AETData = array();
-			if($field[BaseModel::FieldInputTypeFieldName]=='AET'){
+			$FEData = array();
+			if($field[BaseModel::FieldInputTypeFieldName]=='FE'){
 				
-				$AETFields = $this->getTableFields($field[BaseModel::FieldNameFieldName]);
+				$FEFields = $this->getTableFields($field[BaseModel::FieldNameFieldName]);
 				
-				$AETData = array(
+				$FEData = array(
 					'Table'=>array(
 						'Title'=>$field[BaseModel::FieldTitleFieldName],
 						'Name'=>$field[BaseModel::FieldNameFieldName]
 					),
-					'Cardinality Field Name' => $this->student_information->getAETCardinalityFieldName($tableName,$field[BaseModel::FieldNameFieldName]),
-					'Default Cardinality'=>$this->student_information->getAETDefaultCardinality($tableName,$field[BaseModel::FieldNameFieldName]),
-					'Fields' => $AETFields
+					'Cardinality Field Name' => $this->student_information->getFECardinalityFieldName($tableName,$field[BaseModel::FieldNameFieldName]),
+					'Default Cardinality'=>$this->student_information->getFEDefaultCardinality($tableName,$field[BaseModel::FieldNameFieldName]),
+					'Fields' => $FEFields
 				);
 				
 			}
@@ -145,7 +146,7 @@ class Add extends StudentInfoController {
 				'Input Type'=>$field[BaseModel::FieldInputTypeFieldName],
 				'Input Required'=>$field[BaseModel::FieldInputRequiredFieldName],
 				'Input Regex'=>$field[BaseModel::FieldInputRegexFieldName],
-				'AET'=>$AETData
+				'FE'=>$FEData
 			));
 			
 		}
@@ -160,7 +161,7 @@ class Add extends StudentInfoController {
 		$toInsertFields = array();
 		foreach($formData['Fields'] as $field){
 			
-			if($field['Input Type']!='AET'){
+			if($field['Input Type']!='FE'){
 				if($field['Input Required'] == true && !isset( $inputData[$field['Name']] )){
 					//if input is required but no input found, show error
 					$this->responseJSON(false,'Incomplete Data. Please fill-in the required field: '.$field['Title']);
@@ -175,18 +176,18 @@ class Add extends StudentInfoController {
 				}
 			}else{
 				
-				if(isset($inputData[ $field['AET']['Cardinality Field Name'] ])){
-					$cardinality = $inputData[ $field['AET']['Cardinality Field Name'] ];
+				if(isset($inputData[ $field['FE']['Cardinality Field Name'] ])){
+					$cardinality = $inputData[ $field['FE']['Cardinality Field Name'] ];
 				}else{
-					$cardinality = $field['AET']['Default Cardinality'];
+					$cardinality = $field['FE']['Default Cardinality'];
 				}
 				
 				for($i = 0 ; $i<$cardinality ; $i++){
-					if(!isset( $inputData[ $field['AET']['Table']['Name'] ][$i])){
-						$this->responseJSON(false,'Incomplete Data. Please fill-in at least one field in '.$field['AET']['Table']['Title'].' #'.($i+1));
+					if(!isset( $inputData[ $field['FE']['Table']['Name'] ][$i])){
+						$this->responseJSON(false,'Incomplete Data. Please fill-in at least one field in '.$field['FE']['Table']['Title'].' #'.($i+1));
 						return;
 					}
-					$toInsertArray = $this->prepareAndValidateInput($toInsertArray,$field['AET'],$inputData[ $field['AET']['Table']['Name'] ][$i]);
+					$toInsertArray = $this->prepareAndValidateInput($toInsertArray,$field['FE'],$inputData[ $field['FE']['Table']['Name'] ][$i]);
 				}	
 			}
 		}

@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
 <html lang="en" ng-app="app">
 
-<head ng-controller="initializer" ng-init="init('<?=base_url()?>')">
+<head ng-controller="initializer" ng-init="init('<?=base_url()?>','<?= $this->security->get_csrf_token_name()?>','<?= $this->security->get_csrf_hash()?>')">
 	<title>University of the Philippines Baguio Student Registry</title>
 	
 	<link rel="shortcut icon" href="<?= base_url().'logos/up.png' ?>" type="image/x-icon">

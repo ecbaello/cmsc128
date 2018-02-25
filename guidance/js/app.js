@@ -5,34 +5,62 @@ var app = angular.module("app", ['ngMaterial'])
     .accentPalette('green');
 });
 
-app.controller('initializer',function($scope,$rootScope){
-	$scope.init = function(baseURL){
-		$rootScope.baseURL = baseURL;
-	}
-});
 
-app.controller('tests',function($scope,$rootScope){
-	$scope.csrf = {};
+app.run(function($rootScope,$http){
+
+	$rootScope.post = function(url,inputData,onSuccess,onFailure){
 	
-	$scope.init = function(csrfTokenName,csrfHash){
-		$scope.csrf.tokenName = csrfTokenName;
-		$scope.csrf.hash = csrfHash;
-	}	
-	$scope.test = function(){
-		alert($scope.csrf.tokenName+' '+$scope.csrf.hash);
+		var data = {
+			'data':inputData,
+			[$rootScope.csrf.tokenName]:$rootScope.csrf.hash
+		};
+		data = angular.toJson(data);
+		
+		success = function(response) {
+			var responseData = {};
+			responseData = response.data;
+			console.log(responseData);
+			if(!('success' in responseData) || !('msg' in responseData)){
+				alert('Something is missing');
+				return;
+			}
+			if(responseData.success){
+				onSuccess(responseData);
+			}else{
+				onFailure(responseData);
+			}
+		}
+		
+		error = function(response){
+			alert('Something went wrong');
+		}
+		
+		$http({
+			method: 'GET',
+			url: url+encodeURIComponent(data)
+		}).then(success,error);
+		
+		console.log(url+encodeURIComponent(data));
+		
 	}
 });
 
-app.controller('student_add',function($scope,$rootScope,$http,$window){
+app.controller('initializer',function($scope,$rootScope){
+	$scope.init = function(baseURL,csrfTokenName,csrfHash){
+		$rootScope.baseURL = baseURL;
+		$rootScope.csrf = {};
+		$rootScope.csrf.tokenName = csrfTokenName;
+		$rootScope.csrf.hash = csrfHash;
+	}
+});
+
+app.controller('student_form',function($scope,$rootScope,$http,$window){
 	
 	$scope.currCategoryKey = 0;
 	$scope.currCategory = {};
 	$scope.tableData = {};
 	$scope.searchInput = ''; //manage
 	$scope.input = {};
-	
-	var csrfTokenName = '';
-	var csrfHash = '';
 	
 	$scope.init = function(){
 		$http.get($rootScope.baseURL+'studentinfo/add/get/form')
@@ -42,30 +70,25 @@ app.controller('student_add',function($scope,$rootScope,$http,$window){
 			console.log($scope.tableData);
 		});
 	}
-	
-	$scope.setCSRF = function(name,hash){
-		csrfTokenName = name;
-		csrfHash = hash;
-	}
-	
-	$scope.getCardinality = function(baseTableName,AETName){
+
+	$scope.getCardinality = function(baseTableName,FEName){
 		var number = 1;
 		for(key in $scope.tableData){
 			if($scope.tableData[key].Table.Name == baseTableName){
 				var table = $scope.tableData[key];
 				for(key2 in table.Fields){
-					if(table.Fields[key2].Name == AETName){
+					if(table.Fields[key2].Name == FEName){
 						var field = table.Fields[key2];
-						var cardinalityField = field.AET['Cardinality Field Name'];
+						var cardinalityField = field.FE['Cardinality Field Name'];
 						
 						if(!(table.Table.Name in $scope.input)){
-							number = field.AET['Default Cardinality'];
+							number = field.FE['Default Cardinality'];
 							$scope.input[table.Table.Name] = {};
 							$scope.input[table.Table.Name][cardinalityField] = parseInt(number);
 							break;
 						}
 						if(!(cardinalityField in $scope.input[table.Table.Name])){
-							number = field.AET['Default Cardinality'];
+							number = field.FE['Default Cardinality'];
 							$scope.input[table.Table.Name][cardinalityField] = parseInt(number);
 							break;
 						}else{
@@ -89,83 +112,40 @@ app.controller('student_add',function($scope,$rootScope,$http,$window){
 	
 	$scope.changeCategory = function(categoryKey){
 		var object = $scope.tableData[0];
-		/*if(!(object.Table.Name in $scope.input)){
-			alert(object.Table.Title+' should be filled up first.');
-			return;
-		}
-		for(var field in object.Table.Field){
-			if(!(field in $scope.input[object.Table.Name])){
-				alert(object.Table.Title+' should be filled up first.');
-				return;
-			}
-		}*/
 		$scope.currCategoryKey = categoryKey;
 		$scope.currCategory = $scope.tableData[categoryKey];
 	}
 	
 	$scope.search = function(){
-		
 		if($scope.searchInput == '')
 			return;
-		
 		success = function(response) {
 			var responseData = {};
 			responseData = response.data;
-			console.log(responseData);
-			if(!('success' in responseData) && !('msg' in responseData)){
-				alert('Something is missing');
-			}
-			
-			if(responseData.success){
-				$scope.input = {};
-				$scope.input = responseData.data;
-			}else{
-				alert('Error: '+responseData.msg);
-			}
+			$scope.input = {};
+			$scope.input = responseData.data;
 		}
-		
 		error = function(response){
-			alert('Something went wrong');
+			alert('Error: '+response.msg);
 		}
-		$http({
-			method: 'GET',
-			url: $rootScope.baseURL+'studentinfo/manage/getstudentdata/'+encodeURIComponent($scope.searchInput)
-		}).then(success,error);
+		$rootScope.post($rootScope.baseURL+'studentinfo/manage/getstudentdata/',$scope.searchInput,success,error);
 	}
 	
 	$scope.submit = function(){
-		
-		var data = {
-			'data':$scope.input,
-			[csrfTokenName]:csrfHash
-		};
-		data = angular.toJson(data);
-		console.log($scope.input);
 		success = function(response) {
-			var responseData = {};
-			responseData = response.data;
-			console.log(responseData);
-			if(!('success' in responseData) || !('msg' in responseData)){
-				alert('Something is missing');
-				return;
-			}
-			
-			alert((responseData.success ? 'Success: ':'Error: ')+responseData.msg);
-			
-			if(responseData.success){
-				$window.location.reload();
-			}
+			alert('Success: '+response.msg);
+			$window.location.reload();
 		}
-		
 		error = function(response){
-			alert('Something went wrong');
+			alert('Error: '+response.msg);
 		}
-		
-		$http({
-			method: 'GET',
-			url: $rootScope.baseURL+'studentinfo/add/post/'+encodeURIComponent(data)
-		}).then(success,error);
-		
-		console.log($rootScope.baseURL+'studentinfo/add/post/'+encodeURIComponent(data));
+		$rootScope.post($rootScope.baseURL+'studentinfo/add/post/',$scope.input,success,error);
 	}
+});
+
+
+
+app.controller('student_search',function($scope,$rootScope,$window){
+
+
 });

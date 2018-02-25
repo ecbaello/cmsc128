@@ -24,11 +24,16 @@ class BaseModel extends CI_Controller{
 	const ModelTitleFieldName = "model_title";
 	const TableTitleFieldName = "table_title";
 	const TableNameFieldName = "table_name";
+	const TableEssentialFieldName = "is_essential";
+	const TableFloatingFieldName = "is_visible";
 	const FieldTitleFieldName = "field_title";
 	const FieldNameFieldName = "field_name";
 	const FieldInputTypeFieldName = "field_input_type";
 	const FieldInputRequiredFieldName = "field_input_required";
+	const FieldInputTipFieldName = "field_input_tip";
+	const FieldInputOrderFieldName = "field_input_order";
 	const FieldInputRegexFieldName = "field_input_regex";
+	const FieldInputRegexErrMsgFieldName = "field_input_regex_error_msg";
 	
 	public $ModelTitle = "";
 	
@@ -46,7 +51,7 @@ class BaseModel extends CI_Controller{
 	public function addField($tableName,$fieldData = array(),$isPK = false, $isFK = false, $FKReference = array()){
 		
 		//FKReference: field_name*, table_name*
-		//fieldData: name*,type*,title*,constraints,input_type,input_required,input_regex
+		//fieldData: name*,type*,title,constraints,input_type,input_required,input_regex,input_order,input_tip,input_regex,input_regex_error_msg
 		
 		//Error Checking
 		if(!isset($fieldData['name']) || !isset($fieldData['type'])){
@@ -67,7 +72,19 @@ class BaseModel extends CI_Controller{
 		if(!isset($fieldData['constraints'])){
 			$fieldData['constraints'] = '';
 		}
-
+		if(!isset($fieldData['input_order'])){
+			$fieldData['input_order'] = '';
+		}
+		if(!isset($fieldData['input_tip'])){
+			$fieldData['input_tip'] = '';
+		}
+		if(!isset($fieldData['input_regex_error_msg'])){
+			$fieldData['input_regex_error_msg'] = '';
+		}
+		if(!isset($fieldData['title'])){
+			$fieldData['title']='';
+		}
+		
 		$tableID = $this->getTableID($tableName);
 		
 		//Check first if column exists
@@ -92,17 +109,8 @@ class BaseModel extends CI_Controller{
 			$this->db->query('alter table '.$tableName.' add foreign key ('.$fieldData['name'].') references '.$FKReference['table_name'].'('.$FKReference['field_name'].')');
 		}
 		
-		//Remove placeholder field
-		/*$this->db->where(self::TableRegistryPKName,$tableID);
-		$result = $this->db->get(self::FieldRegistryTableName)->result_array();
-		if(count($result)== 0){
-			$this->dbforge->drop_column($tableName,self::PlaceholderField);
-		}*/
-		
 		//Register field
-		//Check if title is set
-		if(!isset($fieldData['title']))
-			$fieldData['title']='';
+		
 		$this->registerField($tableID,$fieldData);
 	}
 	
@@ -340,23 +348,22 @@ class BaseModel extends CI_Controller{
 	
 }
 
-class AssociativeEntityModel extends BaseModel{
-	
-	//AET = Associated Entity Table
-	const AETRegistryTableName = DB_PREFIX.'student$assoc_entity_tables_registry';
+class FloatingEntityModel extends BaseModel{
+
+	const FERegistryTableName = DB_PREFIX.'floating_entitiy_registry';
 	
 	const BaseTableIDFieldName = 'base_table_id';
-	const AETIDFieldName = 'aet_table_id';
-	const AETCardinalityFieldIDFieldName = 'aet_cardinality_field_id';
+	const FEIDFieldName = 'fe_table_id';
+	const FECardinalityFieldIDFieldName = 'fe_cardinality_field_id';
 	
-	const AETRegistryPKName = 'aet_id';
-	const AETDefaultCardinalityFieldName = 'default_cardinality';
+	const FERegistryPKName = 'fe_id';
+	const FEDefaultCardinalityFieldName = 'default_cardinality';
 	
-	public function addAET($tableName,$tableTitle){
+	public function addFE($tableName,$tableTitle){
 		
 		//Check first if table exists
 		if($this->db->table_exists($tableName)){
-			log_message('error','Add AET: Table already exists.');
+			log_message('error','Add FE: Table already exists.');
 			return;
 		}
 		
@@ -369,81 +376,81 @@ class AssociativeEntityModel extends BaseModel{
 		
 	}
 	
-	public function addAETField($tableName,$AETName,$AETCardinalityFieldName,$defaultCardinality=1){
+	public function addFEField($tableName,$FEName,$FECardinalityFieldName,$defaultCardinality=1){
 		$baseTableID = $this->getTableID($tableName);
-		$AETID = $this->getTableID($AETName);
-		$cardinalityFieldID = $this->getFieldID($tableName,$AETCardinalityFieldName);
+		$FEID = $this->getTableID($FEName);
+		$cardinalityFieldID = $this->getFieldID($tableName,$FECardinalityFieldName);
 		
-		$this->registerAET($baseTableID,$AETID,$cardinalityFieldID,$defaultCardinality);
+		$this->registerFE($baseTableID,$FEID,$cardinalityFieldID,$defaultCardinality);
 
 		$this->addField($tableName,array(
-			'name'=>$AETName,
-			'title'=>$this->getTableTitle($AETName),
+			'name'=>$FEName,
+			'title'=>$this->getTableTitle($FEName),
 			'type'=>'int',
-			'input_type'=>'AET'
+			'input_type'=>'FE'
 		));
 	}
 	
-	public function createAETRegistry(){
-		if(!$this->db->table_exists(self::AETRegistryTableName)){
+	public function createFERegistry(){
+		if(!$this->db->table_exists(self::FERegistryTableName)){
 			
 			$this->dbforge->add_field(self::BaseTableIDFieldName.' int unsigned not null');
-			$this->dbforge->add_field(self::AETIDFieldName.' int unsigned not null');
-			$this->dbforge->add_field(self::AETCardinalityFieldIDFieldName.' int unsigned not null');
-			$this->dbforge->add_field(self::AETDefaultCardinalityFieldName.' int unsigned not null');
+			$this->dbforge->add_field(self::FEIDFieldName.' int unsigned not null');
+			$this->dbforge->add_field(self::FECardinalityFieldIDFieldName.' int unsigned not null');
+			$this->dbforge->add_field(self::FEDefaultCardinalityFieldName.' int unsigned not null');
 			
 			$this->dbforge->add_field('foreign key ('.self::BaseTableIDFieldName.') references '.BaseModel::TableRegistryTableName.'('.BaseModel::TableRegistryPKName.')');
 			
-			$this->dbforge->add_field('foreign key ('.self::AETIDFieldName.') references '.BaseModel::TableRegistryTableName.'('.BaseModel::TableRegistryPKName.')');
+			$this->dbforge->add_field('foreign key ('.self::FEIDFieldName.') references '.BaseModel::TableRegistryTableName.'('.BaseModel::TableRegistryPKName.')');
 			
-			$this->dbforge->add_field('foreign key ('.self::AETCardinalityFieldIDFieldName.') references '.BaseModel::FieldRegistryTableName.'('.BaseModel::FieldRegistryPKName.')');
+			$this->dbforge->add_field('foreign key ('.self::FECardinalityFieldIDFieldName.') references '.BaseModel::FieldRegistryTableName.'('.BaseModel::FieldRegistryPKName.')');
 			
-			$this->dbforge->create_table(self::AETRegistryTableName,TRUE);
+			$this->dbforge->create_table(self::FERegistryTableName,TRUE);
 			
 		}
 	}
 	
-	public function getAETCardinalityFieldName($baseTableName,$AETTableName){
+	public function getFECardinalityFieldName($baseTableName,$FETableName){
 		$baseTableID = $this->getTableID($baseTableName);
-		$AETID = $this->getTableID($AETTableName);
+		$FEID = $this->getTableID($FETableName);
 		
-		$this->db->select(self::AETCardinalityFieldIDFieldName);
+		$this->db->select(self::FECardinalityFieldIDFieldName);
 		$this->db->where(self::BaseTableIDFieldName,$baseTableID);
-		$this->db->where(self::AETIDFieldName,$AETID);
-		$AETFieldID = $this->db->get(self::AETRegistryTableName)->result_array()[0][self::AETCardinalityFieldIDFieldName];
+		$this->db->where(self::FEIDFieldName,$FEID);
+		$FEFieldID = $this->db->get(self::FERegistryTableName)->result_array()[0][self::FECardinalityFieldIDFieldName];
 		
 		$this->db->select(BaseModel::FieldNameFieldName);
-		$this->db->where(BaseModel::FieldRegistryPKName,$AETFieldID);
+		$this->db->where(BaseModel::FieldRegistryPKName,$FEFieldID);
 		$result = $this->db->get(BaseModel::FieldRegistryTableName)->result_array();
 		
 		return $result[0][BaseModel::FieldNameFieldName];
 	}
 	
-	public function getAETDefaultCardinality($baseTableName,$AETTableName){
+	public function getFEDefaultCardinality($baseTableName,$FETableName){
 		$baseTableID = $this->getTableID($baseTableName);
-		$AETID = $this->getTableID($AETTableName);
+		$FEID = $this->getTableID($FETableName);
 		
-		$this->db->select(self::AETDefaultCardinalityFieldName);
+		$this->db->select(self::FEDefaultCardinalityFieldName);
 		$this->db->where(self::BaseTableIDFieldName,$baseTableID);
-		$this->db->where(self::AETIDFieldName,$AETID);
-		$result = $this->db->get(self::AETRegistryTableName)->result_array();
-		return $result[0][self::AETDefaultCardinalityFieldName];
+		$this->db->where(self::FEIDFieldName,$FEID);
+		$result = $this->db->get(self::FERegistryTableName)->result_array();
+		return $result[0][self::FEDefaultCardinalityFieldName];
 	}
 	
 	protected function preModelCreation(){
-		$this->createAETRegistry();
+		$this->createFERegistry();
 	}
 	
-	private function registerAET($baseTableID,$AETID,$AETCardinalityFieldID,$defaultCardinality){
+	private function registerFE($baseTableID,$FEID,$FECardinalityFieldID,$defaultCardinality){
 		
 		$data = array(
 			self::BaseTableIDFieldName => $baseTableID,
-			self::AETIDFieldName => $AETID,
-			self::AETCardinalityFieldIDFieldName => $AETCardinalityFieldID,
-			self::AETDefaultCardinalityFieldName => $defaultCardinality
+			self::FEIDFieldName => $FEID,
+			self::FECardinalityFieldIDFieldName => $FECardinalityFieldID,
+			self::FEDefaultCardinalityFieldName => $defaultCardinality
 		);
 		
-		$this->db->insert(self::AETRegistryTableName,$data);
+		$this->db->insert(self::FERegistryTableName,$data);
 	}
 	
 }

@@ -11,7 +11,7 @@ Model ID (fk)
 Table ID (pk)
 Table Title
 Table Name
-Is Hidden
+Is Floating
 Is Essential
 
 --

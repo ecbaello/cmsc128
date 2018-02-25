@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Student_Information extends AssociativeEntityModel{
+class Student_Information extends FloatingEntityModel{
 	 
 	const BaseTableTableName = DB_PREFIX.'student'; 
 	
@@ -44,7 +44,7 @@ class Student_Information extends AssociativeEntityModel{
 			
 			$this->addField(self::BaseTableTableName,array(
 				'name'=>'course_block',
-				'title'=>'Course Block',
+				'title'=>'Course/Block',
 				'type'=>'varchar(30)',
 				'input_type'=>'text',
 				'input_required'=>FALSE,
@@ -182,7 +182,7 @@ class Student_Information extends AssociativeEntityModel{
 				'input_type'=>'hidden'
 			));
 			
-			$this->addAET(self::FamilyParentTableName,'Parents');
+			$this->addFE(self::FamilyParentTableName,'Parents');
 			
 			$this->addField(self::FamilyParentTableName,array(
 				'name'=>self::BaseTablePKName,
@@ -216,7 +216,7 @@ class Student_Information extends AssociativeEntityModel{
 				'input_required'=>TRUE
 			));
 			
-			$this->addAETField(self::FamilyDataTableName,self::FamilyParentTableName,'family_parent_cardinality',2);
+			$this->addFEField(self::FamilyDataTableName,self::FamilyParentTableName,'family_parent_cardinality',2);
 			
 			//Children
 			
@@ -228,7 +228,7 @@ class Student_Information extends AssociativeEntityModel{
 				'input_type'=>'number'
 			));
 			
-			$this->addAET(self::FamilyChildrenTableName,'Children In Family');
+			$this->addFE(self::FamilyChildrenTableName,'Children In Family');
 			
 			$this->addField(self::FamilyChildrenTableName,array(
 				'name'=>self::BaseTablePKName,
@@ -261,7 +261,7 @@ class Student_Information extends AssociativeEntityModel{
 				'input_type'=>'number'
 			));
 			
-			$this->addAETField(self::FamilyDataTableName,self::FamilyChildrenTableName,'family_children_cardinality',1);
+			$this->addFEField(self::FamilyDataTableName,self::FamilyChildrenTableName,'family_children_cardinality',1);
 			
 		}
 		
@@ -323,5 +323,21 @@ class Student_Information extends AssociativeEntityModel{
 		}
 		return isset($result[0])?$result[0]:null;
 	}
+	
+	public function searchStudent($whereQuery=array()){
+	
+		//whereQuery: field=>data
+		$fields = $this->getFields(self::BaseTableTableName);
+		
+		foreach($fields as $field){
+			if($field['Input Type']!='hidden'){
+				
+			}
+		}
+		
+		$this->db->select();
+	
+	}
+	
 	
 }
