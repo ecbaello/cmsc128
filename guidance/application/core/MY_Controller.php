@@ -30,6 +30,7 @@ class BaseController extends CI_Controller{
 			'success'=>$isSuccessful,
 			'msg'=>$msg
 		));
+		die();
 	}
 	
 	protected function isInputValid($input,$inputType,$regex){

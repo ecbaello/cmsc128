@@ -181,8 +181,11 @@ class Add extends StudentInfoController {
 					$cardinality = $field['AET']['Default Cardinality'];
 				}
 				
-				
 				for($i = 0 ; $i<$cardinality ; $i++){
+					if(!isset( $inputData[ $field['AET']['Table']['Name'] ][$i])){
+						$this->responseJSON(false,'Incomplete Data. Please fill-in at least one field in '.$field['AET']['Table']['Title'].' #'.($i+1));
+						return;
+					}
 					$toInsertArray = $this->prepareAndValidateInput($toInsertArray,$field['AET'],$inputData[ $field['AET']['Table']['Name'] ][$i]);
 				}	
 			}
