@@ -35,7 +35,7 @@ app.controller('student_add',function($scope,$rootScope,$http,$window){
 	var csrfHash = '';
 	
 	$scope.init = function(){
-		$http.get($rootScope.baseURL+'studentinfo/add/get/tables')
+		$http.get($rootScope.baseURL+'studentinfo/add/get/form')
 		.then(function(response){
 			$scope.tableData = response.data;
 			$scope.currCategory = response.data[$scope.currCategoryKey];
@@ -139,7 +139,7 @@ app.controller('student_add',function($scope,$rootScope,$http,$window){
 			'data':$scope.input,
 			[csrfTokenName]:csrfHash
 		};
-		data = JSON.stringify(data);
+		data = angular.toJson(data);
 		console.log($scope.input);
 		success = function(response) {
 			var responseData = {};

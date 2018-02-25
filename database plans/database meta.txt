@@ -11,6 +11,8 @@ Model ID (fk)
 Table ID (pk)
 Table Title
 Table Name
+Is Hidden
+Is Essential
 
 --
 Field
@@ -21,5 +23,10 @@ Field Title
 Field Name
 Field Input Type
 Field Input Required
+Field Input Tip
+Field Input Order
+Field Input Regex
+Field Input Regex Error Message
+Is Essential
 
 

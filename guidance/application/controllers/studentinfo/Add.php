@@ -11,8 +11,8 @@ class Add extends StudentInfoController {
 	public function get($data){
 		
 		switch($data){
-			case 'tables':
-				$this->getTableData();
+			case 'form':
+				$this->getModelForm();
 				break;
 			default:
 				show_404();
@@ -61,84 +61,14 @@ class Add extends StudentInfoController {
 		*/
 		
 		$toInsert = array();
-		
-		//Validate Data
-		$tableData = $this->getTableData(true);
-		foreach($tableData as $tableIndex=>$table){
+		$tableData = $this->getModelForm(true);
+		foreach($tableData as $table){
 			
 			if(!isset($data[$table['Table']['Name']])){
 				$this->responseJSON(false,'Incomplete Data. Please fill-up at least one field in the category: '.$table['Table']['Title']);
 				return;
 			}
-			$toInsertFields = array();
-			
-			foreach($table['Fields'] as $field){
-				if($field['Input Type'] != 'AET'){
-					
-					//If field is not an AET
-						
-					if($field['Input Required'] == true && !isset( $data[$table['Table']['Name']][$field['Name']] )){
-						//if input is required but no input found, show error
-						$this->responseJSON(false,'Incomplete Data. Please fill-in the required field: '.$field['Title']);
-						return;
-					}else if (isset( $data[$table['Table']['Name']][$field['Name']] )){
-						//if input required, and input found, add to insert
-						
-						if(!$this->isInputValid($data[$table['Table']['Name']][$field['Name']],$field['Input Type'],$field['Input Regex'])){
-							$this->responseJSON(false,'Invalid Data at '.$field['Title']);
-							return;
-						}
-						$toInsertFields[$field['Name']]=$data[$table['Table']['Name']][$field['Name']];
-					}
-					
-				}else{
-					//If field is an AET
-					//getting cardinality
-					if(isset($data[ $table['Table']['Name'] ][ $field['AET']['Cardinality Field Name'] ])){
-						$cardinality = $data[ $table['Table']['Name'] ][ $field['AET']['Cardinality Field Name'] ];
-					}else{
-						$cardinality = $field['AET']['Default Cardinality'];
-					}
-					
-					for($i = 0 ; $i<$cardinality ; $i++){
-						
-						if(!isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i])){
-							$this->responseJSON(false,'Incomplete Data. Please fill-in at least one field in '.$field['AET']['Table']['Title']);
-							return;
-						}
-						$toInsertAETFields = array();
-						foreach($field['AET']['Fields'] as $AETField){
-						
-							if($AETField['Input Required']==true && !isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ] )){
-								$this->responseJSON(false,'Incomplete Data. Please fill-in the required fields in '.$field['AET']['Table']['Title']);
-								return;
-							}else if(isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ] )){
-									
-								if(isset( $data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i][ $AETField['Name'] ] )){
-									if(!$this->isInputValid($data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i][ $AETField['Name'] ],$AETField['Input Type'],$AETField['Input Regex'])){
-										$this->responseJSON(false,'Invalid Data at '.$AETField['Title']);
-										return;
-									}
-									$toInsertAETFields[$AETField['Name']]=$data[ $table['Table']['Name'] ][ $field['AET']['Table']['Name'] ][$i][ $AETField['Name'] ];
-								}
-							}					
-						}
-						if(count($toInsertAETFields)>0){
-							array_push($toInsert, array(
-								'Table_Name'=>$field['Name'],
-								'Fields'=>$toInsertAETFields
-							));
-						}
-					}
-				}
-			}
-			
-			if(count($toInsertFields)>0){
-				array_push($toInsert,array(
-					'Table_Name'=> $table['Table']['Name'],
-					'Fields'=>$toInsertFields
-				));
-			}	
+			$toInsert = $this->prepareAndValidateInput($toInsert,$table,$data[$table['Table']['Name']]);
 		}
 		
 		$referenceField = '';
@@ -165,54 +95,11 @@ class Add extends StudentInfoController {
 		return;
 	}
 	
-	private function getTableData($returnOnly = false){
+	private function getModelForm($returnOnly = false){
 		$tables = $this->student_information->getTables($this->student_information->ModelTitle);
 		$data = array();
 		foreach($tables as $table){
-			
-			$fieldsTemp = $this->student_information->getFields($table[BaseModel::TableNameFieldName]);
-			$fields = array();
-			
-			foreach($fieldsTemp as $field){
-				
-				if($field[BaseModel::FieldInputTypeFieldName] == 'hidden') continue;
-				
-				$AETData = array();
-				if($field[BaseModel::FieldInputTypeFieldName]=='AET'){
-					$AETFieldsTemp = $this->student_information->getFields($field[BaseModel::FieldNameFieldName]);
-					$AETFields = array();
-					foreach($AETFieldsTemp as $AETField){
-						if($AETField[BaseModel::FieldInputTypeFieldName] == 'hidden') continue;
-						array_push($AETFields,array(
-							'Title' => $AETField[BaseModel::FieldTitleFieldName],
-							'Name' => $AETField[BaseModel::FieldNameFieldName],
-							'Input Type'=>$AETField[BaseModel::FieldInputTypeFieldName],
-							'Input Required'=>$AETField[BaseModel::FieldInputRequiredFieldName],
-							'Input Regex'=>$AETField[BaseModel::FieldInputRegexFieldName]
-						));
-					}
-					
-					$AETData = array(
-						'Table'=>array(
-							'Title'=>$field[BaseModel::FieldTitleFieldName],
-							'Name'=>$field[BaseModel::FieldNameFieldName]
-						),
-						'Cardinality Field Name' => $this->student_information->getAETCardinalityFieldName($table[BaseModel::TableNameFieldName],$field[BaseModel::FieldNameFieldName]),
-						'Default Cardinality'=>$this->student_information->getAETDefaultCardinality($table[BaseModel::TableNameFieldName],$field[BaseModel::FieldNameFieldName]),
-						'Fields' => $AETFields
-					);
-				}
-				
-				array_push($fields,array(
-					'Title' => $field[BaseModel::FieldTitleFieldName],
-					'Name' => $field[BaseModel::FieldNameFieldName],
-					'Input Type'=>$field[BaseModel::FieldInputTypeFieldName],
-					'Input Required'=>$field[BaseModel::FieldInputRequiredFieldName],
-					'Input Regex'=>$field[BaseModel::FieldInputRegexFieldName],
-					'AET'=>$AETData
-				));
-			}
-			
+			$fields = $this->getTableFields($table[BaseModel::TableNameFieldName]);
 			array_push($data,array(
 				'Table'=>array(
 					'Title'=>$table[BaseModel::TableTitleFieldName],
@@ -223,7 +110,94 @@ class Add extends StudentInfoController {
 		}
 		if(!$returnOnly)
 			echo json_encode($data);
+		//print('<pre>');print_r($data);print('</pre>');die();
 		return $data;
+	}
+	
+	private function getTableFields($tableName){
+		
+		$fieldsTemp = $this->student_information->getFields($tableName);
+		$fields = array();
+			
+		foreach($fieldsTemp as $field){
+				
+			if($field[BaseModel::FieldInputTypeFieldName] == 'hidden') continue;
+			
+			$AETData = array();
+			if($field[BaseModel::FieldInputTypeFieldName]=='AET'){
+				
+				$AETFields = $this->getTableFields($field[BaseModel::FieldNameFieldName]);
+				
+				$AETData = array(
+					'Table'=>array(
+						'Title'=>$field[BaseModel::FieldTitleFieldName],
+						'Name'=>$field[BaseModel::FieldNameFieldName]
+					),
+					'Cardinality Field Name' => $this->student_information->getAETCardinalityFieldName($tableName,$field[BaseModel::FieldNameFieldName]),
+					'Default Cardinality'=>$this->student_information->getAETDefaultCardinality($tableName,$field[BaseModel::FieldNameFieldName]),
+					'Fields' => $AETFields
+				);
+				
+			}
+			array_push($fields,array(
+				'Title' => $field[BaseModel::FieldTitleFieldName],
+				'Name' => $field[BaseModel::FieldNameFieldName],
+				'Input Type'=>$field[BaseModel::FieldInputTypeFieldName],
+				'Input Required'=>$field[BaseModel::FieldInputRequiredFieldName],
+				'Input Regex'=>$field[BaseModel::FieldInputRegexFieldName],
+				'AET'=>$AETData
+			));
+			
+		}
+		
+		return $fields;
+		
+	}
+	
+	//validates per table
+	private function prepareAndValidateInput($toInsertArray,$formData,$inputData){
+
+		$toInsertFields = array();
+		foreach($formData['Fields'] as $field){
+			
+			if($field['Input Type']!='AET'){
+				if($field['Input Required'] == true && !isset( $inputData[$field['Name']] )){
+					//if input is required but no input found, show error
+					$this->responseJSON(false,'Incomplete Data. Please fill-in the required field: '.$field['Title']);
+					return;
+				}else if (isset( $inputData[$field['Name']] )){
+					//if input required, and input found, add to insert
+					if(!$this->isInputValid($inputData[$field['Name']],$field['Input Type'],$field['Input Regex'])){
+						$this->responseJSON(false,'Invalid Data at '.$field['Title']);
+						return;
+					}
+					$toInsertFields[$field['Name']]=$inputData[$field['Name']];
+				}
+			}else{
+				
+				if(isset($inputData[ $field['AET']['Cardinality Field Name'] ])){
+					$cardinality = $inputData[ $field['AET']['Cardinality Field Name'] ];
+				}else{
+					$cardinality = $field['AET']['Default Cardinality'];
+				}
+				
+				
+				for($i = 0 ; $i<$cardinality ; $i++){
+					$toInsertArray = $this->prepareAndValidateInput($toInsertArray,$field['AET'],$inputData[ $field['AET']['Table']['Name'] ][$i]);
+				}	
+			}
+		}
+		
+		if(count($toInsertFields)>0){
+			array_push($toInsertArray,array(
+				'Table_Name'=>$formData['Table']['Name'],
+				'Fields'=>$toInsertFields
+			));
+		}
+		
+		
+		return $toInsertArray;
+		
 	}
 	
 	
