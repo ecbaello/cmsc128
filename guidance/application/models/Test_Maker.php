@@ -17,7 +17,7 @@ class Test_Maker extends BaseModel{
 		
 		//Create Tests Table
 		if(!$this->db->table_exists(self::TestsTableName)){
-			$this->addTable($this->ModelTitle,self::TestsTableName,'Test');
+			$this->addTable(self::TestsTableName,'Test');
 			$this->addField(self::TestsTableName,array(
 				'name'=>self::TestsPKName,
 				'type'=>'int',
@@ -32,11 +32,12 @@ class Test_Maker extends BaseModel{
 				'input_type'=>'text',
 				'input_required'=>true
 			));
+			$this->removePlaceholderField(self::TestsTableName);
 		}
 		
 		//Create Questions Table
 		if(!$this->db->table_exists(self::QuestionsTableName)){
-			$this->addTable($this->ModelTitle,self::QuestionsTableName,'Question');
+			$this->addTable(self::QuestionsTableName,'Question');
 			$this->addField(self::QuestionsTableName,array(
 				'name'=>self::QuestionsPKName,
 				'type'=>'int',
@@ -58,11 +59,12 @@ class Test_Maker extends BaseModel{
 				'table_name'=>self::TestsTableName,
 				'field_name'=>self::TestsPKName
 			));
+			$this->removePlaceholderField(self::QuestionsTableName);
 		}
 		
 		//Answers
 		if(!$this->db->table_exists(self::AnswersTableName)){
-			$this->addTable($this->ModelTitle,self::AnswersTableName,'Answers');
+			$this->addTable(self::AnswersTableName,'Answers');
 			$this->addField(self::AnswersTableName,array(
 				'name'=>self::QuestionsPKName,
 				'title'=>'Question ID',
@@ -90,7 +92,7 @@ class Test_Maker extends BaseModel{
 				'input_required'=>true,
 				'input_pattern'=>'\d..\d.',
 			));
-			
+			$this->removePlaceholderField(self::AnswersTableName);
 		}
 		
 	}

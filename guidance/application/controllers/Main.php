@@ -18,6 +18,7 @@ class Main extends BaseController {
 	 * map to /index.php/welcome/<method_name>
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
+	 
 	public function body()
 	{
 		$this->load->view("welcome");

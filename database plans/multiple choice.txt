@@ -1,0 +1,20 @@
+--
+Base
+--
+Multiple Choice Field Name //type = varchar, input_type=MC *Is given the value of the choice, not the choice ID itself. If custom, then its given the value of the custom value.
+
+--
+Multiple Choice Registry
+--
+Base Table ID
+Multiple Choice Field ID
+Choice ID (pk)
+Choice Type *single, multiple, single+custom, multiple+custom
+
+--
+Choice
+--
+Choice ID (fk)
+Choice Value //type = varchar
+
+

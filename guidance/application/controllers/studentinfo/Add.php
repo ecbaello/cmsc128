@@ -100,6 +100,10 @@ class Add extends StudentInfoController {
 		$tables = $this->student_information->getTables($this->student_information->ModelTitle);
 		$data = array();
 		foreach($tables as $table){
+			
+			if($table[BaseModel::TableFlagFieldName] == TableFlags::FLOATING)
+				continue;
+			
 			$fields = $this->getTableFields($table[BaseModel::TableNameFieldName]);
 			array_push($data,array(
 				'Table'=>array(
@@ -146,6 +150,9 @@ class Add extends StudentInfoController {
 				'Input Type'=>$field[BaseModel::FieldInputTypeFieldName],
 				'Input Required'=>$field[BaseModel::FieldInputRequiredFieldName],
 				'Input Regex'=>$field[BaseModel::FieldInputRegexFieldName],
+				'Input Regex Error Message'=>$field[BaseModel::FieldInputRegexErrMsgFieldName],
+				'Input Order'=>$field[BaseModel::FieldInputOrderFieldName],
+				'Input Tip'=>$field[BaseModel::FieldInputTipFieldName],
 				'FE'=>$FEData
 			));
 			

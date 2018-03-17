@@ -1,0 +1,14 @@
+--
+Base
+--
+Floating Entity Table Name => \Input Type = 'AET', Field Name = AET Name, Field Title = AET Title
+Floating Entity Cardinality Field
+Data ...
+
+--
+Floating Entity Tables Registry
+--
+Base Table ID
+Floating Entity Table ID
+Default Cardinality
+Cardinality Field ID

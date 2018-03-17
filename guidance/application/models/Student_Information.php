@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Student_Information extends FloatingEntityModel{
+class Student_Information extends AdvancedInputsModel{
 	 
 	const BaseTableTableName = DB_PREFIX.'student'; 
 	
@@ -24,7 +24,7 @@ class Student_Information extends FloatingEntityModel{
 		
 		//Bacgkround Information 
 		if(!$this->db->table_exists(self::BaseTableTableName)){
-			$this->addTable($this->ModelTitle,self::BaseTableTableName,'Background Information');
+			$this->addTable(self::BaseTableTableName,'Background Information',true);
 			
 			$this->addField(self::BaseTableTableName,array(
 				'name'=>self::BaseTablePKName,
@@ -135,7 +135,7 @@ class Student_Information extends FloatingEntityModel{
 		//Family Data
 		if(!$this->db->table_exists(self::FamilyDataTableName)){
 			
-			$this->addTable($this->ModelTitle,self::FamilyDataTableName, 'Family Data');
+			$this->addTable(self::FamilyDataTableName, 'Family Data');
 			
 			$this->addField(self::FamilyDataTableName,array(
 				'name'=>self::BaseTablePKName,
@@ -170,7 +170,7 @@ class Student_Information extends FloatingEntityModel{
 				'input_type'=>'hidden'
 			));
 			
-			//Associated Entities
+			//Floating Entities
 			
 			//Parent
 			
@@ -182,7 +182,7 @@ class Student_Information extends FloatingEntityModel{
 				'input_type'=>'hidden'
 			));
 			
-			$this->addFE(self::FamilyParentTableName,'Parents');
+			$this->addTable(self::FamilyParentTableName,'Parents',FALSE,TableFlags::FLOATING);
 			
 			$this->addField(self::FamilyParentTableName,array(
 				'name'=>self::BaseTablePKName,
@@ -228,7 +228,7 @@ class Student_Information extends FloatingEntityModel{
 				'input_type'=>'number'
 			));
 			
-			$this->addFE(self::FamilyChildrenTableName,'Children In Family');
+			$this->addTable(self::FamilyChildrenTableName,'Children In Family',FALSE,TableFlags::FLOATING);
 			
 			$this->addField(self::FamilyChildrenTableName,array(
 				'name'=>self::BaseTablePKName,
@@ -267,7 +267,7 @@ class Student_Information extends FloatingEntityModel{
 		
 		//Financial Information
 		if(!$this->db->table_exists(self::FinancialInfoTableName)){
-			$this->addTable($this->ModelTitle,self::FinancialInfoTableName,'Financial Information');
+			$this->addTable(self::FinancialInfoTableName,'Financial Information');
 			
 			$this->addField(self::FinancialInfoTableName,array(
 				'name'=>self::BaseTablePKName,
@@ -324,19 +324,28 @@ class Student_Information extends FloatingEntityModel{
 		return isset($result[0])?$result[0]:null;
 	}
 	
-	public function searchStudent($whereQuery=array()){
+	public function searchStudents($whereQuery=array()){
 	
 		//whereQuery: field=>data
-		$fields = $this->getFields(self::BaseTableTableName);
+		$fieldsTemp = $this->getFields(self::BaseTableTableName);
 		
-		foreach($fields as $field){
-			if($field['Input Type']!='hidden'){
-				
+		foreach($fieldsTemp as $field){
+			if($field[BaseModel::FieldInputTypeFieldName]=='hidden' && array_key_exists($whereQuery,$field[BaseModel::FieldNameFieldName])){
+				unset($whereQuery,$field[BaseModel::FieldNameFieldName]);
 			}
 		}
 		
-		$this->db->select();
-	
+		$fields = array();
+		foreach($whereQuery as $key=>$value){
+			array_push($fields,$key);
+		}
+		
+		$this->db->select(implode(' , ',$fields).' , '.self::BaseTablePKName);
+		$this->db->where($whereQuery);
+		$result = $this->db->get(self::BaseTableTableName)->result_array();
+		
+		
+		
 	}
 	
 	
