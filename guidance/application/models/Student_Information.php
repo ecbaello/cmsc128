@@ -39,7 +39,9 @@ class Student_Information extends AdvancedInputsModel{
 				'constraints'=>'not null unique',
 				'input_type'=>'text',
 				'input_required'=>TRUE,
-				'input_regex'=>'^\d{4}-\d{5}$'
+				'input_regex'=>'^\d{4}-\d{5}$',
+				'input_regex_error_msg'=>'Must follow the format xxxx-xxxxx',
+				'input_tip'=>'Must be unique'
 			));
 			
 			$this->addField(self::BaseTableTableName,array(
@@ -97,9 +99,9 @@ class Student_Information extends AdvancedInputsModel{
 			$this->addField(self::BaseTableTableName,array(
 				'name'=>'birthdate',
 				'title'=>'Date of Birth',
-				'type'=>'varchar(30)',
+				'type'=>'date',
 				'constraints'=>'not null',
-				'input_type'=>'text',
+				'input_type'=>'date',
 				'input_required'=>TRUE,
 			));
 			
@@ -261,7 +263,7 @@ class Student_Information extends AdvancedInputsModel{
 				'input_type'=>'number'
 			));
 			
-			$this->addFEField(self::FamilyDataTableName,self::FamilyChildrenTableName,'family_children_cardinality',1);
+			$this->addFEField(self::FamilyDataTableName,self::FamilyChildrenTableName,'family_children_cardinality',1,'Enter student details first.');
 			
 		}
 		
@@ -302,6 +304,10 @@ class Student_Information extends AdvancedInputsModel{
 		$this->db->where(self::ReferenceFieldFieldName,$studentNumber);
 		$result = $this->db->get(self::BaseTableTableName)->result_array();
 		return isset($result[0][self::BaseTablePKName])?$result[0][self::BaseTablePKName]:null;
+	}
+	
+	public function getBaseTableFields(){
+		return $this->getFields(self::BaseTableTableName);
 	}
 	
 	public function getStudentData($tableName,$studentNumber,$isAET=false){

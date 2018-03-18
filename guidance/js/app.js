@@ -1,4 +1,4 @@
-var app = angular.module("app", ['ngMaterial'])
+var app = angular.module("app", ['ngMaterial','ngMessages'])
 .config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
     .primaryPalette('grey')
@@ -6,7 +6,7 @@ var app = angular.module("app", ['ngMaterial'])
 });
 
 
-app.run(function($rootScope,$http){
+app.run(function($rootScope,$http,$httpParamSerializer,$mdDialog){
 
 	$rootScope.post = function(url,inputData,onSuccess,onFailure){
 	
@@ -14,14 +14,14 @@ app.run(function($rootScope,$http){
 			'data':inputData,
 			[$rootScope.csrf.tokenName]:$rootScope.csrf.hash
 		};
-		data = angular.toJson(data);
+		data = $httpParamSerializer(data);
 		
 		success = function(response) {
 			var responseData = {};
 			responseData = response.data;
-			console.log(responseData);
+			console.log(responseData+"asd");
 			if(!('success' in responseData) || !('msg' in responseData)){
-				alert('Something is missing');
+				$rootScope.customAlert('ERROR','Something is missing');
 				return;
 			}
 			if(responseData.success){
@@ -32,16 +32,36 @@ app.run(function($rootScope,$http){
 		}
 		
 		error = function(response){
-			alert('Something went wrong');
+			$rootScope.customAlert('Error','Something went wrong');
 		}
 		
 		$http({
-			method: 'GET',
-			url: url+encodeURIComponent(data)
+			method: 'POST',
+			url: url,
+			data: data,
+			headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
 		}).then(success,error);
 		
-		console.log(url+encodeURIComponent(data));
-		
+	}
+	
+	$rootScope.customAlert = function(title,content,ok='ok'){
+		$mdDialog.show(
+		    $mdDialog.alert()
+				.clickOutsideToClose(true)
+				.title(title)
+				.textContent(content)
+				.ok(ok)
+		);
+	}
+	
+	$rootScope.customConfirm = function(title,content,confirm,cancel,okButton='ok',cancelButton='cancel'){
+		$mdDialog.show( $mdDialog.confirm()
+			.clickOutsideToClose(true)
+			.title(title)
+			.textContent(content)
+			.ok(okButton)
+			.cancel(cancelButton)
+		).then(confirm,cancel);
 	}
 });
 
@@ -63,6 +83,7 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 	$scope.input = {};
 	
 	$scope.init = function(){
+		//alert('test');
 		$http.get($rootScope.baseURL+'studentinfo/add/get/form')
 		.then(function(response){
 			$scope.tableData = response.data;
@@ -116,36 +137,72 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		$scope.currCategory = $scope.tableData[categoryKey];
 	}
 	
-	$scope.search = function(){
-		if($scope.searchInput == '')
-			return;
-		success = function(response) {
-			var responseData = {};
-			responseData = response.data;
-			$scope.input = {};
-			$scope.input = responseData.data;
-		}
-		error = function(response){
-			alert('Error: '+response.msg);
-		}
-		$rootScope.post($rootScope.baseURL+'studentinfo/manage/getstudentdata/',$scope.searchInput,success,error);
-	}
-	
 	$scope.submit = function(){
 		success = function(response) {
-			alert('Success: '+response.msg);
-			$window.location.reload();
+			$rootScope.customConfirm('Success',response.msg,function(){
+				$window.location.reload();
+			},
+			function(){
+				$window.location.reload();
+			});
 		}
 		error = function(response){
-			alert('Error: '+response.msg);
+			$rootScope.customAlert('Error',response.msg);
 		}
-		$rootScope.post($rootScope.baseURL+'studentinfo/add/post/',$scope.input,success,error);
+		$rootScope.post($rootScope.baseURL+'studentinfo/add/post/add',$scope.input,success,error);
+	}
+	
+	$scope.test = function(index){
+		
+		return angular.toJson($scope.currCategory.Fields[index]);
 	}
 });
 
 
 
-app.controller('student_search',function($scope,$rootScope,$window){
-
+app.controller('student_search',function($scope,$rootScope,$window,$http){
+	
+	$scope.params = {};
+	$scope.filters = [];
+	
+	$scope.init = function(){
+		//alert('debug');
+		console.log($rootScope.baseURL+'studentinfo/manage/get/params');
+		
+		$http.get($rootScope.baseURL+'studentinfo/manage/get/params')
+		.then(function(response){
+			$scope.params = response.data;
+			console.log($scope.params);
+		});
+	}
+	
+	$scope.addFilter = function(type){
+		
+		var toAdd = JSON.parse($scope.toAddFilter);
+		console.log(toAdd);
+		var filter = {
+			name:toAdd.name,
+			title:toAdd.title,
+			type:type
+		};
+		$scope.filters.push(filter);
+		console.log($scope.filters);
+	}
+	
+	$scope.removeFilter = function(index){
+		$scope.filters.splice(index,1);
+		console.log($scope.filters);
+	}
+	
+	$scope.getFiltersLength = function(){
+		return Object.keys($scope.filters).length;
+	}
+	
+	$scope.search = function(){
+		if($scope.getFiltersLength() == 0){
+			$rootScope.customAlert('Error','At least one filter is required.');
+		}
+		
+	}
 
 });

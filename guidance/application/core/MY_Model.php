@@ -197,11 +197,11 @@ class BaseModel extends CI_Controller{
 		$this->dbforge->add_field(self::FieldNameFieldName.' varchar(50) not null');
 		$this->dbforge->add_field(self::FieldFlagFieldName.' int');
 		$this->dbforge->add_field(self::FieldInputTypeFieldName.' varchar(15) not null default "hidden"');
-		$this->dbforge->add_field(self::FieldInputRegexFieldName.' varchar(15)');
+		$this->dbforge->add_field(self::FieldInputRegexFieldName.' varchar(30)');
 		$this->dbforge->add_field(self::FieldInputRequiredFieldName.' boolean not null default FALSE');
 		$this->dbforge->add_field(self::FieldInputOrderFieldName.' int not null default 0');
-		$this->dbforge->add_field(self::FieldInputTipFieldName.' varchar(30)');
-		$this->dbforge->add_field(self::FieldInputRegexErrMsgFieldName.' varchar(30)');
+		$this->dbforge->add_field(self::FieldInputTipFieldName.' varchar(100)');
+		$this->dbforge->add_field(self::FieldInputRegexErrMsgFieldName.' varchar(100)');
 		$this->dbforge->add_field(self::FieldEssentialFieldName.' boolean not null default FALSE');
 		$this->dbforge->add_field('primary key ('.self::FieldRegistryPKName.')');
 		$this->dbforge->add_field('foreign key ('.self::TableRegistryPKName.') references '.self::TableRegistryTableName.'('.self::TableRegistryPKName.')');
@@ -418,7 +418,7 @@ class AdvancedInputsModel extends BaseModel{
 	public function addChoice(){
 	}
 	
-	public function addFEField($tableName,$FEName,$FECardinalityFieldName,$defaultCardinality=1){
+	public function addFEField($tableName,$FEName,$FECardinalityFieldName,$defaultCardinality=1,$input_tip=''){
 		$baseTableID = $this->getTableID($tableName);
 		$FEID = $this->getTableID($FEName);
 		$cardinalityFieldID = $this->getFieldID($tableName,$FECardinalityFieldName);
@@ -429,7 +429,8 @@ class AdvancedInputsModel extends BaseModel{
 			'name'=>$FEName,
 			'title'=>$this->getTableTitle($FEName),
 			'type'=>'int',
-			'input_type'=>'FE'
+			'input_type'=>'FE',
+			'input_tip'=>$input_tip
 		));
 	}
 	
