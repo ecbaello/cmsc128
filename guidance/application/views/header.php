@@ -12,6 +12,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" href="<?= base_url().'css/fontawesome-all.min.css' ?>"/>
 	<link rel="stylesheet" href="<?= base_url().'css/roboto.css' ?>"/>
 	<link rel="stylesheet" href="<?= base_url().'css/angular-material.min.css' ?>"/>
+	<link rel="stylesheet" href="<?= base_url().'css/font-awesome.css' ?>"/>
 
 	<script src="<?= base_url().'js/angular.min.js' ?>"></script>
 	<script src="<?= base_url().'js/angular-animate.min.js' ?>"></script>
