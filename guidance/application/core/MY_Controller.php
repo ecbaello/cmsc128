@@ -45,7 +45,7 @@ class StudentInfoController extends BaseController {
 		$this->load->model('student_information');
 	}
 	
-	public function get($data){
+	public function get($data,$arg0=null){
 		switch($data){
 			case 'form':
 				$this->getModelForm();
@@ -53,26 +53,29 @@ class StudentInfoController extends BaseController {
 			case 'params':
 				$this->getParams();
 				break;
+			case 'search':
+				$this->search($arg0);
+				break;
 			default:
 				show_404();
 				break;
 		}
 	}
 	
-	public function post($type){
+	public function post($type,$arg0=null){
 		switch($type){
 			case 'add':
-				$this->add();
+				$this->update('add');
 				break;
 			case 'edit':
-				$this->edit();
+				$this->update('edit',$arg0);
 				break;
 			default:
 				show_404();
 		}
 	}
 	
-	private function add(){
+	private function update($type='add',$studentID=null){
 		$input = $this->input->post('data');
 		
 		if($input == null){
@@ -83,6 +86,11 @@ class StudentInfoController extends BaseController {
 		$data= json_decode($input,true);
 		if (json_last_error() !== JSON_ERROR_NONE) {
 			$this->responseJSON(false,'Invalid JSON');
+			return;
+		}
+		
+		if($type=='edit'&&$studentID==null){
+			$this->responseJSON(false,'Missing Student ID.');
 			return;
 		}
 		
@@ -97,31 +105,54 @@ class StudentInfoController extends BaseController {
 			$toInsert = $this->prepareAndValidateInput($toInsert,$table,$data[$table['Table']['Name']]);
 		}
 		
-		$referenceField = '';
-		//print('<pre>');print_r($toInsert);print('</pre>');die();
-		foreach($toInsert as $index=>$value){
-			if($index == 0){
-				$referenceField=$value['Fields'][Student_Information::ReferenceFieldFieldName];
-				$result = $this->student_information->insert($value['Table_Name'],$value['Fields']);
-				if($result !== null){
-					$this->responseJSON(false,$result);
+		if($type=='add'){
+			//print('<pre>');print_r($toInsert);print('</pre>');die();
+			$referenceField = '';
+			foreach($toInsert as $index=>$value){
+				if($value['Table_Name'] == Student_Information::BaseTableTableName){
+					$referenceField=$value['Fields'][Student_Information::ReferenceFieldFieldName];
+					$result = $this->student_information->insert($value['Table_Name'],$value['Fields']);
+					if($result !== null){
+						$this->responseJSON(false,$result);
+						return;
+					}
+				}
+			}
+			
+			foreach($toInsert as $index=>$value){
+				if($referenceField == ''){
+					$this->responseJSON(false,'Something went wrong.');
 					return;
 				}
-			}else{
-				$value['Fields'][Student_Information::BaseTablePKName]=$this->student_information->getBasePK($referenceField);
-				$result = $this->student_information->insert($value['Table_Name'],$value['Fields']);
+				if($value['Table_Name'] == Student_Information::BaseTableTableName){
+					continue;
+				}else{
+					$value['Fields'][Student_Information::BaseTablePKName]=$this->student_information->getBasePK($referenceField);
+					$result = $this->student_information->insert($value['Table_Name'],$value['Fields']);
+					if($result !== null){
+						$this->responseJSON(false,$result);
+						return;
+					}
+				}
+			}
+			
+			$this->responseJSON(true,'Added Student');
+			return;
+		}
+		if($type=='edit'){
+			
+			foreach($toInsert as $index=>$value){
+				$value['Fields'][Student_Information::BaseTablePKName] = $studentID;
+				$result = $this->student_information->update($value['Table_Name'],$value['Fields']);
 				if($result !== null){
 					$this->responseJSON(false,$result);
 					return;
 				}
 			}
+			
+			$this->responseJSON(true,'Edited Student Record');
+			return;
 		}
-		
-		$this->responseJSON(true,'Added Student');
-		return;
-	}
-	
-	private function edit(){
 	}
 	
 	private function getModelForm($returnOnly = false){
@@ -153,13 +184,12 @@ class StudentInfoController extends BaseController {
 		foreach($data as $value){
 			
 			$inputType = $value[BaseModel::FieldInputTypeFieldName];
-			if($inputType=='hidden' || $inputType== 'FE' || $inputType=='MC')
-				continue;
-			
-			array_push($output,array(
-				'title'=>$value[BaseModel::FieldTitleFieldName],
-				'name'=>$value[BaseModel::FieldNameFieldName]
-			));
+			if($inputType=='text'){
+				array_push($output,array(
+					'title'=>$value[BaseModel::FieldTitleFieldName],
+					'name'=>$value[BaseModel::FieldNameFieldName]
+				));
+			}
 			
 		}
 		echo json_encode($output);
@@ -191,7 +221,26 @@ class StudentInfoController extends BaseController {
 				);
 				
 			}
-			array_push($fields,array(
+			
+			$MCData = array();
+			if($field[BaseModel::FieldInputTypeFieldName]=='MC'){
+				$MCData['Type'] = $this->student_information->getMCType($tableName,$field[BaseModel::FieldNameFieldName]);
+				$choices = $this->student_information->getMCChoices($tableName,$field[BaseModel::FieldNameFieldName]);
+				
+				$MCChoices = array();
+				$MCCustom = array();
+				foreach($choices as $choice){
+					if(isset($choice[AdvancedInputsModel::ChoiceCustomFieldName]) && $choice[AdvancedInputsModel::ChoiceCustomFieldName]==true){
+						array_push($MCCustom,$choice[AdvancedInputsModel::ChoiceTitleFieldName]);
+					}else{
+						array_push($MCChoices,$choice[AdvancedInputsModel::ChoiceValueFieldName]);
+					}
+				}
+				$MCData['Choices'] = $MCChoices;
+				$MCData['Custom'] = $MCCustom;
+			}
+			
+			$toPush = array(
 				'Title' => $field[BaseModel::FieldTitleFieldName],
 				'Name' => $field[BaseModel::FieldNameFieldName],
 				'Input Type'=>$field[BaseModel::FieldInputTypeFieldName],
@@ -199,9 +248,15 @@ class StudentInfoController extends BaseController {
 				'Input Regex'=>$field[BaseModel::FieldInputRegexFieldName],
 				'Input Regex Error Message'=>$field[BaseModel::FieldInputRegexErrMsgFieldName],
 				'Input Order'=>$field[BaseModel::FieldInputOrderFieldName],
-				'Input Tip'=>$field[BaseModel::FieldInputTipFieldName],
-				'FE'=>$FEData
-			));
+				'Input Tip'=>$field[BaseModel::FieldInputTipFieldName]
+			);
+			
+			if(count($FEData)>0)
+				$toPush['FE']=$FEData;
+			if(count($MCData)>0)
+				$toPush['MC']=$MCData;
+			
+			array_push($fields,$toPush);
 			
 		}
 		
@@ -221,10 +276,37 @@ class StudentInfoController extends BaseController {
 					$this->responseJSON(false,'Incomplete Data. Please fill-in the required field: '.$field['Title']);
 					return;
 				}else if (isset( $inputData[$field['Name']] )){
-					//if input required, and input found, add to insert
-					if(!$this->isInputValid($inputData[$field['Name']],$field['Input Type'],$field['Input Regex'])){
-						$this->responseJSON(false,'Invalid Data at '.$field['Title']);
-						return;
+					
+					if($field['Input Type'] == 'MC' && $field['MC']['Type'] == MCTypes::MULTIPLE){
+						
+						if(!is_array($inputData[$field['Name']])){
+							$this->responseJSON(false,'Invalid Input at: '.$field['Title']);
+							return;
+						}
+						
+						$value = '';
+						foreach($inputData[$field['Name']] as $key=>$choice){
+							
+							if($key == 'Custom'){
+								if(!isset($inputData[$field['Name']]['Custom']))
+									continue;
+								foreach($inputData[$field['Name']]['Custom'] as $choiceKey=>$customChoice){
+									$customChoice = preg_replace('[\{}]','',$customChoice);
+									$value= $value.' c{\\'.$choiceKey.'\\'.$customChoice.'}';
+								}
+							}else if($choice != false){
+								$value= $value.' {\\'.$key.'\\'.$choice.'}';
+							}
+						}
+						$inputData[$field['Name']] = $value;
+						
+					}else{
+					
+						//if input required, and input found, add to insert
+						if(!$this->isInputValid($inputData[$field['Name']],$field['Input Type'],$field['Input Regex'])){
+							$this->responseJSON(false,'Invalid Data at '.$field['Title']);
+							return;
+						}
 					}
 					$toInsertFields[$field['Name']]=$inputData[$field['Name']];
 				}
@@ -255,6 +337,35 @@ class StudentInfoController extends BaseController {
 		
 		
 		return $toInsertArray;
+		
+	}
+	
+	private function search($filters){
+		if($filters == null){
+			$this->responseJSON(false,'No Filters Found');
+			return;
+		}
+		$filters = json_decode(urldecode($filters),true);
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			$this->responseJSON(false,'Invalid JSON');
+			return;
+		}
+		
+		$whereQuery=array();
+		foreach($filters as $filter){
+			if(!isset($filter['value']) || $filter['value']=='')
+				continue;
+			array_push($whereQuery,array(
+				'type'=>$filter['type'],
+				'query'=>array(
+					$filter['name']=>$filter['value']
+				)
+			));
+		}
+		$result = $this->student_information->searchStudents($whereQuery);
+		
+		echo json_encode($result,JSON_NUMERIC_CHECK);
+		return $result;
 		
 	}
 

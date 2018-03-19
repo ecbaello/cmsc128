@@ -79,17 +79,19 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 	$scope.currCategoryKey = 0;
 	$scope.currCategory = {};
 	$scope.tableData = {};
-	$scope.searchInput = ''; //manage
 	$scope.input = {};
 	
-	$scope.init = function(){
-		//alert('test');
+	$scope.init = function(info=''){
 		$http.get($rootScope.baseURL+'studentinfo/add/get/form')
 		.then(function(response){
 			$scope.tableData = response.data;
 			$scope.currCategory = response.data[$scope.currCategoryKey];
 			console.log($scope.tableData);
 		});
+		
+		if(info!=''){
+			$scope.input = JSON.parse(info);
+		}
 	}
 
 	$scope.getCardinality = function(baseTableName,FEName){
@@ -137,24 +139,50 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		$scope.currCategory = $scope.tableData[categoryKey];
 	}
 	
-	$scope.submit = function(){
-		success = function(response) {
-			$rootScope.customConfirm('Success',response.msg,function(){
-				$window.location.reload();
-			},
-			function(){
-				$window.location.reload();
-			});
+	$scope.getLength = function(object){
+		return Object.keys(object).length;
+	}
+	
+	$scope.submit = function(type,studentid){
+		
+		var url = '';
+		
+		if(type=='add'){
+			url=$rootScope.baseURL+'studentinfo/add/post/add';
+		}else if(type=='manage'){
+			if(studentid == ''){
+				return;
+			}
+			url=$rootScope.baseURL+'studentinfo/manage/post/edit/'+studentid;
+		}else{
+			return;
 		}
-		error = function(response){
-			$rootScope.customAlert('Error',response.msg);
+		
+		action =function(){
+			success = function(response) {
+				$rootScope.customConfirm('Success',response.msg,function(){
+					$window.location.reload();
+				},
+				function(){
+					$window.location.reload();
+				});
+			}
+			error = function(response){
+				$rootScope.customAlert('Error',response.msg);
+			}
+			$rootScope.post(url,$scope.input,success,error);
 		}
-		$rootScope.post($rootScope.baseURL+'studentinfo/add/post/add',$scope.input,success,error);
+		
+		if(type=='manage'){
+			$rootScope.customConfirm('Warning','Are you sure you want to continue?',action,function(){})
+		}else{
+			action();
+		}
 	}
 	
 	$scope.test = function(index){
 		
-		return angular.toJson($scope.currCategory.Fields[index]);
+		console.log($scope.input);
 	}
 });
 
@@ -164,10 +192,11 @@ app.controller('student_search',function($scope,$rootScope,$window,$http){
 	
 	$scope.params = {};
 	$scope.filters = [];
+	$scope.results = [];
 	
 	$scope.init = function(){
 		//alert('debug');
-		console.log($rootScope.baseURL+'studentinfo/manage/get/params');
+		//console.log($rootScope.baseURL+'studentinfo/manage/get/params');
 		
 		$http.get($rootScope.baseURL+'studentinfo/manage/get/params')
 		.then(function(response){
@@ -186,7 +215,7 @@ app.controller('student_search',function($scope,$rootScope,$window,$http){
 			type:type
 		};
 		$scope.filters.push(filter);
-		console.log($scope.filters);
+		//console.log($scope.filters);
 	}
 	
 	$scope.removeFilter = function(index){
@@ -194,15 +223,21 @@ app.controller('student_search',function($scope,$rootScope,$window,$http){
 		console.log($scope.filters);
 	}
 	
-	$scope.getFiltersLength = function(){
-		return Object.keys($scope.filters).length;
+	$scope.getLength = function(object){
+		return Object.keys(object).length;
 	}
 	
 	$scope.search = function(){
-		if($scope.getFiltersLength() == 0){
+		if($scope.getLength($scope.filters) == 0){
 			$rootScope.customAlert('Error','At least one filter is required.');
+			return;
 		}
-		
+		console.log($rootScope.baseURL+'studentinfo/manage/get/search/'+encodeURIComponent(angular.toJson($scope.filters)));
+		$http.get($rootScope.baseURL+'studentinfo/manage/get/search/'+encodeURIComponent(angular.toJson($scope.filters)))
+		.then(function(response){
+			$scope.results = response.data;
+			console.log($scope.results);
+		});
 	}
 
 });

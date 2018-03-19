@@ -41,7 +41,8 @@ class Student_Information extends AdvancedInputsModel{
 				'input_required'=>TRUE,
 				'input_regex'=>'^\d{4}-\d{5}$',
 				'input_regex_error_msg'=>'Must follow the format xxxx-xxxxx',
-				'input_tip'=>'Must be unique'
+				'input_tip'=>'Must be unique',
+				'essential'=>TRUE
 			));
 			
 			$this->addField(self::BaseTableTableName,array(
@@ -99,7 +100,7 @@ class Student_Information extends AdvancedInputsModel{
 			$this->addField(self::BaseTableTableName,array(
 				'name'=>'birthdate',
 				'title'=>'Date of Birth',
-				'type'=>'date',
+				'type'=>'varchar(50)',
 				'constraints'=>'not null',
 				'input_type'=>'date',
 				'input_required'=>TRUE,
@@ -280,21 +281,19 @@ class Student_Information extends AdvancedInputsModel{
 				'table_name'=>self::BaseTableTableName
 			));
 			
-			$this->addField(self::FinancialInfoTableName,array(
-				'name'=>'family_annual_income',
-				'title'=>'Family\'s Annual Income',
-				'type'=>'varchar(30)',
-				'constraints'=>'not null',
-				'input_type'=>'text'
-			));
+			$this->addMCField(self::FinancialInfoTableName,MCTypes::SINGLE,'family_annual_income','Family\'s Annual Income',true);
+			$this->addChoice(self::FinancialInfoTableName,'family_annual_income','0-40,500');
+			$this->addChoice(self::FinancialInfoTableName,'family_annual_income','40,501-49,500');
+			$this->addChoice(self::FinancialInfoTableName,'family_annual_income','49,501-58,500');
 			
-			$this->addField(self::FinancialInfoTableName,array(
-				'name'=>'family_income_sources',
-				'title'=>'Family\'s Income Sources',
-				'type'=>'varchar(100)',
-				'constraints'=>'not null',
-				'input_type'=>'text'
-			));
+			$this->addMCField(self::FinancialInfoTableName,MCTypes::MULTIPLE,'family_income_sources','Family\'s Income Sources',true,'Check as many that applies');
+			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','Salaries/Wages/Commission');
+			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','Farming/Fishing');
+			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','Own Business');
+			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','Pension');
+			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','',true,'Others (Pls. specify)');
+			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','None');
+			
 		}
 		
 	}
@@ -310,47 +309,49 @@ class Student_Information extends AdvancedInputsModel{
 		return $this->getFields(self::BaseTableTableName);
 	}
 	
-	public function getStudentData($tableName,$studentNumber,$isAET=false){
+	public function getStudentData($tableName,$studentNumber,$isFE=false){
 		$pk = $this->getBasePK($studentNumber);
 		if($pk == null)
 			return;
 		$fields = $this->getFields($tableName);
 		$select= array();
 		foreach($fields as $field){
-			if($field[BaseModel::FieldInputTypeFieldName] == 'hidden' || $field[BaseModel::FieldInputTypeFieldName] == 'AET')
+			if($field[BaseModel::FieldInputTypeFieldName] == 'hidden' || $field[BaseModel::FieldInputTypeFieldName] == 'FE')
 				continue;
 			array_push($select,$field[BaseModel::FieldNameFieldName]);
 		}
 		$this->db->select(implode(' , ',$select));
 		$this->db->where(self::BaseTablePKName,$pk);
 		$result = $this->db->get($tableName)->result_array();
-		if($isAET){
+		if($isFE){
 			return $result;
 		}
 		return isset($result[0])?$result[0]:null;
 	}
 	
-	public function searchStudents($whereQuery=array()){
+	public function searchStudents($whereQuery = array()){
 	
-		//whereQuery: field=>data
+		//whereQuery: type=>and/or,query=> (field=>data)
 		$fieldsTemp = $this->getFields(self::BaseTableTableName);
 		
+		$fields = array();
 		foreach($fieldsTemp as $field){
-			if($field[BaseModel::FieldInputTypeFieldName]=='hidden' && array_key_exists($whereQuery,$field[BaseModel::FieldNameFieldName])){
-				unset($whereQuery,$field[BaseModel::FieldNameFieldName]);
+			if($field[BaseModel::FieldInputTypeFieldName]=='text'){
+				array_push($fields,$field[BaseModel::FieldNameFieldName]);
 			}
 		}
 		
-		$fields = array();
-		foreach($whereQuery as $key=>$value){
-			array_push($fields,$key);
+		$this->db->select(implode(' , ',$fields));
+		foreach($whereQuery as $query){
+			if($query['type']=='and')
+				$this->db->where($query['query']);
+			if($query['type']=='or')
+				$this->db->or_where($query['query']);
 		}
-		
-		$this->db->select(implode(' , ',$fields).' , '.self::BaseTablePKName);
-		$this->db->where($whereQuery);
+		//print_r($this->db->get_compiled_select(self::BaseTableTableName));die();
 		$result = $this->db->get(self::BaseTableTableName)->result_array();
 		
-		
+		return $result;
 		
 	}
 	

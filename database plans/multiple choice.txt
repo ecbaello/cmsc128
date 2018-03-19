@@ -9,12 +9,14 @@ Multiple Choice Registry
 Base Table ID
 Multiple Choice Field ID
 Choice ID (pk)
-Choice Type *single, multiple, single+custom, multiple+custom
+Choice Type *single, multiple
 
 --
 Choice
 --
 Choice ID (fk)
 Choice Value //type = varchar
+Is Custom
+Custom Choice Title
 
 

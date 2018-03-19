@@ -4,7 +4,7 @@ $ci =& get_instance();
 ?><!DOCTYPE html>
 
 
-<div ng-controller="student_form" layout="row" layout-align="center start" flex ng-init="init()">
+<div ng-controller="student_form" layout="row" layout-align="center start" flex ng-init='init(<?=$mode=='manage'?$student_info:""?>)'>
 	<md-content layout="column" layout-align="start start" flex='20'>
 		<div layout-margin>
 		<?php
@@ -12,14 +12,16 @@ $ci =& get_instance();
 				echo '<h2>Add Students</h2> ';
 			}
 			if($mode=='manage'){
-				echo '<h2>Manage Students</h2>';
+				echo '<h2>Manage Student:</h2>';
+				echo '<h2>'.$student_number.'</h2>';
 			}
 		?>
 		</div>
 		<md-button layout-fill style="text-align:left" ng-repeat="(key,value) in tableData"  ng-click="changeCategory(key)" ng-class="{'md-primary md-raised':key == currCategoryKey}">
 			<span layout-padding>{{value.Table.Title}}</span>
 		</md-button>
-		<md-button class="md-raised md-primary" ng-click="submit()">Submit</md-button>
+		<md-button class="md-raised md-primary" ng-click="submit('<?=$mode?>','<?=isset($student_id)? $student_id: ""?>')">Submit</md-button>
+		<!--<md-button class="md-raised md-primary" ng-click="test()">Check Input</md-button>-->
 	</md-content>
 	
 	<div layout="column" layout-align="start start" flex layout-padding layout-fill>
@@ -33,17 +35,7 @@ $ci =& get_instance();
 				<div ng-repeat="(key,value) in currCategory.Fields">
 				
 					<div ng-if="value['Input Type'] != 'FE'" class="md-no-margin">
-						<?=/*$this->load->view('student_info_form_input',array(
-							'model'=>'input[currCategory.Table.Name][value.Name]',
-							'title'=>'{{value.Title}}',
-							'name' => '{{value.Name}}',
-							'tip'=>'value["Input Tip"]',
-							'regex'=>'value["Input Regex"]',
-							'type'=>'{{value["Input Type"]}}',
-							'required'=>'value["Input Required"]',
-							'regex_error'=>'value["Input Regex Error Message"]',
-							'order'=>'value["Input Order"]'
-						),true)*/
+						<?=
 							$this->load->view('student_info_form_input',array(
 								'model'=>'input[currCategory.Table.Name][value.Name]',
 								'input'=>'value',
