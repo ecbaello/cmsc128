@@ -454,7 +454,7 @@ class AdvancedInputsModel extends BaseModel{
 		$this->addField($tableName, array(
 			'name'=>$fieldName,
 			'title'=>$fieldTitle,
-			'type'=>'varchar(100)',
+			'type'=>'varchar(1200)',
 			'input_type'=>'MC',
 			'input_required'=>$fieldRequired,
 			'input_tip'=>$fieldTip

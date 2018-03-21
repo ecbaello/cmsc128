@@ -57,14 +57,14 @@ class Manage extends StudentInfoController {
 				}
 				
 				if($field[BaseModel::FieldInputTypeFieldName]=='MC' && $this->student_information->getMCType($table[BaseModel::TableNameFieldName],$field[BaseModel::FieldNameFieldName]) == MCTypes::MULTIPLE){
-					
+					$index = $field[BaseModel::FieldNameFieldName];
 					$value = $fields[$field[BaseModel::FieldNameFieldName]];
 					$fields[$index] = array();
 					
 					$result = array();
 					preg_match_all('/c?{[^{}]+}+/',$value,$result);
 					foreach($result[0] as $r){
-						if(preg_match('/c.+/',$r)){
+						if(preg_match('/^c.+/',$r)){
 							preg_match('/c{\\\\(.+)\\\\(.+)}/',$r,$choice);
 							$fields[$index]['Custom'][$choice[1]] = $choice[2];
 						}else{
@@ -76,10 +76,12 @@ class Manage extends StudentInfoController {
 				}
 			}
 			
+			
 			$data[$table[BaseModel::TableNameFieldName]]=$fields;
 		}
 		
 		return json_encode($data,JSON_NUMERIC_CHECK);
+		//print('<pre>');print_r($data);print('</pre>');
 		
 	}
 	
