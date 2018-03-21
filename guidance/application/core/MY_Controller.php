@@ -286,8 +286,7 @@ class StudentInfoController extends BaseController {
 						
 						$value = '';
 						foreach($inputData[$field['Name']] as $key=>$choice){
-							
-							if($key == 'Custom'){
+							if($key === 'Custom'){
 								if(!isset($inputData[$field['Name']]['Custom']))
 									continue;
 								foreach($inputData[$field['Name']]['Custom'] as $choiceKey=>$customChoice){
@@ -299,7 +298,6 @@ class StudentInfoController extends BaseController {
 							}
 						}
 						$inputData[$field['Name']] = $value;
-						
 					}else{
 					
 						//if input required, and input found, add to insert
