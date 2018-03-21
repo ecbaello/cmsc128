@@ -192,7 +192,10 @@ class Test_Maker extends CI_Model{
 			$questionID = $this->db->get(self::QuestionsTableName)->result_array()[0][self::QuestionsPKName];
 			
 			foreach($question['Choices'] as $choice){
-				$this->db->insert(self::ChoicesTableName,array(self::ChoicesValueFieldName=>$choice['Value']));
+				$this->db->insert(self::ChoicesTableName,array(
+					self::QuestionsPKName=>$questionID,
+					self::ChoicesValueFieldName=>$choice['Value'])
+				);
 			}
 		}
 	}
