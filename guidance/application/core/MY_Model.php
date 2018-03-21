@@ -179,8 +179,8 @@ class BaseModel extends CI_Controller{
 		//Create table registry table
 		$this->dbforge->add_field(self::ModelRegistryPKName.' int unsigned');
 		$this->dbforge->add_field(self::TableRegistryPKName.' int unsigned not null auto_increment unique');
-		$this->dbforge->add_field(self::TableTitleFieldName.' varchar(50) not null');
-		$this->dbforge->add_field(self::TableNameFieldName.' varchar(50) not null unique');
+		$this->dbforge->add_field(self::TableTitleFieldName.' varchar(75) not null');
+		$this->dbforge->add_field(self::TableNameFieldName.' varchar(75) not null unique');
 		$this->dbforge->add_field(self::TableEssentialFieldName.' boolean not null default FALSE');
 		$this->dbforge->add_field(self::TableFlagFieldName.' int');
 		$this->dbforge->add_field('primary key ('.self::TableRegistryPKName.')');

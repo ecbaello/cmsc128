@@ -7,7 +7,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 	<div>
 		<md-content layout="row" layout-wrap layout-align="center center" layout-margin>
-			<md-card ng-repeat="(i,v) in tests">
+			<md-card ng-repeat="(i,v) in tests" flex="25">
 				<md-card-title layout-padding layout="row" layout-align="center center" style="background-color:maroon">
 					<md-content style="background-color:inherit">
 						<span class="md-headline">{{v.Title}}<span>
@@ -15,13 +15,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</md-card-title>
 				<md-card-content class="md-primary" layout="column" layout-align"center center">
 					<div layout-padding layout-align="center center">
-						<p>{{v.Desc}}</p>
-						
+						<p>{{v.Desc}}</p>	
 					</div>
-					<div layout="row">
+					<div layout="row" layout-align="center">
 						<md-button class="md-no-margin">Take</md-button>
 						<md-button class="md-no-margin" ng-click="edit(v.Title)">Edit</md-button>
-						<md-button class="md-no-margin">View Answers</md-button>
 					</div>
 				</md-card-content>
 			</md-card>
