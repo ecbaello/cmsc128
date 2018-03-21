@@ -3,27 +3,44 @@ Test
 --
 Test ID(pk)
 Test Title (unique)
+Test Desc
+Test Flag
 
 --
 Questions
 --
 Test ID(fk)
 Question ID (pk)
-Question Body
+Question Title (unique per test)
+Question Order (unique per test)
 
 --
-Answers
+Choices
 --
 Question ID (fk)
-Answer
-Answer Weight \\to be used with some formula
+Choice Value
 
 --
-User Answers
+Users Tests Association
 --
-Question ID (fk)
-Student Number
-Question ID
-Answer
+UTA ID (pk)
+Test Title
+User ID(fk)
+UTA Flag
+
+--
+User Answers Association
+--
+UTA ID(fk)
+UAA ID(pk)
+Question Title
+
+
+--
+User Answers Association Choices
+--
+UAA ID(fk)
+Choice Value
+Is Answer
 
 

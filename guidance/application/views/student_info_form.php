@@ -68,6 +68,12 @@ $ci =& get_instance();
 				</div>
 			</form>
 		</div>
+		
+		<div layout="row">
+			<md-button class="md-raised md-fab md-mini md-no-margin md-no-padding" ng-disabled="currCategoryKey==0" ng-click="categoryNav('left')"><i class="fas fa-caret-left"></i></md-button>
+			<div layout-padding> </div>
+			<md-button class="md-raised md-fab md-mini md-no-margin md-no-padding" ng-disabled="currCategoryKey==getLength(tableData)-1" ng-click="categoryNav('right')"><i class="fas fa-caret-right"></i></md-button>
+		</div>
 	</div>
 	
 </div>

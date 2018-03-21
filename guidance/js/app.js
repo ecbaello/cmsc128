@@ -180,6 +180,20 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		}
 	}
 	
+	$scope.categoryNav = function(direction){
+		var index = $scope.currCategoryKey;
+		if(direction=='left'){
+			index=index-1<0?0:index-1;
+		}else if(direction=='right'){
+			index=index+1>$scope.getLength($scope.tableData)-1?$scope.getLength($scope.tableData)-1:index+1;
+		}else{
+			return;
+		}
+		$scope.currCategoryKey = index;
+		$scope.currCategory = $scope.tableData[index];
+		console.log($scope.tableData);
+	}
+	
 	$scope.test = function(index){
 		
 		console.log($scope.input);
@@ -240,4 +254,151 @@ app.controller('student_search',function($scope,$rootScope,$window,$http){
 		});
 	}
 
+});
+
+app.controller('tests_form',function($scope,$rootScope,$window){
+	
+});
+
+app.controller('tests_edit',function($scope,$rootScope,$window){
+	
+	$scope.test = {};
+	
+	$scope.init = function(test){
+		$scope.test = JSON.parse(test);
+		console.log($scope.test);
+	}
+	
+	$scope.addChoice = function(qIndex){
+		$scope.test.Questions[qIndex].Choices.push({
+			'Value':''
+		});
+	}
+	
+	$scope.deleteChoice = function(qIndex,cIndex){
+		$scope.test.Questions[qIndex].Choices.splice(cIndex,1);
+	}
+	
+	$scope.addQuestion = function(){
+		$scope.test.Questions.push({
+			'Title':'',
+			'Choices':[],
+			'Order':$scope.test.Questions.length+1
+		});
+		
+	}
+	
+	$scope.changeOrder = function(currIndex,desIndex){
+		if(currIndex == desIndex)
+			return;
+		var currValue = $scope.test.Questions[currIndex];
+		$scope.test.Questions.splice(currIndex,1);
+		$scope.test.Questions.splice(desIndex,0,currValue);
+		
+		updateOrder();
+	}
+	
+	$scope.deleteQuestion = function(qIndex){
+		yes = function(){
+			$scope.test.Questions.splice(qIndex,1);
+			updateOrder();
+		}
+		no = function(){
+			//
+		}
+		$rootScope.customConfirm('Warning','Are you sure you want to do this?',yes,no);
+	}
+	
+	$scope.ping = function(){
+		alert('pong');
+		console.log($scope.test.Questions);
+	}
+	
+	$scope.getNumber = function(num) {
+		return new Array(num);   
+	}
+		
+	$scope.submit = function(){
+		
+		success = function(msg){
+			cont = function(){
+				$window.location.reload();
+			}
+			canc = function(){
+				$window.location.reload();
+			}
+			$rootScope.customConfirm('Success',msg.msg,cont,canc);
+		}
+		
+		fail = function(msg){
+			$rootScope.customAlert('Error',msg.msg);
+		}
+		$rootScope.post($rootScope.baseURL+'tests/edit/post/',$scope.test,success,fail);
+	}
+		
+	function updateOrder(){
+		for(var i = 0 ; i<$scope.test.Questions.length ; i++){
+			$scope.test.Questions[i].Order = i+1;
+		}
+		console.log($scope.test.Questions);
+	}
+	
+});
+
+app.controller('tests_nav',function($scope,$rootScope,$window,$mdDialog,$http){
+	
+	$scope.newTest = {};
+	$scope.tests = {};
+	
+	$scope.init = function(){
+		$scope.getTests();
+	}
+	
+	$scope.add = function(){
+		console.log($scope.newTest);
+		
+		success = function(response) {
+			$rootScope.customConfirm('Success',response.msg,function(){
+				//$window.location.reload();
+				$scope.getTests();
+			},
+			function(){
+				//$window.location.reload();
+				$scope.getTests();
+			});
+		}
+		error = function(response){
+			$rootScope.customAlert('Error',response.msg);
+		}
+		$rootScope.post($rootScope.baseURL+'tests/main/post/add',$scope.newTest,success,error);
+		
+	}
+	
+	$scope.addDialog = function(){
+		$mdDialog.show({
+			contentElement: '#addDialog',
+			clickOutsideToClose: true
+		});
+	}
+	
+	$scope.closeDialog = function(){
+		$mdDialog.hide();
+	}
+	
+	$scope.test = function(){
+		alert('bbom');
+	}
+	
+	$scope.getTests = function(){
+		$http.get($rootScope.baseURL+'tests/main/get/tests/')
+		.then(function(response){
+			$scope.tests = response.data;
+			console.log($scope.tests);
+		});
+	}
+	
+	$scope.edit = function(testTitle){
+		$window.location.href=$scope.baseURL+'tests/edit/test/'+encodeURIComponent(testTitle);
+	}
+	
 });

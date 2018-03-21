@@ -26,7 +26,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</md-card-title>
 				<md-card-content class="md-primary">
 					<div layout-padding>
-						<i class="fas fa-user fa-10x fa-fw" style="font-size:12vw"></i>
+						<i class="fas fa-user-md fa-10x fa-fw" style="font-size:12vw"></i>
 					</div>
 				</md-card-content>
 			</md-card>
