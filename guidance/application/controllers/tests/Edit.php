@@ -61,18 +61,6 @@ class Edit extends TestsController {
 		
 	}
 	
-	private function getTestData($testTitle){
-		$output = array();
-		$output['Questions'] = $this->test_maker->getQuestions($testTitle);
-		$output['Title']=$testTitle;
-		$output['ID']=$this->test_maker->getTestID($testTitle);
-		$output['Desc']=$this->test_maker->getTestDescription($testTitle);
-		
-		//echo json_encode($output,JSON_NUMERIC_CHECK);
-		//return json_encode($output,JSON_NUMERIC_CHECK);
-		return $output;
-	}
-	
 	private function validateInput($input){
 		if(!isset($input['ID']) || !isset($input['Desc']) || !isset($input['Title']) || !isset($input['Questions']))
 			return 'Invalid Test Input';

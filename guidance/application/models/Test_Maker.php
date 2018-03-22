@@ -90,7 +90,6 @@ class Test_Maker extends CI_Model{
 		$this->dbforge->add_field(self::UTAPKName.' int unsigned not null');
 		$this->dbforge->add_field(self::UAAPKName.' int unsigned not null auto_increment unique');
 		$this->dbforge->add_field(self::UAAQuestionTitleFieldName.' varchar(500) not null');
-		$this->dbforge->add_field(self::UTAFlagFieldName.' int unsigned');
 		$this->dbforge->add_field('primary key ('.self::UAAPKName.')');
 		$this->dbforge->add_field('foreign key ('.self::UTAPKName.') references '.self::UTATableName.'('.self::UTAPKName.') on update cascade on delete cascade');
 		
@@ -262,6 +261,78 @@ class Test_Maker extends CI_Model{
 			array_push($questions,$question);
 		}
 		return $questions;
+	}
+	
+	private function getUAAID($UTAID,$questionTitle){
+		$this->db->select(self::UAAPKName);
+		$this->db->where(self::UTAPKName,$UTAID);
+		$this->db->where(self::UAAQuestionTitleFieldName,$questionTitle);
+		$result = $this->db->get(self::UAATableName)->result_array();
+		if(!isset($result[0][self::UAAPKName]))
+			return null;
+		return $result[0][self::UAAPKName];
+	}
+	
+	public function getUTAID($userID,$testTitle){
+		$this->db->select(self::UTAPKName);
+		$this->db->where(self::UTAUserIDFieldName,$userID);
+		$this->db->where(self::UTATestTitleFieldName,$testTitle);
+		$result = $this->db->get(self::UTATableName)->result_array();
+		if(!isset($result[0][self::UTAPKName]))
+			return null;
+		return $result[0][self::UTAPKName];
+	}
+	
+	public function submitAnswers($userID,$testData=array()){
+		/*
+		testData = array(
+			Title,
+			Questions = array(
+				Title,
+				Choices = array(
+					Value
+				),
+				Answer
+			)
+		)
+		*/
+		//print_r($testData);die();
+		$data = array(
+			self::UTATestTitleFieldName => $testData['Title'],
+			self::UTAUserIDFieldName => $userID
+		);
+		$this->db->delete(self::UTATableName,$data);
+		$this->db->insert(self::UTATableName,$data);
+		
+		$UTAID = $this->getUTAID($userID,$testData['Title']);
+		
+		foreach($testData['Questions'] as $question){
+
+			$data = array(
+				self::UTAPKName => $UTAID,
+				self::UAAQuestionTitleFieldName=>$question['Title']
+			);
+			
+			$this->db->where($data);
+			$this->db->delete(self::UAATableName);
+			
+			$this->db->insert(self::UAATableName,$data);
+			$UAAID = $this->getUAAID($UTAID,$question['Title']);
+			
+			$this->db->where(self::UAAPKName,$UAAID);
+			$this->db->delete(self::UAAChoicesTableName);
+			
+			foreach($question['Choices'] as $choice){
+				$this->db->insert(self::UAAChoicesTableName,array(
+					self::UAAPKName=>$UAAID,
+					self::UAAChoicesValueName=>$choice['Value'],
+					self::UAAChoicesIsAnswerName=>$choice['Value']==$question['Answer']
+				));
+			}
+		}
+	}
+	
+	public function getAnswers(){
 	}
 }
 

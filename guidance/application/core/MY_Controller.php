@@ -375,5 +375,22 @@ class TestsController extends BaseController {
 		parent::__construct();
 		$this->load->model('test_maker');
 	}
+	
+	protected function getTestData($testTitle){
+		$testID = $this->test_maker->getTestID($testTitle);
+		if($testID == null){
+			return null;
+		}
+		
+		$output = array();
+		$output['Questions'] = $this->test_maker->getQuestions($testTitle);
+		$output['Title']=$testTitle;
+		$output['ID']=$this->test_maker->getTestID($testTitle);
+		$output['Desc']=$this->test_maker->getTestDescription($testTitle);
+		
+		//echo json_encode($output,JSON_NUMERIC_CHECK);
+		//return json_encode($output,JSON_NUMERIC_CHECK);
+		return $output;
+	}
 
 }

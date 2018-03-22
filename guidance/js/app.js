@@ -265,6 +265,26 @@ app.controller('tests_take',function($scope,$rootScope,$window){
 		console.log($scope.test);
 	}
 	
+	$scope.submit = function(){
+		console.log($scope.test);
+		
+		action =function(){
+			success = function(response) {
+				$rootScope.customConfirm('Success',response.msg,function(){
+					$window.location.href=$rootScope.baseURL+'tests';
+				},
+				function(){
+					$window.location.href=$rootScope.baseURL+'tests';
+				});
+			}
+			error = function(response){
+				$rootScope.customAlert('Error',response.msg);
+			}
+			$rootScope.post($rootScope.baseURL+'tests/take/post',$scope.test,success,error);
+		}
+		$rootScope.customConfirm('Warning','Are you sure you want to continue?',action,function(){});
+	}
+	
 });
 
 app.controller('tests_edit',function($scope,$rootScope,$window){
@@ -407,6 +427,10 @@ app.controller('tests_nav',function($scope,$rootScope,$window,$mdDialog,$http){
 	
 	$scope.edit = function(testTitle){
 		$window.location.href=$scope.baseURL+'tests/edit/test/'+encodeURIComponent(testTitle);
+	}
+	
+	$scope.take = function(testTitle){
+		$window.location.href=$scope.baseURL+'tests/take/test/'+encodeURIComponent(testTitle);
 	}
 	
 });

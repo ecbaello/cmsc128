@@ -18,7 +18,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<p>{{v.Desc}}</p>	
 					</div>
 					<div layout="row" layout-align="center">
-						<md-button class="md-no-margin">Take</md-button>
+						<md-button class="md-no-margin" ng-click="take(v.Title)">Take</md-button>
 						<md-button class="md-no-margin" ng-click="edit(v.Title)">Edit</md-button>
 					</div>
 				</md-card-content>

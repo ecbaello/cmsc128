@@ -24,11 +24,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<legend>
 							#{{$index+1}}
 						</legend>
-						<div>
-							<p>
-								{{value.Title}}
-							</p>
-						</div>
+						<span>
+							{{value.Title}}
+						</span>
 						
 						<div layout-fill  class="md-no-padding" layout="row" layout-margin >
 							<md-radio-group ng-model="test.Questions[index].Answer">
