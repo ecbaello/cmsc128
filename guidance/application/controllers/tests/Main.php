@@ -64,7 +64,7 @@ class Main extends TestsController {
 		
 	}
 	
-	public function getTests(){
+	private function getTests(){
 		$tests = $this->test_maker->getTests();
 		$output = array();
 		foreach($tests as $test){

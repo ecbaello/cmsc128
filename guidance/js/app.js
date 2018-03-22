@@ -256,7 +256,14 @@ app.controller('student_search',function($scope,$rootScope,$window,$http){
 
 });
 
-app.controller('tests_form',function($scope,$rootScope,$window){
+app.controller('tests_take',function($scope,$rootScope,$window){
+	
+	$scope.test = {};
+	
+	$scope.init = function(test){
+		$scope.test = test;
+		console.log($scope.test);
+	}
 	
 });
 

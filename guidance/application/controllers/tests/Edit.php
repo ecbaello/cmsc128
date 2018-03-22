@@ -55,7 +55,7 @@ class Edit extends TestsController {
 	private function showEditForm($testTitle){
 		$this->load->view('header');
 		$this->load->view('tests_edit',array(
-			'test'=>json_encode($this->getTestData($testTitle),JSON_HEX_APOS)
+			'test'=>json_encode($this->getTestData($testTitle),JSON_HEX_APOS|JSON_NUMERIC_CHECK)
 		));
 		$this->load->view('footer');
 		
