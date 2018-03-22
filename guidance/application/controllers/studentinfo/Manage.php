@@ -14,7 +14,7 @@ class Manage extends StudentInfoController {
 		$studentInfo = $this->getStudentData($studentNumber);
 		
 		$this->load->view('header');
-		$this->load->view('student_info_form',array('mode'=>'manage','student_id'=>$this->student_information->getBasePK($studentNumber),'student_number'=>$studentNumber,'student_info'=>json_encode($studentInfo)));
+		$this->load->view('student_info_form',array('mode'=>'manage','student_id'=>$this->student_information->getBasePK($studentNumber),'student_number'=>$studentNumber,'student_info'=>json_encode($studentInfo,JSON_HEX_APOS|JSON_NUMERIC_CHECK)));
 		$this->load->view('footer');
 		
 	}
@@ -80,8 +80,9 @@ class Manage extends StudentInfoController {
 			$data[$table[BaseModel::TableNameFieldName]]=$fields;
 		}
 		
-		return json_encode($data,JSON_NUMERIC_CHECK);
+		//return json_encode($data,JSON_NUMERIC_CHECK);
 		//print('<pre>');print_r($data);print('</pre>');
+		return $data;
 		
 	}
 	

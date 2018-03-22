@@ -90,7 +90,7 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		});
 		
 		if(info!=''){
-			$scope.input = JSON.parse(info);
+			$scope.input = info;
 		}
 	}
 
@@ -265,7 +265,8 @@ app.controller('tests_edit',function($scope,$rootScope,$window){
 	$scope.test = {};
 	
 	$scope.init = function(test){
-		$scope.test = JSON.parse(test);
+		//console.log(test);
+		$scope.test = test;
 		console.log($scope.test);
 	}
 	

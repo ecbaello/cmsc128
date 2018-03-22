@@ -55,7 +55,7 @@ class Edit extends TestsController {
 	private function showEditForm($testTitle){
 		$this->load->view('header');
 		$this->load->view('tests_edit',array(
-			'test'=>json_encode($this->getTestData($testTitle))
+			'test'=>json_encode($this->getTestData($testTitle),JSON_HEX_APOS)
 		));
 		$this->load->view('footer');
 		
@@ -69,7 +69,8 @@ class Edit extends TestsController {
 		$output['Desc']=$this->test_maker->getTestDescription($testTitle);
 		
 		//echo json_encode($output,JSON_NUMERIC_CHECK);
-		return json_encode($output,JSON_NUMERIC_CHECK);
+		//return json_encode($output,JSON_NUMERIC_CHECK);
+		return $output;
 	}
 	
 	private function validateInput($input){
