@@ -17,14 +17,20 @@ $ci =& get_instance();
 			}
 		?>
 		</div>
-		<md-button layout-fill style="text-align:left" ng-repeat="(key,value) in tableData"  ng-click="changeCategory(key)" ng-class="{'md-primary md-raised':key == currCategoryKey}">
+		<md-button layout-fill style="text-align:left" ng-repeat="(key,value) in tableData"  ng-click="changeCategory(key)" ng-class="{'md-primary md-raised':key == currCategoryKey&&!isTests}">
 			<span layout-padding>{{value.Table.Title}}</span>
 		</md-button>
 		<md-button class="md-raised md-primary" ng-click="submit('<?=$mode?>','<?=isset($student_id)? $student_id: ""?>')">Submit</md-button>
 		<!--<md-button class="md-raised md-primary" ng-click="test()">Check Input</md-button>-->
+		<div layout-margin ng-if="'<?=$mode?>'!='add'">
+			<h2>Test Results: </h2>
+		</div>
+		<md-button layout-fill style="text-align:left" ng-repeat="(key,value) in tests"  ng-click="changeTest(key)" ng-class="{'md-primary md-raised':key ==currTestKey&&isTests}">
+			<span layout-padding>{{value.Title}}</span>
+		</md-button>
 	</md-content>
 	
-	<div layout="column" layout-align="start start" flex layout-padding layout-fill>
+	<div layout="column" layout-align="start start" flex layout-padding layout-fill  ng-if="!isTests">
 		<div>
 			<h2 class="md-headline">
 				<span>Student Information: {{currCategory.Table.Title}}<span>
@@ -74,6 +80,27 @@ $ci =& get_instance();
 			<div layout-padding> </div>
 			<md-button class="md-raised md-fab md-mini md-no-margin md-no-padding" ng-disabled="currCategoryKey==getLength(tableData)-1" ng-click="categoryNav('right')"><i class="fas fa-caret-right"></i></md-button>
 		</div>
+	</div>
+	
+	<div layout="column" layout-align="start start" flex layout-padding layout-fill  ng-if="isTests">
+	
+		<div>
+			<h2 class="md-headline">
+				<span>Test Results: {{currTest.Title}}<span>
+			</h2>
+		</div>
+		<div layout-fill layout="column">
+			<fieldset ng-repeat="(key,value) in tests[currTestKey].Questions" layout-margin>
+				<legend>#{{$index+1}}. {{value.Title}}</legend>
+				<md-radio-group ng-model="value.Answer" ng-disabled="true">
+					<md-radio-button ng-repeat="(cindex,cvalue) in value.Choices" value="{{cvalue.Value}}">
+						{{cvalue.Value}}
+					</md-radio-button>
+				</md-radio-group>
+			</fieldset>
+			
+		</div>
+	
 	</div>
 	
 </div>

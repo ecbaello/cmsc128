@@ -11,6 +11,8 @@ class Manage extends StudentInfoController {
 	
 	public function student($studentNumber){
 		
+		$studentNumber = urldecode($studentNumber);
+		
 		$studentInfo = $this->getStudentData($studentNumber);
 		
 		$this->load->view('header');
@@ -20,6 +22,9 @@ class Manage extends StudentInfoController {
 	}
 	
 	private function getStudentData($studentNumber){
+		
+		
+		//print('<pre> ');print_r($this);print('</pre>');die();
 		
 		$tables = $this->student_information->getTables($this->student_information->ModelTitle);
 		$data = array();
@@ -79,6 +84,12 @@ class Manage extends StudentInfoController {
 			
 			$data[$table[BaseModel::TableNameFieldName]]=$fields;
 		}
+		
+		$data['Test Answers'] = array();
+		
+		$testAnswers = $this->test_maker->getAnswers($studentNumber);
+		if($testAnswers !== null)
+			$data['Test Answers']=$testAnswers;
 		
 		//return json_encode($data,JSON_NUMERIC_CHECK);
 		//print('<pre>');print_r($data);print('</pre>');

@@ -332,7 +332,60 @@ class Test_Maker extends CI_Model{
 		}
 	}
 	
-	public function getAnswers(){
+	public function getAnswers($userID){
+		/*
+		ouput = array(
+			array(
+				Title,
+				Questions = array(
+					Title,
+					Choices = array(
+						Value
+					)
+				),
+				Answer
+			)
+		)*/
+		$output = array();
+		
+		$this->db->select(self::UTATestTitleFieldName.','.self::UTAPKName);
+		$this->db->where(self::UTAUserIDFieldName,$userID);
+		$result = $this->db->get(self::UTATableName)->result_array();
+		foreach($result as $r){
+			$UTAID = $this->getUTAID($userID,$r[self::UTATestTitleFieldName]);
+			$this->db->select(self::UAAQuestionTitleFieldName);
+			$this->db->where(self::UTAPKName,$UTAID);
+			$questionsTemp = $this->db->get(self::UAATableName)->result_array();
+			$questions = array();
+			foreach($questionsTemp as $question){
+				$UAAID = $this->getUAAID($UTAID,$question[self::UAAQuestionTitleFieldName]);
+				$answer = '';
+				
+				$this->db->select(self::UAAChoicesValueName.','.self::UAAChoicesIsAnswerName);
+				$this->db->where(self::UAAPKName,$UAAID);
+				$choicesTemp = $this->db->get(self::UAAChoicesTableName)->result_array();
+				$choices = array();
+				foreach($choicesTemp as $choice){
+					array_push($choices,array(
+						'Value'=>$choice[self::UAAChoicesValueName]
+					));
+					if($choice[self::UAAChoicesIsAnswerName]==true)
+						$answer = $choice[self::UAAChoicesValueName];
+				}
+				
+				array_push($questions,array(
+					'Title'=>$question[self::UAAQuestionTitleFieldName],
+					'Choices'=>$choices,
+					'Answer'=>$answer
+				));
+			}
+			array_push($output,array(
+				'Title'=>$r[self::UTATestTitleFieldName],
+				'Questions'=>$questions
+			));
+		}
+		
+		return $output;
 	}
 }
 

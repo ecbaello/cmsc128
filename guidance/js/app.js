@@ -80,6 +80,10 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 	$scope.currCategory = {};
 	$scope.tableData = {};
 	$scope.input = {};
+	$scope.tests = {};
+	$scope.isTests = false;
+	$scope.currTest = {};
+	$scope.currTestKey = 0;
 	
 	$scope.init = function(info=''){
 		$http.get($rootScope.baseURL+'studentinfo/add/get/form')
@@ -91,6 +95,7 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		
 		if(info!=''){
 			$scope.input = info;
+			$scope.tests = info['Test Answers'];
 		}
 	}
 
@@ -134,9 +139,15 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 
 	
 	$scope.changeCategory = function(categoryKey){
-		var object = $scope.tableData[0];
 		$scope.currCategoryKey = categoryKey;
 		$scope.currCategory = $scope.tableData[categoryKey];
+		$scope.isTests = false;
+	}
+	
+	$scope.changeTest = function(testKey){
+		$scope.isTests =true;
+		$scope.currTestKey = testKey;
+		$scope.currTest = $scope.tests[testKey];
 	}
 	
 	$scope.getLength = function(object){
@@ -144,7 +155,7 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 	}
 	
 	$scope.submit = function(type,studentid){
-		
+		console.log($scope.tests);
 		var url = '';
 		
 		if(type=='add'){
