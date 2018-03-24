@@ -23,9 +23,6 @@ class Manage extends StudentInfoController {
 	
 	private function getStudentData($studentNumber){
 		
-		
-		//print('<pre> ');print_r($this);print('</pre>');die();
-		
 		$tables = $this->student_information->getTables($this->student_information->ModelTitle);
 		$data = array();
 		
