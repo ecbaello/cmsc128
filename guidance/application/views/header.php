@@ -38,12 +38,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<md-toolbar layout="row" layout-align="start center" style="background-color:maroon" >
 			<img layout-padding style="width:10%;min-width:75px" src="<?=base_url().'logos/up.png'?>"/>
 			<div layout="column" layout-align="start stretch" flex>
-				<span class="md-display-1" >University of the Philippines Baguio</span>
-				<span style="background-color:#014421;padding:5px">Guidance Homepage</span>
+				<span class="md-display-1" style="font-family: 'Century Gothic'; color:white">University of the Philippines Baguio</span>
+				<span style="padding:5px; font-family: 'Century Gothic'; color:white;">Guidance Homepage</span>
 				<md-content layout="row" layout-align="start center" style="background-color:inherit;font-size:0.8em;color:white">
-					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#5D0F0D" href="<?=base_url().'studentinfo'?>">Student Information</a>
-					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#5D0F0D" href="<?=base_url()?>">Home</a>
-					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#5D0F0D" href="<?=base_url().'tests'?>">Tests</a>
+					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#014421" href="<?=base_url().'studentinfo'?>">Student Information</a>
+					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#014421" href="<?=base_url()?>">Home</a>
+					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#014421" href="<?=base_url().'tests'?>">Tests</a>
 				</md-content>
 			</div>
 		</md-toolbar>
