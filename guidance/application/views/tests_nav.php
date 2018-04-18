@@ -10,7 +10,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<md-card ng-repeat="(i,v) in tests" flex="25">
 				<md-card-title layout-padding layout="row" layout-align="center center" style="background-color:maroon">
 					<md-content style="background-color:inherit">
-						<span class="md-headline">{{v.Title}}<span>
+						<span class="md-headline" style="color:white">{{v.Title}}<span>
 					</md-content>
 				</md-card-title>
 				<md-card-content class="md-primary" layout="column" layout-align"center center">

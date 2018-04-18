@@ -13,7 +13,7 @@ $ci =& get_instance();
 			<span layout-padding>{{value.Table.Title}}</span>
 		</md-button>
 		<md-button class="md-raised md-primary" ng-click="addTable()">Add Table</md-button>
-		<md-button class="md-raised md-primary" ng-click="submit()">Submit</md-button>
+		<md-button class="md-raised md-primary" ng-disabled="busy" ng-click="submit()">Submit</md-button>
 	</md-content>
 	
 	<div layout="column" layout-align="start start" flex layout-padding layout-fill  ng-if="!isTests">
@@ -33,6 +33,9 @@ $ci =& get_instance();
 					<legend>
 						<md-button ng-disabled="value.Essential==1" ng-click="deleteField(key)" class="md-no-margin md-no-padding md-fab md-mini md-primary"><i class="fas fa-times"></i></md-button>
 					</legend>
+					<md-switch ng-model="value['Input Required']" ng-true-value="1" ng-false-value="0">
+						Required?
+					</md-switch>
 					<md-input-container class="md-no-margin" ng-if="value['Input Type']!='FE'">
 						<label>Name</label>
 						<input type="text" ng-model="value.Name" disabled></input>
@@ -80,6 +83,30 @@ $ci =& get_instance();
 							<md-radio-button value="<?=MCTypes::SINGLE?>">Single Answer</md-radio-button>
 							<md-radio-button value="<?=MCTypes::MULTIPLE?>">Multiple Answers</md-radio-button>
 						</md-radio-group>
+						<fieldset layout-padding>
+							<legend>Choices:</legend>
+							<div layout="row" ng-repeat="(index,choice) in value.MC.Choices track by $index">
+								<span>{{$index+1}}</span>
+								<md-input-container class="md-no-margin" flex>
+									<label>Value</label>
+									<input type="text" value="{{choice}}"/>
+								</md-input-container>
+								<md-button class="md-fab md-mini md-raised md-no-margin md-primary" layout-align="center center"><i class="fas fa-times"></i></md-button>
+							</div>
+							<md-button class="md-primary md-raised md-no-margin md-no-padding">Add Choice</md-button>
+						</fieldset>
+						<fieldset layout-padding>
+							<legend>Custom Choices:</legend>
+							<div layout="row" ng-repeat="(index,choice) in value.MC.Custom track by $index">
+								<span>{{$index+1}}</span>
+								<md-input-container class="md-no-margin" flex>
+									<label>Value</label>
+									<input type="text" value="{{choice}}"/>
+								</md-input-container>
+								<md-button class="md-fab md-mini md-raised md-no-margin md-primary" layout-align="center center"><i class="fas fa-times"></i></md-button>
+							</div>
+							<md-button class="md-primary md-raised md-no-margin md-no-padding">Add Custom Choice</md-button>
+						</fieldset>
 					</fieldset>
 				</fieldset>
 			</form>

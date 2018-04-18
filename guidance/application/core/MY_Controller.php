@@ -63,9 +63,6 @@ class StudentInfoController extends BaseController {
 			case 'search':
 				$this->search($arg0);
 				break;
-			case 'tables':
-				$this->getTables();
-				break;
 			default:
 				show_404();
 				break;
@@ -174,8 +171,10 @@ class StudentInfoController extends BaseController {
 			$fields = $this->getTableFields($table[StudentInfoBaseModel::TableNameFieldName]);
 			array_push($data,array(
 				'Table'=>array(
+					'ID'=>$table[StudentInfoBaseModel::TableRegistryPKName],
 					'Title'=>$table[StudentInfoBaseModel::TableTitleFieldName],
-					'Name'=>$table[StudentInfoBaseModel::TableNameFieldName]
+					'Name'=>$table[StudentInfoBaseModel::TableNameFieldName],
+					'Essential'=>$table[StudentInfoBaseModel::EssentialFieldName]
 				),
 				'Fields'=>$fields
 			));
@@ -249,6 +248,7 @@ class StudentInfoController extends BaseController {
 			}
 			
 			$toPush = array(
+				'ID' => $field[StudentInfoBaseModel::FieldRegistryPKName],
 				'Title' => $field[StudentInfoBaseModel::FieldTitleFieldName],
 				'Name' => $field[StudentInfoBaseModel::FieldNameFieldName],
 				'Input Type'=>$field[StudentInfoBaseModel::FieldInputTypeFieldName],
@@ -256,7 +256,8 @@ class StudentInfoController extends BaseController {
 				'Input Regex'=>$field[StudentInfoBaseModel::FieldInputRegexFieldName],
 				'Input Regex Error Message'=>$field[StudentInfoBaseModel::FieldInputRegexErrMsgFieldName],
 				'Input Order'=>$field[StudentInfoBaseModel::FieldInputOrderFieldName],
-				'Input Tip'=>$field[StudentInfoBaseModel::FieldInputTipFieldName]
+				'Input Tip'=>$field[StudentInfoBaseModel::FieldInputTipFieldName],
+				'Essential'=>$field[StudentInfoBaseModel::EssentialFieldName]
 			);
 			
 			if(count($FEData)>0)
@@ -270,70 +271,6 @@ class StudentInfoController extends BaseController {
 		
 		return $fields;
 		
-	}
-	
-	private function getTables(){
-		$tables=$this->student_information->getTables();
-		$output = array();
-		foreach($tables as $table){
-			
-			if($table[StudentInfoBaseModel::FlagFieldName] & Flags::DELETED)
-				continue;
-			
-			$tab = array();
-			$tab['Table'] = array(
-				'ID'=>$table[StudentInfoBaseModel::TableRegistryPKName],
-				'Name'=>$table[StudentInfoBaseModel::TableNameFieldName],
-				'Title'=>$table[StudentInfoBaseModel::TableTitleFieldName],
-				'Essential'=>$table[StudentInfoBaseModel::EssentialFieldName]
-			);
-			
-			$fields = $this->student_information->getFields($tab['Table']['Name']);
-			
-			$tab['Fields']=array();
-			
-			foreach($fields as $field){
-				
-				$fie = array(
-					'ID' => $field[StudentInfoBaseModel::FieldRegistryPKName],
-					'Title' => $field[StudentInfoBaseModel::FieldTitleFieldName],
-					'Name' => $field[StudentInfoBaseModel::FieldNameFieldName],
-					'Input Type'=>$field[StudentInfoBaseModel::FieldInputTypeFieldName],
-					'Input Required'=>$field[StudentInfoBaseModel::FieldInputRequiredFieldName],
-					'Input Regex'=>$field[StudentInfoBaseModel::FieldInputRegexFieldName],
-					'Input Regex Error Message'=>$field[StudentInfoBaseModel::FieldInputRegexErrMsgFieldName],
-					'Input Order'=>$field[StudentInfoBaseModel::FieldInputOrderFieldName],
-					'Input Tip'=>$field[StudentInfoBaseModel::FieldInputTipFieldName],
-					'Essential'=>$field[StudentInfoBaseModel::EssentialFieldName]
-				);
-				
-				if($field[StudentInfoBaseModel::FieldInputTypeFieldName]=='MC'){
-					$MCData = array();
-					$MCData['Type'] = $this->student_information->getMCType($tab['Table']['Name'],$field[StudentInfoBaseModel::FieldNameFieldName]);
-					$choices = $this->student_information->getMCChoices($tab['Table']['Name'],$field[StudentInfoBaseModel::FieldNameFieldName]);
-					
-					$MCChoices = array();
-					$MCCustom = array();
-					foreach($choices as $choice){
-						if(isset($choice[AdvancedInputsModel::ChoiceCustomFieldName]) && $choice[AdvancedInputsModel::ChoiceCustomFieldName]==true){
-							array_push($MCCustom,$choice[AdvancedInputsModel::ChoiceTitleFieldName]);
-						}else{
-							array_push($MCChoices,$choice[AdvancedInputsModel::ChoiceValueFieldName]);
-						}
-					}
-					$MCData['Choices'] = $MCChoices;
-					$MCData['Custom'] = $MCCustom;
-					$fie['MC'] = $MCData;
-				}
-				
-				array_push($tab['Fields'],$fie);
-			}
-			
-			array_push($output,$tab);
-		}
-		//print('<pre>');print_r($output);print('</pre>');die();
-		
-		echo json_encode($output);
 	}
 	
 	//validates per table

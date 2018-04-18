@@ -55,7 +55,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<md-button class="md-raised md-no-margin" ng-click="addFilter('and')">AND</md-button>
 				<md-button class="md-raised md-no-margin" ng-click="addFilter('or')">OR</md-button>
 			</span>
-			<md-button class="md-primary md-raised" ng-click="search()" type="submit"><i class="fas fa-search" style=""></i></md-button>
+			<md-button class="md-primary md-raised" ng-click="search()" ng-disabled="busy" type="submit"><i class="fas fa-search" style=""></i></md-button>
 		</div>
 	</form>
 	

@@ -9,7 +9,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<md-button href="<?= base_url().'studentinfo/add'?>">
 			<md-card>
 				<md-card-title layout-padding layout="row" layout-align="center center" style="background-color:maroon" class="md-no-margin md-no-padding">
-					<md-content style="min-width:200px;background-color:inherit">Add Students</md-content>
+					<md-content style="min-width:200px;background-color:inherit;color:white">Add Students</md-content>
 				</md-card-title>
 				<md-card-content class="md-primary">
 					<div layout-padding>
@@ -22,7 +22,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<md-button href="<?= base_url().'studentinfo/manage'?>">
 			<md-card>
 				<md-card-title  class="md-no-margin md-no-padding" layout-padding layout="row" layout-align="center center" style="background-color:maroon">
-					<md-content style="min-width:200px;background-color:inherit">Manage Students</md-content>
+					<md-content style="min-width:200px;background-color:inherit;color:white">Manage Students</md-content>
 				</md-card-title>
 				<md-card-content class="md-primary">
 					<div layout-padding>
@@ -35,7 +35,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<md-button href="<?= base_url().'studentinfo/formedit'?>">
 			<md-card>
 				<md-card-title  class="md-no-margin md-no-padding" layout-padding layout="row" layout-align="center center" style="background-color:maroon">
-					<md-content style="min-width:200px;background-color:inherit">Edit Student Form</md-content>
+					<md-content style="min-width:200px;background-color:inherit;color:white">Edit Student Form</md-content>
 				</md-card-title>
 				<md-card-content class="md-primary">
 					<div layout-padding>

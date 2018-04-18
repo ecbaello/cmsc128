@@ -40,7 +40,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</md-card-content>
 		</md-card>
 		<div layout-margin layout="row" layout-align="center">
-			<md-button class="md-raised md-primary md-no-margin" ng-click="submit()">
+			<md-button class="md-raised md-primary md-no-margin" ng-disabled="busy" ng-click="submit()">
 				Submit
 			</md-button>
 		</div>

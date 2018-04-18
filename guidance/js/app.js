@@ -6,7 +6,7 @@ var app = angular.module("app", ['ngMaterial','ngMessages'])
 });
 
 app.run(function($rootScope,$http,$httpParamSerializer,$mdDialog){
-
+	$rootScope.busy = false;
 	$rootScope.post = function(url,inputData,onSuccess,onFailure){
 	
 		var data = {
@@ -167,7 +167,7 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		}else{
 			return;
 		}
-		
+		$rootScope.busy = true;
 		action =function(){
 			success = function(response) {
 				$rootScope.customConfirm('Success',response.msg,function(){
@@ -179,6 +179,7 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 			}
 			error = function(response){
 				$rootScope.customAlert('Error',response.msg);
+				$rootScope.busy = false;
 			}
 			$rootScope.post(url,$scope.input,success,error);
 		}
@@ -279,12 +280,13 @@ app.controller('student_search',function($scope,$rootScope,$window,$http){
 			$rootScope.customAlert('Error','At least one filter is required.');
 			return;
 		}
-		
+		$rootScope.busy = true;
 		console.log($rootScope.baseURL+'studentinfo/manage/get/search/'+encodeURIComponent(angular.toJson($scope.filters)));
 		$http.get($rootScope.baseURL+'studentinfo/manage/get/search/'+encodeURIComponent(angular.toJson($scope.filters)))
 		.then(function(response){
 			$scope.results = response.data;
 			console.log($scope.results);
+			$rootScope.busy = false;
 		});
 	}
 
@@ -301,7 +303,7 @@ app.controller('tests_take',function($scope,$rootScope,$window){
 	
 	$scope.submit = function(){
 		console.log($scope.test);
-		
+		$rootScope.busy = true;
 		action =function(){
 			success = function(response) {
 				$rootScope.customConfirm('Success',response.msg,function(){
@@ -313,6 +315,7 @@ app.controller('tests_take',function($scope,$rootScope,$window){
 			}
 			error = function(response){
 				$rootScope.customAlert('Error',response.msg);
+				$rootScope.busy=false;
 			}
 			$rootScope.post($rootScope.baseURL+'tests/take/post',$scope.test,success,error);
 		}
@@ -371,17 +374,12 @@ app.controller('tests_edit',function($scope,$rootScope,$window){
 		$rootScope.customConfirm('Warning','Are you sure you want to do this?',yes,no);
 	}
 	
-	$scope.ping = function(){
-		alert('pong');
-		console.log($scope.test.Questions);
-	}
-	
 	$scope.getNumber = function(num) {
 		return new Array(num);   
 	}
 		
 	$scope.submit = function(){
-		
+		$rootScope.busy = true;
 		success = function(msg){
 			cont = function(){
 				$window.location.reload();
@@ -394,6 +392,7 @@ app.controller('tests_edit',function($scope,$rootScope,$window){
 		
 		fail = function(msg){
 			$rootScope.customAlert('Error',msg.msg);
+			$rootScope.busy = false;
 		}
 		$rootScope.post($rootScope.baseURL+'tests/edit/post/',$scope.test,success,fail);
 	}
@@ -418,7 +417,6 @@ app.controller('tests_nav',function($scope,$rootScope,$window,$mdDialog,$http){
 	
 	$scope.add = function(){
 		console.log($scope.newTest);
-		
 		success = function(response) {
 			$rootScope.customConfirm('Success',response.msg,function(){
 				//$window.location.reload();
