@@ -1,17 +1,10 @@
 --
-Model
---
-Model ID (pk)
-Model Title
-
---
 Table
 --
-Model ID (fk)
 Table ID (pk)
 Table Title
 Table Name
-Is Floating
+Table Flag - (0-default, 1-deleted, 2-floating, 3-deleted floating)
 Is Essential
 
 --
@@ -21,12 +14,14 @@ Table ID (fk)
 Field ID (pk)
 Field Title
 Field Name
-Field Input Type
+Field Input Type - (text,number,integer,date,mc single,mc double,entity)
 Field Input Required
 Field Input Tip
 Field Input Order
 Field Input Regex
 Field Input Regex Error Message
+Field Flag - (0-default)
 Is Essential
+
 
 

@@ -9,11 +9,10 @@ class MY_Model extends CI_Model {
 	
 }
 
-class TableFlags{
-	const FLOATING = 1;
-}
-
-class FieldFlags{
+class Flags{
+	const DEF = 0;
+	const DELETED = 1;
+	const FLOATING = 2;
 }
 
 class MCTypes{
@@ -21,23 +20,21 @@ class MCTypes{
 	const MULTIPLE = 2;
 }
 
-class BaseModel extends CI_Controller{
+class StudentInfoBaseModel extends CI_Model{
 	
-	const ModelRegistryTableName = DB_PREFIX."dbmeta_model_registry";
-	const TableRegistryTableName = DB_PREFIX."dbmeta_table_registry";
-	const FieldRegistryTableName = DB_PREFIX."dbmeta_field_registry";
+	const TableRegistryTableName = DB_PREFIX."studentform_table_registry";
+	const FieldRegistryTableName = DB_PREFIX."studentform_field_registry";
+	const BaseTableTableName = DB_PREFIX.'student'; 
 	
-	const PlaceholderField = DB_PREFIX."placeholder_field";
-	
-	const ModelRegistryPKName = "model_id";
 	const TableRegistryPKName = "table_id";
 	const FieldRegistryPKName = "field_id";
+	const BaseTablePKName = "student_id";
 	
-	const ModelTitleFieldName = "model_title";
+	const StudentNumberFieldName = "student_number";
+	
 	const TableTitleFieldName = "table_title";
 	const TableNameFieldName = "table_name";
-	const TableEssentialFieldName = "is_essential";
-	const TableFlagFieldName = "table_flag";
+	
 	const FieldTitleFieldName = "field_title";
 	const FieldNameFieldName = "field_name";
 	const FieldInputTypeFieldName = "field_input_type";
@@ -46,10 +43,9 @@ class BaseModel extends CI_Controller{
 	const FieldInputOrderFieldName = "field_input_order";
 	const FieldInputRegexFieldName = "field_input_regex";
 	const FieldInputRegexErrMsgFieldName = "field_input_regex_error_msg";
-	const FieldFlagFieldName = "field_flag";
-	const FieldEssentialFieldName = "is_essential";
 	
-	public $ModelTitle = "";
+	const EssentialFieldName = 'is_essential';
+	const FlagFieldName = "flag";
 	
 	public function __construct(){
 		parent::__construct();
@@ -57,20 +53,17 @@ class BaseModel extends CI_Controller{
 		$this->load->dbforge();
 		
 		$this->createRegistry();
-		$this->registerModel();
-		$this->preModelCreation();
-		$this->createModel();
+		$this->createBaseTable();
 	}
 	
-	public function addField($tableName,$fieldData = array(),$isPK = false, $isFK = false, $FKReference = array()){
+	public function addField($tableName,$fieldData = array()){
 		
-		//FKReference: field_name*, table_name*
-		//fieldData: name*,type*,title,constraints,input_type,input_required,input_regex,input_order,input_tip,input_regex,input_regex_error_msg,flag,essential
+		//fieldData: name*,type*,title,constraints,input_type,input_required,input_regex,input_order,input_tip,input_regex_error_msg,flag,essential
 		
 		//Error Checking
 		if(!isset($fieldData['name']) || !isset($fieldData['type'])){
 			log_message('error','Add Field: Name or type not defined');
-			return;
+			return 'Name or type not defined.';
 		}
 		
 		//Default values
@@ -99,10 +92,10 @@ class BaseModel extends CI_Controller{
 			$fieldData['title']='';
 		}
 		if(!isset($fieldData['flag'])){
-			$fieldData['flag']='';
+			$fieldData['flag']=Flags::DEF;
 		}
 		if(!isset($fieldData['essential'])){
-			$fieldData['essential']=0;
+			$fieldData['essential']=false;
 		}
 		
 		$tableID = $this->getTableID($tableName);
@@ -111,80 +104,114 @@ class BaseModel extends CI_Controller{
 		$this->db->where(self::FieldNameFieldName,$fieldData['name']);
 		$this->db->where(self::TableRegistryPKName,$tableID);
 		$result = $this->db->get(self::FieldRegistryTableName)->result_array();
-		if(count($result)>0){
-			log_message('error','Add Field: Field already exists');
-			return;
+		if(count($result)>0 || $fieldData['name']==self::BaseTablePKName){
+			//log_message('error','Add Field: Field already exists');
+			return 'Field already exists';
 		}
-		
+
 		//Add Column
 		$this->dbforge->add_column($tableName, array(
 			$fieldData['name'] => array('type'=>$fieldData['type'].' '.$fieldData['constraints'])
 		));
 		
-		if($isPK){
-			$this->db->query('alter table '.$tableName.' add primary key ('.$fieldData['name'].')');
-		}
-		
-		if($isFK){
-			$this->db->query('alter table '.$tableName.' add foreign key ('.$fieldData['name'].') references '.$FKReference['table_name'].'('.$FKReference['field_name'].') on update cascade on delete cascade');
-		}
-		
 		//Register field
-		
 		$this->registerField($tableID,$fieldData);
+		return null;
 	}
 	
-	public function addTable($tableName,$tableTitle,$essential = FALSE,$flag = null){
+	public function addTable($tableName,$tableTitle,$flag = Flags::DEF,$essential = FALSE){
 		
 		//Check first if table exists
 		if($this->db->table_exists($tableName)){
 			log_message('error','Add Table: Table already exists.');
-			return;
+			return 'Table already exists.';
 		}
-		
-		$modelID = $this->getModelID($this->ModelTitle);
 		
 		//Check for uniqueness of title
 		$data = array(
 			self::TableTitleFieldName => $tableTitle,
-			self::ModelRegistryPKName => $modelID
 		);
 		$result = $this->db->get_where(self::TableRegistryTableName,$data)->result_array();
 		if(count($result)>0){
 			log_message('error','Add Table: Table title must be unique');
-			return;
+			return 'Table title must be unique.';
 		}
 		
 		//Create table
-		// but first add placeholder field
-		$this->dbforge->add_field(self::PlaceholderField.' int');
+		$this->dbforge->add_field(self::BaseTablePKName.' int unsigned not null');
+		$this->dbforge->add_field(self::FlagFieldName.' int unsigned not null default '.Flags::DEF);
+		$this->dbforge->add_field('foreign key ('.self::BaseTablePKName.') references '.self::BaseTableTableName.'('.self::BaseTablePKName.') on delete cascade on update cascade');
 		$this->dbforge->create_table($tableName);
 		
 		//Register table
-		$this->registerTable($tableName,$tableTitle,$essential,$flag);
+		$this->registerTable($tableName,$tableTitle,$flag,$essential);
+		return null;
 		
 	}
 	
-	public function createRegistry(){
-
-		if($this->db->table_exists(self::ModelRegistryTableName) && $this->db->table_exists(self::TableRegistryTableName) && $this->db->table_exists(self::FieldRegistryTableName)) return;
+	private function createBaseTable(){
+		if(!$this->db->table_exists(self::BaseTableTableName)){
+			$this->dbforge->add_field(self::BaseTablePKName.' int unsigned not null auto_increment unique');
+			$this->dbforge->add_field(self::FlagFieldName.' int unsigned not null default '.Flags::DEF);
+			$this->dbforge->add_field('primary key ('.self::BaseTablePKName.')');
+			$this->dbforge->create_table(self::BaseTableTableName,true);
+			$this->registerTable(self::BaseTableTableName,'Background Information',Flags::DEF,TRUE);
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>self::StudentNumberFieldName,
+				'title'=>'Student Number',
+				'type'=>'varchar(11)',
+				'constraints'=>'not null unique',
+				'input_type'=>'text',
+				'input_required'=>TRUE,
+				'input_regex'=>'^\d{4}-\d{5}$',
+				'input_regex_error_msg'=>'Must follow the format xxxx-xxxxx',
+				'input_tip'=>'Must be unique',
+				'essential'=>TRUE
+			));
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>'last_name',
+				'title'=>'Last Name',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>TRUE,
+				'essential'=>TRUE
+			));
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>'first_name',
+				'title'=>'First Name',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>TRUE,
+				'essential'=>TRUE
+			));
+			
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>'middle_name',
+				'title'=>'Middle Name',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'essential'=>TRUE
+			));
+		}
+	}
 	
-		//Create model registry table
-		$this->dbforge->add_field(self::ModelRegistryPKName.' int unsigned not null auto_increment unique');
-		$this->dbforge->add_field(self::ModelTitleFieldName.' varchar(50) not null unique');
-		$this->dbforge->add_field('primary key ('.self::ModelRegistryPKName.')');
+	private function createRegistry(){
 
-		$this->dbforge->create_table(self::ModelRegistryTableName,true);
+		if($this->db->table_exists(self::TableRegistryTableName) && $this->db->table_exists(self::FieldRegistryTableName)) return;
 		
 		//Create table registry table
-		$this->dbforge->add_field(self::ModelRegistryPKName.' int unsigned');
 		$this->dbforge->add_field(self::TableRegistryPKName.' int unsigned not null auto_increment unique');
 		$this->dbforge->add_field(self::TableTitleFieldName.' varchar(75) not null');
 		$this->dbforge->add_field(self::TableNameFieldName.' varchar(75) not null unique');
-		$this->dbforge->add_field(self::TableEssentialFieldName.' boolean not null default FALSE');
-		$this->dbforge->add_field(self::TableFlagFieldName.' int');
+		$this->dbforge->add_field(self::EssentialFieldName.' boolean not null default FALSE');
+		$this->dbforge->add_field(self::FlagFieldName.' int unsigned not null default '.Flags::DEF);
 		$this->dbforge->add_field('primary key ('.self::TableRegistryPKName.')');
-		$this->dbforge->add_field('foreign key ('.self::ModelRegistryPKName.') references '.self::ModelRegistryTableName.'('.self::ModelRegistryPKName.')');
 		
 		$this->dbforge->create_table(self::TableRegistryTableName,true);
 		
@@ -193,25 +220,22 @@ class BaseModel extends CI_Controller{
 		$this->dbforge->add_field(self::FieldRegistryPKName.' int unsigned not null auto_increment unique');
 		$this->dbforge->add_field(self::FieldTitleFieldName.' varchar(50) not null');
 		$this->dbforge->add_field(self::FieldNameFieldName.' varchar(50) not null');
-		$this->dbforge->add_field(self::FieldFlagFieldName.' int');
+		$this->dbforge->add_field(self::FlagFieldName.' int unsigned not null default '.Flags::DEF);
 		$this->dbforge->add_field(self::FieldInputTypeFieldName.' varchar(15) not null default "hidden"');
 		$this->dbforge->add_field(self::FieldInputRegexFieldName.' varchar(30)');
 		$this->dbforge->add_field(self::FieldInputRequiredFieldName.' boolean not null default FALSE');
 		$this->dbforge->add_field(self::FieldInputOrderFieldName.' int not null default 0');
 		$this->dbforge->add_field(self::FieldInputTipFieldName.' varchar(100)');
 		$this->dbforge->add_field(self::FieldInputRegexErrMsgFieldName.' varchar(100)');
-		$this->dbforge->add_field(self::FieldEssentialFieldName.' boolean not null default FALSE');
+		$this->dbforge->add_field(self::EssentialFieldName.' boolean not null default FALSE');
 		$this->dbforge->add_field('primary key ('.self::FieldRegistryPKName.')');
-		$this->dbforge->add_field('foreign key ('.self::TableRegistryPKName.') references '.self::TableRegistryTableName.'('.self::TableRegistryPKName.')');
+		$this->dbforge->add_field('foreign key ('.self::TableRegistryPKName.') references '.self::TableRegistryTableName.'('.self::TableRegistryPKName.') on delete cascade on update cascade');
 
 		$this->dbforge->create_table(self::FieldRegistryTableName,true);
 		
 	}
 	
-	public function createModel(){
-	}
-	
-	public function getFieldID ($tableName,$fieldName){
+	protected function getFieldID ($tableName,$fieldName){
 		$tableID = $this->getTableID($tableName);
 		
 		$this->db->select(self::FieldRegistryPKName);
@@ -236,7 +260,7 @@ class BaseModel extends CI_Controller{
 	public function getFields($tableName,$whereQuery=array()){
 		$tableID = $this->getTableID($tableName);
 		
-		$this->db->select(self::FieldNameFieldName.','.self::FieldTitleFieldName.','.self::FieldInputTypeFieldName.','.self::FieldInputRequiredFieldName.','.self::FieldInputRegexFieldName.','.self::FieldInputOrderFieldName.','.self::FieldInputRegexErrMsgFieldName.','.self::FieldInputTipFieldName.','.self::FieldFlagFieldName.','.self::FieldEssentialFieldName);
+		//$this->db->select(self::FieldNameFieldName.','.self::FieldTitleFieldName.','.self::FieldInputTypeFieldName.','.self::FieldInputRequiredFieldName.','.self::FieldInputRegexFieldName.','.self::FieldInputOrderFieldName.','.self::FieldInputRegexErrMsgFieldName.','.self::FieldInputTipFieldName.','.self::FlagFieldName.','.self::EssentialFieldName);
 		$this->db->where(self::TableRegistryPKName,$tableID);
 		foreach($whereQuery as $index=>$key){
 			$this->db->where($index,$key);
@@ -244,20 +268,6 @@ class BaseModel extends CI_Controller{
 		$result = $this->db->get(self::FieldRegistryTableName)->result_array();
 		
 		return $result;
-	}
-	
-	public function getModelID($modelTitle){
-		$this->db->select(self::ModelRegistryPKName);
-		$this->db->from(self::ModelRegistryTableName);
-		$this->db->where(array(
-			self::ModelTitleFieldName => $modelTitle
-		));
-		$result = $this->db->get()->result_array();
-		if(count($result)!=1) {
-			//log_message('error','Get Model ID: Multiple/No model(s) found.');
-			return;
-		}
-		return($result[0][self::ModelRegistryPKName]);
 	}
 	
 	public function getTableTitle($tableName){
@@ -286,12 +296,9 @@ class BaseModel extends CI_Controller{
 		
 	}
 	
-	public function getTables($modelTitle,$whereQuery=array()){
+	public function getTables($whereQuery=array()){
 		
-		$modelID = $this->getModelID($modelTitle);
-		
-		$this->db->select(self::TableTitleFieldName.','.self::TableNameFieldName.','.self::TableFlagFieldName.','.self::TableEssentialFieldName);
-		$this->db->where(self::ModelRegistryPKName,$modelID);
+		//$this->db->select(self::TableTitleFieldName.','.self::TableNameFieldName.','.self::FlagFieldName.','.self::EssentialFieldName);
 		foreach($whereQuery as $index=>$key){
 			$this->db->where($index,$key);
 		}
@@ -299,39 +306,11 @@ class BaseModel extends CI_Controller{
 		return $result;
 	}
 	
-	public function insert($tableName,$fields = array()){
-		//fields: field_name => field_data
-		
-		if(!$this->db->insert($tableName,$fields)){
-			return $this->parseError($tableName,$this->db->error());
-		}
-		
-	}
 	
-	private function parseError($tableName,$error=array()){
-		$msg='';
-		switch($error['code']){
-			case '1062':
-				preg_match('/for key \'(.+)\'/',$error['message'],$matches);
-				$msg = $this->getTableTitle($tableName).'. Duplicate entry for '.$this->getFieldTitle($tableName,$matches[1]);
-				break;
-			default:
-				$msg = $error['message'];
-		}
-		return $msg;
-	}
-	
-	protected function preModelCreation(){
-		return;
-	}
-	
-	protected function removePlaceholderField($tableName){
-		$this->dbforge->drop_column($tableName,self::PlaceholderField);
-	}
 	
 	private function registerField($tableID,$fieldData = array()){
 		
-		// fieldData : title, name, input_type, input_required, regex
+		// fieldData : title, name, input_type, input_required, ...
 		
 		$data = array(
 			self::TableRegistryPKName => $tableID,
@@ -341,8 +320,8 @@ class BaseModel extends CI_Controller{
 			self::FieldInputRequiredFieldName => $fieldData['input_required'],
 			self::FieldInputRegexFieldName => $fieldData['input_regex'],
 			self::FieldInputOrderFieldName => $fieldData['input_order'],
-			self::FieldFlagFieldName => $fieldData['flag'],
-			self::FieldEssentialFieldName => $fieldData['essential'],
+			self::FlagFieldName => $fieldData['flag'],
+			self::EssentialFieldName => $fieldData['essential'],
 			self::FieldInputRegexErrMsgFieldName => $fieldData['input_regex_error_msg'],
 			self::FieldInputTipFieldName => $fieldData['input_tip']
 		);
@@ -350,50 +329,20 @@ class BaseModel extends CI_Controller{
 		$this->db->insert(self::FieldRegistryTableName,$data);
 	}
 	
-	private function registerModel(){
-		
-		//Check if function is called from BaseModel
-		if($this->ModelTitle == "") return; 
-		
-		
-		
-		//Check if model exists
-		$this->db->select(self::ModelTitleFieldName);
-		$this->db->where(self::ModelTitleFieldName,$this->ModelTitle);
-		$this->db->from(self::ModelRegistryTableName);
-		$result = $this->db->get()->result_array();
-		if(count($result)>0){
-			return;
-		}
-		
-		//Register model
+	protected function registerTable($tableName,$tableTitle,$tableFlag,$tableEssential){
+
 		$data = array(
-			self::ModelTitleFieldName => $this->ModelTitle
-		);
-		$this->db->insert(self::ModelRegistryTableName,$data);
-	}
-	
-	protected function registerTable($tableName,$tableTitle,$tableEssential,$tableFlag){
-		
-		$modelID = $this->getModelID($this->ModelTitle);
-		
-		$data = array(
-			self::ModelRegistryPKName => $modelID,
 			self::TableTitleFieldName => $tableTitle,
 			self::TableNameFieldName => $tableName,
-			self::TableEssentialFieldName => $tableEssential,
-			self::TableFlagFieldName => $tableFlag
+			self::EssentialFieldName => $tableEssential,
+			self::FlagFieldName => $tableFlag
 		);
 		
 		$this->db->insert(self::TableRegistryTableName,$data);
 		
 	}
 	
-	public function update($tableName,$fields = array()){
-		if(!$this->db->replace($tableName,$fields)){
-			return $this->parseError($tableName,$this->db->error());
-		}
-	}
+	
 	
 }
 
@@ -401,7 +350,7 @@ class BaseModel extends CI_Controller{
 
 //FE = floating entity
 //MC = Multiple Choice (singular,multiple)
-class AdvancedInputsModel extends BaseModel{
+class AdvancedInputsModel extends StudentInfoBaseModel{
 
 	const FERegistryTableName = DB_PREFIX.'floating_entitiy_registry';
 	const MCRegistryTableName = DB_PREFIX.'multiple_choice_registry';
@@ -421,6 +370,13 @@ class AdvancedInputsModel extends BaseModel{
 	const ChoiceCustomFieldName = 'is_custom';
 	const ChoiceTitleFieldName = 'choice_title';
 	
+	public function __construct(){
+		parent::__construct();
+		$this->createFERegistry();
+		$this->createMCRegistry();
+		$this->createChoiceRegistry();
+	}
+	
 	public function addChoice($tableName, $fieldName, $choiceValue, $isCustom = false, $customTitle = ''){
 		$MCID = $this->getMCID($tableName,$fieldName);
 		$fields =array(
@@ -429,7 +385,7 @@ class AdvancedInputsModel extends BaseModel{
 			self::ChoiceCustomFieldName => $isCustom,
 			self::ChoiceTitleFieldName => $customTitle
 		);
-		return $this->insert(self::ChoiceRegistryTableName,$fields);
+		return $this->db->insert(self::ChoiceRegistryTableName,$fields);
 	}
 	
 	public function addFEField($tableName,$FEName,$FECardinalityFieldName,$defaultCardinality=1,$input_tip=''){
@@ -473,9 +429,9 @@ class AdvancedInputsModel extends BaseModel{
 			$this->dbforge->add_field(self::FECardinalityFieldIDFieldName.' int unsigned not null');
 			$this->dbforge->add_field(self::FEDefaultCardinalityFieldName.' int unsigned not null');
 			
-			$this->dbforge->add_field('foreign key ('.self::BaseTableIDFieldName.') references '.BaseModel::TableRegistryTableName.'('.BaseModel::TableRegistryPKName.')');
-			$this->dbforge->add_field('foreign key ('.self::FEIDFieldName.') references '.BaseModel::TableRegistryTableName.'('.BaseModel::TableRegistryPKName.')');
-			$this->dbforge->add_field('foreign key ('.self::FECardinalityFieldIDFieldName.') references '.BaseModel::FieldRegistryTableName.'('.BaseModel::FieldRegistryPKName.')');
+			$this->dbforge->add_field('foreign key ('.self::BaseTableIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.')');
+			$this->dbforge->add_field('foreign key ('.self::FEIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.')');
+			$this->dbforge->add_field('foreign key ('.self::FECardinalityFieldIDFieldName.') references '.StudentInfoBaseModel::FieldRegistryTableName.'('.StudentInfoBaseModel::FieldRegistryPKName.')');
 			
 			$this->dbforge->create_table(self::FERegistryTableName,TRUE);
 			
@@ -492,8 +448,8 @@ class AdvancedInputsModel extends BaseModel{
 			$this->dbforge->add_field(self::MCTypeFieldName.' int unsigned not null default 1');
 			
 			$this->dbforge->add_field('primary key ('.self::MCRegistryPKName.')');
-			$this->dbforge->add_field('foreign key ('.self::BaseTableIDFieldName.') references '.BaseModel::TableRegistryTableName.'('.BaseModel::TableRegistryPKName.')');
-			$this->dbforge->add_field('foreign key ('.self::MCFieldIDFieldName.') references '.BaseModel::FieldRegistryTableName.'('.BaseModel::FieldRegistryPKName.')');
+			$this->dbforge->add_field('foreign key ('.self::BaseTableIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.')');
+			$this->dbforge->add_field('foreign key ('.self::MCFieldIDFieldName.') references '.StudentInfoBaseModel::FieldRegistryTableName.'('.StudentInfoBaseModel::FieldRegistryPKName.')');
 			
 			$this->dbforge->create_table(self::MCRegistryTableName,TRUE);
 			
@@ -524,11 +480,11 @@ class AdvancedInputsModel extends BaseModel{
 		$this->db->where(self::FEIDFieldName,$FEID);
 		$FEFieldID = $this->db->get(self::FERegistryTableName)->result_array()[0][self::FECardinalityFieldIDFieldName];
 		
-		$this->db->select(BaseModel::FieldNameFieldName);
-		$this->db->where(BaseModel::FieldRegistryPKName,$FEFieldID);
-		$result = $this->db->get(BaseModel::FieldRegistryTableName)->result_array();
+		$this->db->select(StudentInfoBaseModel::FieldNameFieldName);
+		$this->db->where(StudentInfoBaseModel::FieldRegistryPKName,$FEFieldID);
+		$result = $this->db->get(StudentInfoBaseModel::FieldRegistryTableName)->result_array();
 		
-		return $result[0][BaseModel::FieldNameFieldName];
+		return $result[0][StudentInfoBaseModel::FieldNameFieldName];
 	}
 	
 	public function getFEDefaultCardinality($baseTableName,$FETableName){
@@ -570,12 +526,6 @@ class AdvancedInputsModel extends BaseModel{
 		
 		return $result[0][self::MCRegistryPKName];
 		
-	}
-	
-	protected function preModelCreation(){
-		$this->createFERegistry();
-		$this->createMCRegistry();
-		$this->createChoiceRegistry();
 	}
 	
 	private function registerFE($baseTableID,$FEID,$FECardinalityFieldID,$defaultCardinality){

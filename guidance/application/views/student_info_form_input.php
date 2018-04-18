@@ -17,14 +17,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<div ng-switch-when="date" layout="column">
 		<md-input-container class="md-no-margin">
-			<label>{{<?=$input?>.Title}} <span ng-if="<?=$input?>['Input Tip']!=''" class="md-caption">({{<?=$input?>['Input Tip']}})</span></label>
-			<md-datepicker ng-model="<?=$model?>"></md-datepicker>
+			<label>{{<?=$input?>.Title}}<span ng-if="<?=$input?>['Input Tip']!=''" class="md-caption">({{<?=$input?>['Input Tip']}})</span></label>
+			<md-datepicker ng-model="<?=$model?>" ng-required="{{<?=$input?>['Input Required']}}"></md-datepicker>
 		</md-input-container>
 	</div>
 	
 	<div ng-switch-when="MC" layout="column" layout-padding layout-margin>
 		<fieldset >
-			<legend>{{<?=$input?>.Title}} </legend>
+			<legend>{{<?=$input?>.Title}} <span ng-if="<?=$input?>['Input Required']==1">*</span></legend>
 			<p ng-if="<?=$input?>['Input Tip']!=''" class="md-caption">({{<?=$input?>['Input Tip']}})</p>
 			
 			<md-radio-group ng-if="<?=$input?>.MC.Type == <?= MCTypes::SINGLE ?>" ng-model="<?=$model?>">

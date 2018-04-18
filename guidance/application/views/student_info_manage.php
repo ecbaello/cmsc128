@@ -27,7 +27,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </style>
 
 <div ng-controller="student_search" ng-init="init()" >
-	<div layout="column" layout-align="start">
+	<form layout="column" layout-align="start">
 		<h2 layout-padding layout-margin>Search Student</h2>
 		<div ng-repeat="(key,value) in filters" layout="row" layout-align="start center" class="md-no-padding">
 			<span layout-padding>
@@ -55,9 +55,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<md-button class="md-raised md-no-margin" ng-click="addFilter('and')">AND</md-button>
 				<md-button class="md-raised md-no-margin" ng-click="addFilter('or')">OR</md-button>
 			</span>
-			<md-button class="md-primary md-raised" ng-click="search()"><i class="fas fa-search" style=""></i></md-button>
+			<md-button class="md-primary md-raised" ng-click="search()" type="submit"><i class="fas fa-search" style=""></i></md-button>
 		</div>
-	</div>
+	</form>
 	
 	<div ng-if="getLength(results)>0" layout-padding flex>
 		<md-content>

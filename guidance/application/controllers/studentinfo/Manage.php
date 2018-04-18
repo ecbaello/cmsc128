@@ -23,14 +23,14 @@ class Manage extends StudentInfoController {
 	
 	private function getStudentData($studentNumber){
 		
-		$tables = $this->student_information->getTables($this->student_information->ModelTitle);
+		$tables = $this->student_information->getTables();
 		$data = array();
 		
 		foreach($tables as $table){
 
-			if($table[BaseModel::TableFlagFieldName] == TableFlags::FLOATING)
+			if($table[StudentInfoBaseModel::FlagFieldName] == Flags::FLOATING)
 				continue;
-			$studentData = $this->student_information->getStudentData($table[BaseModel::TableNameFieldName],$studentNumber);
+			$studentData = $this->student_information->getStudentData($table[StudentInfoBaseModel::TableNameFieldName],$studentNumber);
 			if($studentData == null){
 				show_404();
 			}
@@ -44,23 +44,23 @@ class Manage extends StudentInfoController {
 				$fields[$index]=$student;
 			}
 			
-			$fieldsTemp = $this->student_information->getFields($table[BaseModel::TableNameFieldName]);
+			$fieldsTemp = $this->student_information->getFields($table[StudentInfoBaseModel::TableNameFieldName]);
 			foreach($fieldsTemp as $i=>$field){
 				
-				if($field[BaseModel::FieldInputTypeFieldName]=='FE'){
-					$FEFields = $this->student_information->getStudentData($field[BaseModel::FieldNameFieldName],$studentNumber,true);
+				if($field[StudentInfoBaseModel::FieldInputTypeFieldName]=='FE'){
+					$FEFields = $this->student_information->getStudentData($field[StudentInfoBaseModel::FieldNameFieldName],$studentNumber,true);
 					$FEData = array();
 					foreach($FEFields as $index=>$FEField){
 						foreach($FEField as $name=>$value){
 							$FEData[$index][$name]=$value;
 						}
 					}
-					$fields[$field[BaseModel::FieldNameFieldName]]=$FEData;
+					$fields[$field[StudentInfoBaseModel::FieldNameFieldName]]=$FEData;
 				}
 				
-				if($field[BaseModel::FieldInputTypeFieldName]=='MC' && $this->student_information->getMCType($table[BaseModel::TableNameFieldName],$field[BaseModel::FieldNameFieldName]) == MCTypes::MULTIPLE){
-					$index = $field[BaseModel::FieldNameFieldName];
-					$value = $fields[$field[BaseModel::FieldNameFieldName]];
+				if($field[StudentInfoBaseModel::FieldInputTypeFieldName]=='MC' && $this->student_information->getMCType($table[StudentInfoBaseModel::TableNameFieldName],$field[StudentInfoBaseModel::FieldNameFieldName]) == MCTypes::MULTIPLE){
+					$index = $field[StudentInfoBaseModel::FieldNameFieldName];
+					$value = $fields[$field[StudentInfoBaseModel::FieldNameFieldName]];
 					$fields[$index] = array();
 					
 					$result = array();
@@ -79,7 +79,7 @@ class Manage extends StudentInfoController {
 			}
 			
 			
-			$data[$table[BaseModel::TableNameFieldName]]=$fields;
+			$data[$table[StudentInfoBaseModel::TableNameFieldName]]=$fields;
 		}
 		
 		$data['Test Answers'] = array();

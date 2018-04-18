@@ -5,7 +5,6 @@ var app = angular.module("app", ['ngMaterial','ngMessages'])
     .accentPalette('green');
 });
 
-
 app.run(function($rootScope,$http,$httpParamSerializer,$mdDialog){
 
 	$rootScope.post = function(url,inputData,onSuccess,onFailure){
@@ -211,6 +210,29 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 	}
 });
 
+app.controller('student_form_edit',function($scope,$rootScope,$window,$http){
+	
+	$scope.tables = {};
+	$scope.currCategoryKey = 0;
+	$scope.currCategory = {};
+	
+	$scope.init = function(){
+		$http.get($rootScope.baseURL+'studentinfo/formedit/get/form/false').then(function(response){
+			$scope.tables = response.data;
+			$scope.currCategory = $scope.tables[$scope.currCategoryKey];
+			console.log($scope.tables);
+		});
+	}
+	
+	$scope.changeCategory = function(categoryKey){
+		$scope.currCategoryKey = categoryKey;
+		$scope.currCategory = $scope.tables[categoryKey];
+	}
+	
+	$scope.submit = function(){
+	};
+	
+});
 
 
 app.controller('student_search',function($scope,$rootScope,$window,$http){
@@ -257,6 +279,7 @@ app.controller('student_search',function($scope,$rootScope,$window,$http){
 			$rootScope.customAlert('Error','At least one filter is required.');
 			return;
 		}
+		
 		console.log($rootScope.baseURL+'studentinfo/manage/get/search/'+encodeURIComponent(angular.toJson($scope.filters)));
 		$http.get($rootScope.baseURL+'studentinfo/manage/get/search/'+encodeURIComponent(angular.toJson($scope.filters)))
 		.then(function(response){

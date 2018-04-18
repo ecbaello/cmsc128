@@ -46,16 +46,25 @@ class StudentInfoController extends BaseController {
 		$this->load->model('student_information');
 	}
 	
-	public function get($data,$arg0=null){
+	public function get($data=null,$arg0=null){
+		if($data == null)
+			show_404();
+		
+		$data = urldecode($data);
+		$arg0 = urldecode($arg0);
+		
 		switch($data){
 			case 'form':
-				$this->getModelForm();
+				$this->getForm(false,$arg0==null?true:false);
 				break;
 			case 'params':
 				$this->getParams();
 				break;
 			case 'search':
 				$this->search($arg0);
+				break;
+			case 'tables':
+				$this->getTables();
 				break;
 			default:
 				show_404();
@@ -96,7 +105,7 @@ class StudentInfoController extends BaseController {
 		}
 		
 		$toInsert = array();
-		$tableData = $this->getModelForm(true);
+		$tableData = $this->getForm(true);
 		foreach($tableData as $table){
 			
 			if(!isset($data[$table['Table']['Name']])){
@@ -108,10 +117,10 @@ class StudentInfoController extends BaseController {
 		
 		if($type=='add'){
 			//print('<pre>');print_r($toInsert);print('</pre>');die();
-			$referenceField = '';
+			$studentNumber = '';
 			foreach($toInsert as $index=>$value){
 				if($value['Table_Name'] == Student_Information::BaseTableTableName){
-					$referenceField=$value['Fields'][Student_Information::ReferenceFieldFieldName];
+					$studentNumber=$value['Fields'][Student_Information::StudentNumberFieldName];
 					$result = $this->student_information->insert($value['Table_Name'],$value['Fields']);
 					if($result !== null){
 						$this->responseJSON(false,$result);
@@ -121,14 +130,12 @@ class StudentInfoController extends BaseController {
 			}
 			
 			foreach($toInsert as $index=>$value){
-				if($referenceField == ''){
+				if($studentNumber == ''){
 					$this->responseJSON(false,'Something went wrong.');
 					return;
 				}
-				if($value['Table_Name'] == Student_Information::BaseTableTableName){
-					continue;
-				}else{
-					$value['Fields'][Student_Information::BaseTablePKName]=$this->student_information->getBasePK($referenceField);
+				if($value['Table_Name'] != Student_Information::BaseTableTableName){
+					$value['Fields'][Student_Information::BaseTablePKName]=$this->student_information->getBasePK($studentNumber);
 					$result = $this->student_information->insert($value['Table_Name'],$value['Fields']);
 					if($result !== null){
 						$this->responseJSON(false,$result);
@@ -156,25 +163,25 @@ class StudentInfoController extends BaseController {
 		}
 	}
 	
-	private function getModelForm($returnOnly = false){
-		$tables = $this->student_information->getTables($this->student_information->ModelTitle);
+	private function getForm($returnOnly = false,$hideFE = true){
+		$tables = $this->student_information->getTables();
 		$data = array();
 		foreach($tables as $table){
 			
-			if($table[BaseModel::TableFlagFieldName] == TableFlags::FLOATING)
+			if($table[StudentInfoBaseModel::FlagFieldName] == Flags::FLOATING && $hideFE)
 				continue;
 			
-			$fields = $this->getTableFields($table[BaseModel::TableNameFieldName]);
+			$fields = $this->getTableFields($table[StudentInfoBaseModel::TableNameFieldName]);
 			array_push($data,array(
 				'Table'=>array(
-					'Title'=>$table[BaseModel::TableTitleFieldName],
-					'Name'=>$table[BaseModel::TableNameFieldName]
+					'Title'=>$table[StudentInfoBaseModel::TableTitleFieldName],
+					'Name'=>$table[StudentInfoBaseModel::TableNameFieldName]
 				),
 				'Fields'=>$fields
 			));
 		}
 		if(!$returnOnly)
-			echo json_encode($data);
+			echo json_encode($data,JSON_NUMERIC_CHECK);
 		//print('<pre>');print_r($data);print('</pre>');die();
 		return $data;
 	}
@@ -184,11 +191,11 @@ class StudentInfoController extends BaseController {
 		$output = array();
 		foreach($data as $value){
 			
-			$inputType = $value[BaseModel::FieldInputTypeFieldName];
+			$inputType = $value[StudentInfoBaseModel::FieldInputTypeFieldName];
 			if($inputType=='text'){
 				array_push($output,array(
-					'title'=>$value[BaseModel::FieldTitleFieldName],
-					'name'=>$value[BaseModel::FieldNameFieldName]
+					'title'=>$value[StudentInfoBaseModel::FieldTitleFieldName],
+					'name'=>$value[StudentInfoBaseModel::FieldNameFieldName]
 				));
 			}
 			
@@ -204,29 +211,29 @@ class StudentInfoController extends BaseController {
 			
 		foreach($fieldsTemp as $field){
 				
-			if($field[BaseModel::FieldInputTypeFieldName] == 'hidden') continue;
+			if($field[StudentInfoBaseModel::FieldInputTypeFieldName] == 'hidden') continue;
 			
 			$FEData = array();
-			if($field[BaseModel::FieldInputTypeFieldName]=='FE'){
+			if($field[StudentInfoBaseModel::FieldInputTypeFieldName]=='FE'){
 				
-				$FEFields = $this->getTableFields($field[BaseModel::FieldNameFieldName]);
+				$FEFields = $this->getTableFields($field[StudentInfoBaseModel::FieldNameFieldName]);
 				
 				$FEData = array(
 					'Table'=>array(
-						'Title'=>$field[BaseModel::FieldTitleFieldName],
-						'Name'=>$field[BaseModel::FieldNameFieldName]
+						'Title'=>$field[StudentInfoBaseModel::FieldTitleFieldName],
+						'Name'=>$field[StudentInfoBaseModel::FieldNameFieldName]
 					),
-					'Cardinality Field Name' => $this->student_information->getFECardinalityFieldName($tableName,$field[BaseModel::FieldNameFieldName]),
-					'Default Cardinality'=>$this->student_information->getFEDefaultCardinality($tableName,$field[BaseModel::FieldNameFieldName]),
+					'Cardinality Field Name' => $this->student_information->getFECardinalityFieldName($tableName,$field[StudentInfoBaseModel::FieldNameFieldName]),
+					'Default Cardinality'=>$this->student_information->getFEDefaultCardinality($tableName,$field[StudentInfoBaseModel::FieldNameFieldName]),
 					'Fields' => $FEFields
 				);
 				
 			}
 			
 			$MCData = array();
-			if($field[BaseModel::FieldInputTypeFieldName]=='MC'){
-				$MCData['Type'] = $this->student_information->getMCType($tableName,$field[BaseModel::FieldNameFieldName]);
-				$choices = $this->student_information->getMCChoices($tableName,$field[BaseModel::FieldNameFieldName]);
+			if($field[StudentInfoBaseModel::FieldInputTypeFieldName]=='MC'){
+				$MCData['Type'] = $this->student_information->getMCType($tableName,$field[StudentInfoBaseModel::FieldNameFieldName]);
+				$choices = $this->student_information->getMCChoices($tableName,$field[StudentInfoBaseModel::FieldNameFieldName]);
 				
 				$MCChoices = array();
 				$MCCustom = array();
@@ -242,14 +249,14 @@ class StudentInfoController extends BaseController {
 			}
 			
 			$toPush = array(
-				'Title' => $field[BaseModel::FieldTitleFieldName],
-				'Name' => $field[BaseModel::FieldNameFieldName],
-				'Input Type'=>$field[BaseModel::FieldInputTypeFieldName],
-				'Input Required'=>$field[BaseModel::FieldInputRequiredFieldName],
-				'Input Regex'=>$field[BaseModel::FieldInputRegexFieldName],
-				'Input Regex Error Message'=>$field[BaseModel::FieldInputRegexErrMsgFieldName],
-				'Input Order'=>$field[BaseModel::FieldInputOrderFieldName],
-				'Input Tip'=>$field[BaseModel::FieldInputTipFieldName]
+				'Title' => $field[StudentInfoBaseModel::FieldTitleFieldName],
+				'Name' => $field[StudentInfoBaseModel::FieldNameFieldName],
+				'Input Type'=>$field[StudentInfoBaseModel::FieldInputTypeFieldName],
+				'Input Required'=>$field[StudentInfoBaseModel::FieldInputRequiredFieldName],
+				'Input Regex'=>$field[StudentInfoBaseModel::FieldInputRegexFieldName],
+				'Input Regex Error Message'=>$field[StudentInfoBaseModel::FieldInputRegexErrMsgFieldName],
+				'Input Order'=>$field[StudentInfoBaseModel::FieldInputOrderFieldName],
+				'Input Tip'=>$field[StudentInfoBaseModel::FieldInputTipFieldName]
 			);
 			
 			if(count($FEData)>0)
@@ -263,6 +270,70 @@ class StudentInfoController extends BaseController {
 		
 		return $fields;
 		
+	}
+	
+	private function getTables(){
+		$tables=$this->student_information->getTables();
+		$output = array();
+		foreach($tables as $table){
+			
+			if($table[StudentInfoBaseModel::FlagFieldName] & Flags::DELETED)
+				continue;
+			
+			$tab = array();
+			$tab['Table'] = array(
+				'ID'=>$table[StudentInfoBaseModel::TableRegistryPKName],
+				'Name'=>$table[StudentInfoBaseModel::TableNameFieldName],
+				'Title'=>$table[StudentInfoBaseModel::TableTitleFieldName],
+				'Essential'=>$table[StudentInfoBaseModel::EssentialFieldName]
+			);
+			
+			$fields = $this->student_information->getFields($tab['Table']['Name']);
+			
+			$tab['Fields']=array();
+			
+			foreach($fields as $field){
+				
+				$fie = array(
+					'ID' => $field[StudentInfoBaseModel::FieldRegistryPKName],
+					'Title' => $field[StudentInfoBaseModel::FieldTitleFieldName],
+					'Name' => $field[StudentInfoBaseModel::FieldNameFieldName],
+					'Input Type'=>$field[StudentInfoBaseModel::FieldInputTypeFieldName],
+					'Input Required'=>$field[StudentInfoBaseModel::FieldInputRequiredFieldName],
+					'Input Regex'=>$field[StudentInfoBaseModel::FieldInputRegexFieldName],
+					'Input Regex Error Message'=>$field[StudentInfoBaseModel::FieldInputRegexErrMsgFieldName],
+					'Input Order'=>$field[StudentInfoBaseModel::FieldInputOrderFieldName],
+					'Input Tip'=>$field[StudentInfoBaseModel::FieldInputTipFieldName],
+					'Essential'=>$field[StudentInfoBaseModel::EssentialFieldName]
+				);
+				
+				if($field[StudentInfoBaseModel::FieldInputTypeFieldName]=='MC'){
+					$MCData = array();
+					$MCData['Type'] = $this->student_information->getMCType($tab['Table']['Name'],$field[StudentInfoBaseModel::FieldNameFieldName]);
+					$choices = $this->student_information->getMCChoices($tab['Table']['Name'],$field[StudentInfoBaseModel::FieldNameFieldName]);
+					
+					$MCChoices = array();
+					$MCCustom = array();
+					foreach($choices as $choice){
+						if(isset($choice[AdvancedInputsModel::ChoiceCustomFieldName]) && $choice[AdvancedInputsModel::ChoiceCustomFieldName]==true){
+							array_push($MCCustom,$choice[AdvancedInputsModel::ChoiceTitleFieldName]);
+						}else{
+							array_push($MCChoices,$choice[AdvancedInputsModel::ChoiceValueFieldName]);
+						}
+					}
+					$MCData['Choices'] = $MCChoices;
+					$MCData['Custom'] = $MCCustom;
+					$fie['MC'] = $MCData;
+				}
+				
+				array_push($tab['Fields'],$fie);
+			}
+			
+			array_push($output,$tab);
+		}
+		//print('<pre>');print_r($output);print('</pre>');die();
+		
+		echo json_encode($output);
 	}
 	
 	//validates per table
@@ -305,6 +376,10 @@ class StudentInfoController extends BaseController {
 						if(!$this->isInputValid($inputData[$field['Name']],$field['Input Type'],$field['Input Regex'])){
 							$this->responseJSON(false,'Invalid Data at '.$field['Title']);
 							return;
+						}
+						
+						if($field['Input Type']=='date'){
+							$inputData[$field['Name']]=date('Y-m-d',strtotime($inputData[$field['Name']]));
 						}
 					}
 					$toInsertFields[$field['Name']]=$inputData[$field['Name']];

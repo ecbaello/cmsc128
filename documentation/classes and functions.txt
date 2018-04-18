@@ -1,0 +1,41 @@
+--
+StudentInfoBase
+--
+Initializes database meta and contains functions on adding tables and fields to student information form.
+
+Functions:
+public __construct()
+	- Calls Codeigniter's database and dbforge libraries.
+	- Calls createRegistries and createBaseTable.
+	
+public addField(string tableName,array fieldData)
+	- adds a field to a table and registers it.
+	- returns:
+		- 'Field already exists'
+		- 'Name or type not defined'
+		- null if successful.
+	- tableName refers to the name of the table where the field is to be added.
+	- fieldData should contain the following indices:
+		- name - refers to the technical name of the field. Only visible in the back-end. Must be unique. Required.
+		- type - refers to the data type of the field. (e.g int, varchar, float). Required.
+		- title - refers to the name of the field when viewed in the front-end.
+		- input_type - can only be text,number,integer,date,MC, or FE.
+			- MC - multiple choice (can be single or multiple);
+			- FE - floating entity. An input type referring to a table.
+		- input_required - if it is a required input.
+		- input_regex - regex pattern that the input should match.
+		- input_order - refers to the order of the input in the form. UNIMPLEMENTED.
+		- input_tip - tip for the input in the front-end
+		- input_regex_error_msg - message displayed when regex pattern didn't match.
+		- flag - field flag. Refer to section Field Flags.
+		- essential - is the field essential.
+
+public addTable(string tableName, string tableTitle, int flag, boolean essential)
+	- creates a table and registers it.
+	- returns:
+		- 'Table already exists'
+		- 'Table title must be unique'
+	- flag - refers to the table flag. Refer to section Table Flags. Default value is 0.
+	- essential - if essential, the table cannot be marked deleted. Default value is false.
+
+public createBaseTable()

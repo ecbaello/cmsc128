@@ -2,8 +2,6 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Student_Information extends AdvancedInputsModel{
-	 
-	const BaseTableTableName = DB_PREFIX.'student'; 
 	
 	const FamilyDataTableName = DB_PREFIX.'student_family';
 	const FamilyParentTableName = DB_PREFIX.'student_family_parent';
@@ -15,142 +13,82 @@ class Student_Information extends AdvancedInputsModel{
 	const FinancialInfoTableName = DB_PREFIX.'student_finance';
 	const VocationalPlansTableName = DB_PREFIX.'student_vocation';
 	const LeisureInfoTableName = DB_PREFIX.'student_leisure';
-
-	const BaseTablePKName = "student_id";
-	const ReferenceFieldFieldName = "student_number";
-		
-	public $ModelTitle = "Student Information";
 	
-	public function createModel(){
+	public function __construct(){
+		parent::__construct();
+		$this->initDefaults();
+	}
+	
+	public function initDefaults(){
 		
 		//Bacgkround Information 
-		if(!$this->db->table_exists(self::BaseTableTableName)){
-			$this->addTable(self::BaseTableTableName,'Background Information',true);
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>self::BaseTablePKName,
-				'type'=>'int',
-				'constraints'=>'not null auto_increment unique',
-				'essential'=>TRUE
-			),true);
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>self::ReferenceFieldFieldName,
-				'title'=>'Student Number',
-				'type'=>'varchar(15)',
-				'constraints'=>'not null unique',
-				'input_type'=>'text',
-				'input_required'=>TRUE,
-				'input_regex'=>'^\d{4}-\d{5}$',
-				'input_regex_error_msg'=>'Must follow the format xxxx-xxxxx',
-				'input_tip'=>'Must be unique',
-				'essential'=>TRUE
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'course_block',
-				'title'=>'Course/Block',
-				'type'=>'varchar(30)',
-				'input_type'=>'text',
-				'input_required'=>FALSE,
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'last_name',
-				'title'=>'Last Name',
-				'type'=>'varchar(30)',
-				'constraints'=>'not null',
-				'input_type'=>'text',
-				'input_required'=>TRUE,
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'first_name',
-				'title'=>'First Name',
-				'type'=>'varchar(30)',
-				'constraints'=>'not null',
-				'input_type'=>'text',
-				'input_required'=>TRUE,
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'middle_name',
-				'title'=>'Middle Name',
-				'type'=>'varchar(30)',
-				'constraints'=>'not null',
-				'input_type'=>'text'
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'nickname',
-				'title'=>'Nickname',
-				'type'=>'varchar(30)',
-				'constraints'=>'not null',
-				'input_type'=>'text',
-				'input_required'=>FALSE
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'sex',
-				'title'=>'Sex',
-				'type'=>'varchar(15)',
-				'constraints'=>'not null',
-				'input_type'=>'text',
-				'input_required'=>TRUE,
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'birthdate',
-				'title'=>'Date of Birth',
-				'type'=>'varchar(40)',
-				'constraints'=>'not null',
-				'input_type'=>'date',
-				'input_required'=>TRUE,
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'birthplace',
-				'title'=>'Place of Birth',
-				'type'=>'varchar(100)',
-				'constraints'=>'not null',
-				'input_type'=>'text',
-				'input_required'=>FALSE,
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'nationality',
-				'title'=>'Nationality',
-				'type'=>'varchar(30)',
-				'constraints'=>'not null',
-				'input_type'=>'text',
-				'input_required'=>FALSE,
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'citizenship',
-				'title'=>'Citizenship',
-				'type'=>'varchar(30)',
-				'constraints'=>'not null',
-				'input_type'=>'text',
-				'input_required'=>FALSE,
-			));
-			
-		}
+		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+			'name'=>'course_block',
+			'title'=>'Course/Block',
+			'type'=>'varchar(30)',
+			'input_type'=>'text',
+			'input_required'=>FALSE,
+		));
 		
+		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+			'name'=>'nickname',
+			'title'=>'Nickname',
+			'type'=>'varchar(30)',
+			'constraints'=>'not null',
+			'input_type'=>'text',
+			'input_required'=>FALSE
+		));
+		
+		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+			'name'=>'sex',
+			'title'=>'Sex',
+			'type'=>'varchar(15)',
+			'constraints'=>'not null',
+			'input_type'=>'text',
+			'input_required'=>TRUE,
+		));
+		
+		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+			'name'=>'birthdate',
+			'title'=>'Date of Birth',
+			'type'=>'date',
+			'constraints'=>'not null',
+			'input_type'=>'date',
+			'input_required'=>TRUE,
+		));
+		
+		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+			'name'=>'birthplace',
+			'title'=>'Place of Birth',
+			'type'=>'varchar(100)',
+			'constraints'=>'not null',
+			'input_type'=>'text',
+			'input_required'=>FALSE,
+		));
+		
+		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+			'name'=>'nationality',
+			'title'=>'Nationality',
+			'type'=>'varchar(30)',
+			'constraints'=>'not null',
+			'input_type'=>'text',
+			'input_required'=>FALSE,
+		));
+		
+		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+			'name'=>'citizenship',
+			'title'=>'Citizenship',
+			'type'=>'varchar(30)',
+			'constraints'=>'not null',
+			'input_type'=>'text',
+			'input_required'=>FALSE,
+		));
+
 		//Family Data
 		if(!$this->db->table_exists(self::FamilyDataTableName)){
 			
 			$this->addTable(self::FamilyDataTableName, 'Family Data');
-			
-			$this->addField(self::FamilyDataTableName,array(
-				'name'=>self::BaseTablePKName,
-				'type'=>'int',
-				'constraints'=>'not null',
-			),false,true,array(
-				'field_name'=>self::BaseTablePKName,
-				'table_name'=>self::BaseTableTableName
-			));
-			
+
 			$this->addMCField(self::FamilyDataTableName,MCTypes::MULTIPLE,'parents_marital_status','Parent\'s Marital Status',true,'Check as many that applies');
 			$this->addChoice(self::FamilyDataTableName,'parents_marital_status','Parents still married');
 			$this->addChoice(self::FamilyDataTableName,'parents_marital_status','Parents separated');
@@ -168,15 +106,8 @@ class Student_Information extends AdvancedInputsModel{
 				'constraints'=>'not null default 1',
 				'input_type'=>'hidden'
 			));
-			$this->addTable(self::FamilyGuardianTableName,'Guardian',FALSE,TableFlags::FLOATING);
-			$this->addField(self::FamilyGuardianTableName,array(
-				'name'=>self::BaseTablePKName,
-				'type'=>'int',
-				'constraints'=>'not null',
-			),false,true,array(
-				'field_name'=>self::BaseTablePKName,
-				'table_name'=>self::BaseTableTableName
-			));
+			$this->addTable(self::FamilyGuardianTableName,'Guardian',Flags::FLOATING);
+
 			$this->addField(self::FamilyGuardianTableName,array(
 				'name'=>'guardian_id',
 				'type'=>'int',
@@ -217,15 +148,7 @@ class Student_Information extends AdvancedInputsModel{
 				'constraints'=>'not null default 1',
 				'input_type'=>'hidden'
 			));
-			$this->addTable(self::FamilyEmergencyContactTableName,'Emergency Contact',FALSE,TableFlags::FLOATING);
-			$this->addField(self::FamilyEmergencyContactTableName,array(
-				'name'=>self::BaseTablePKName,
-				'type'=>'int',
-				'constraints'=>'not null',
-			),false,true,array(
-				'field_name'=>self::BaseTablePKName,
-				'table_name'=>self::BaseTableTableName
-			));
+			$this->addTable(self::FamilyEmergencyContactTableName,'Emergency Contact',Flags::FLOATING);
 			$this->addField(self::FamilyEmergencyContactTableName,array(
 				'name'=>'emergency_contact_id',
 				'type'=>'int',
@@ -268,16 +191,7 @@ class Student_Information extends AdvancedInputsModel{
 				'input_type'=>'hidden'
 			));
 			
-			$this->addTable(self::FamilyParentTableName,'Parents',FALSE,TableFlags::FLOATING);
-			
-			$this->addField(self::FamilyParentTableName,array(
-				'name'=>self::BaseTablePKName,
-				'type'=>'int',
-				'constraints'=>'not null',
-			),false,true,array(
-				'field_name'=>self::BaseTablePKName,
-				'table_name'=>self::BaseTableTableName
-			));
+			$this->addTable(self::FamilyParentTableName,'Parents',Flags::FLOATING);
 			
 			$this->addField(self::FamilyParentTableName,array(
 				'name'=>'parent_id',
@@ -314,16 +228,7 @@ class Student_Information extends AdvancedInputsModel{
 				'input_type'=>'number'
 			));
 			
-			$this->addTable(self::FamilyChildrenTableName,'Children In Family',FALSE,TableFlags::FLOATING);
-			
-			$this->addField(self::FamilyChildrenTableName,array(
-				'name'=>self::BaseTablePKName,
-				'type'=>'int',
-				'constraints'=>'not null',
-			),false,true,array(
-				'field_name'=>self::BaseTablePKName,
-				'table_name'=>self::BaseTableTableName
-			));
+			$this->addTable(self::FamilyChildrenTableName,'Children In Family',Flags::FLOATING);
 			
 			$this->addField(self::FamilyChildrenTableName,array(
 				'name'=>'child_id',
@@ -354,15 +259,7 @@ class Student_Information extends AdvancedInputsModel{
 		//Educational Background
 		if(!$this->db->table_exists(self::EducationalBGTableName)){
 			$this->addTable(self::EducationalBGTableName,'Educational Background');
-			
-			$this->addField(self::EducationalBGTableName,array(
-				'name'=>self::BaseTablePKName,
-				'type'=>'int',
-				'constraints'=>'not null',
-			),false,true,array(
-				'field_name'=>self::BaseTablePKName,
-				'table_name'=>self::BaseTableTableName
-			));
+
 			$this->addField(self::EducationalBGTableName,array(
 				'name'=>'elem_school',
 				'title'=>'Elementary School Graduated From',
@@ -412,15 +309,6 @@ class Student_Information extends AdvancedInputsModel{
 		if(!$this->db->table_exists(self::FinancialInfoTableName)){
 			$this->addTable(self::FinancialInfoTableName,'Financial Information');
 			
-			$this->addField(self::FinancialInfoTableName,array(
-				'name'=>self::BaseTablePKName,
-				'type'=>'int',
-				'constraints'=>'not null',
-			),false,true,array(
-				'field_name'=>self::BaseTablePKName,
-				'table_name'=>self::BaseTableTableName
-			));
-			
 			$this->addMCField(self::FinancialInfoTableName,MCTypes::SINGLE,'family_annual_income','Family\'s Annual Income',true);
 			$this->addChoice(self::FinancialInfoTableName,'family_annual_income','0-40,500');
 			$this->addChoice(self::FinancialInfoTableName,'family_annual_income','40,501-49,500');
@@ -435,14 +323,27 @@ class Student_Information extends AdvancedInputsModel{
 			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','None');
 			
 		}
+	}
+	
+	public function insert($tableName,$fields = array()){
+		//fields: field_name => field_data
 		
+		if(isset($fields[StudentInfoBaseModel::StudentNumberFieldName])){
+			$this->db->where(StudentInfoBaseModel::StudentNumberFieldName,$fields[StudentInfoBaseModel::StudentNumberFieldName]);
+			$result = $this->db->get(StudentInfoBaseModel::BaseTableTableName)->result_array();
+			
+			if(count($result)>0)
+				return 'Student Number already registered.';
+		}
 		
+		$this->db->insert($tableName,$fields);
+		return null;
 		
 	}
 	
 	public function getBasePK($studentNumber){
 		$this->db->select(self::BaseTablePKName);
-		$this->db->where(self::ReferenceFieldFieldName,$studentNumber);
+		$this->db->where(self::StudentNumberFieldName,$studentNumber);
 		$result = $this->db->get(self::BaseTableTableName)->result_array();
 		return isset($result[0][self::BaseTablePKName])?$result[0][self::BaseTablePKName]:null;
 	}
@@ -458,9 +359,9 @@ class Student_Information extends AdvancedInputsModel{
 		$fields = $this->getFields($tableName);
 		$select= array();
 		foreach($fields as $field){
-			if($field[BaseModel::FieldInputTypeFieldName] == 'hidden' || $field[BaseModel::FieldInputTypeFieldName] == 'FE')
+			if($field[StudentInfoBaseModel::FieldInputTypeFieldName] == 'hidden' || $field[StudentInfoBaseModel::FieldInputTypeFieldName] == 'FE')
 				continue;
-			array_push($select,$field[BaseModel::FieldNameFieldName]);
+			array_push($select,$field[StudentInfoBaseModel::FieldNameFieldName]);
 		}
 		$this->db->select(implode(' , ',$select));
 		$this->db->where(self::BaseTablePKName,$pk);
@@ -478,23 +379,27 @@ class Student_Information extends AdvancedInputsModel{
 		
 		$fields = array();
 		foreach($fieldsTemp as $field){
-			if($field[BaseModel::FieldInputTypeFieldName]=='text'){
-				array_push($fields,$field[BaseModel::FieldNameFieldName]);
+			if($field[StudentInfoBaseModel::FieldInputTypeFieldName]=='text'){
+				array_push($fields,$field[StudentInfoBaseModel::FieldNameFieldName]);
 			}
 		}
 		
 		$this->db->select(implode(' , ',$fields));
 		foreach($whereQuery as $query){
 			if($query['type']=='and')
-				$this->db->where($query['query']);
+				$this->db->like($query['query']);
 			if($query['type']=='or')
-				$this->db->or_where($query['query']);
+				$this->db->or_like($query['query']);
 		}
 		//print_r($this->db->get_compiled_select(self::BaseTableTableName));die();
 		$result = $this->db->get(self::BaseTableTableName)->result_array();
 		
 		return $result;
 		
+	}
+	
+	public function update($tableName,$fields = array()){
+		$this->db->replace($tableName,$fields);
 	}
 	
 	
