@@ -63,16 +63,12 @@ class Manage extends StudentInfoController {
 					$value = $fields[$field[StudentInfoBaseModel::FieldNameFieldName]];
 					$fields[$index] = array();
 					
-					$result = array();
-					preg_match_all('/c?{[^{}]+}+/',$value,$result);
-					foreach($result[0] as $r){
-						if(preg_match('/^c.+/',$r)){
-							preg_match('/c{\\\\(.+)\\\\(.+)}/',$r,$choice);
-							$fields[$index]['Custom'][$choice[1]] = $choice[2];
-						}else{
-							preg_match('/{\\\\(.+)\\\\(.+)}/',$r,$choice);
-							$fields[$index][$choice[1]] = $choice[2];
-						}
+					$result = json_decode($value,true);
+					foreach($result['Custom'] as $i2=>$val){
+						$fields[$index]['Custom'][$i2]=$val;
+					}
+					foreach($result['Normal'] as $i2=>$val){
+						$fields[$index][$i2]=$val;
 					}
 					
 				}

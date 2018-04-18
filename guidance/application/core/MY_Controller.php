@@ -356,20 +356,24 @@ class StudentInfoController extends BaseController {
 							return;
 						}
 						
-						$value = '';
+						$value = array(
+							'Custom'=>array(),
+							'Normal'=>array()
+						);
 						foreach($inputData[$field['Name']] as $key=>$choice){
-							if($key === 'Custom'){
-								if(!isset($inputData[$field['Name']]['Custom']))
+							
+							if($key==='Custom'){
+								
+								if(!isset($inputData[$field['Name']]['Custom'])) //This is needed for some reason
 									continue;
 								foreach($inputData[$field['Name']]['Custom'] as $choiceKey=>$customChoice){
-									$customChoice = preg_replace('[\{}]','',$customChoice);
-									$value= $value.' c{\\'.$choiceKey.'\\'.$customChoice.'}';
+									$value['Custom'][$choiceKey]=$customChoice;
 								}
-							}else if($choice != false){
-								$value= $value.' {\\'.$key.'\\'.$choice.'}';
+							}else if($choice!=false){ //If the choice is not chosen, it is equal to false.
+								$value['Normal'][$key]=$choice;
 							}
 						}
-						$inputData[$field['Name']] = $value;
+						$inputData[$field['Name']] = json_encode($value,JSON_NUMERIC_CHECK|JSON_HEX_APOS|JSON_HEX_QUOT);
 					}else{
 					
 						//if input required, and input found, add to insert
@@ -379,7 +383,7 @@ class StudentInfoController extends BaseController {
 						}
 						
 						if($field['Input Type']=='date'){
-							$inputData[$field['Name']]=date('Y-m-d',strtotime($inputData[$field['Name']]));
+							$inputData[$field['Name']]= (new DateTime($inputData[$field['Name']]))->format('Y-m-d');
 						}
 					}
 					$toInsertFields[$field['Name']]=$inputData[$field['Name']];

@@ -16,7 +16,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 
 	<div ng-switch-when="date" layout="column">
-		<md-input-container class="md-no-margin">
+		<md-input-container class="md-no-margin" ng-if="!<?=$model?>" >
+			<label>{{<?=$input?>.Title}}<span ng-if="<?=$input?>['Input Tip']!=''" class="md-caption">({{<?=$input?>['Input Tip']}})</span></label>
+			<md-datepicker ng-model="<?=$model?>" ng-init="<?=$model?>='<?=date('c')?>'" ng-required="{{<?=$input?>['Input Required']}}"></md-datepicker>
+		</md-input-container>
+		<md-input-container class="md-no-margin" ng-if="<?=$model?>">
 			<label>{{<?=$input?>.Title}}<span ng-if="<?=$input?>['Input Tip']!=''" class="md-caption">({{<?=$input?>['Input Tip']}})</span></label>
 			<md-datepicker ng-model="<?=$model?>" ng-required="{{<?=$input?>['Input Required']}}"></md-datepicker>
 		</md-input-container>
