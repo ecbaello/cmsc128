@@ -76,7 +76,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div>
 	</div>
 	<div>
-		<table id="tables">
+		<a class="md-button md-fab md-raised md-mini" ng-click="csv.generate()" ng-href="{{csv.link()}}" download="<?=date('Y-M-d-')?>passwords.csv">
+			<i class="fas fa-print"></i>
+		</a>
+		<table id="tables" export-csv="csv">
 			<tr>
 				<th>
 					Student Number

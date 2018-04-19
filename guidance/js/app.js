@@ -1,4 +1,4 @@
-var app = angular.module("app", ['ngMaterial','ngMessages'])
+var app = angular.module("app", ['ngMaterial','ngMessages','ngTableToCsv'])
 .config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
     .primaryPalette('grey')
@@ -302,7 +302,6 @@ app.controller('tests_take',function($scope,$rootScope,$window){
 	}
 	
 	$scope.submit = function(){
-		console.log($scope.test);
 		$rootScope.busy = true;
 		action =function(){
 			success = function(response) {

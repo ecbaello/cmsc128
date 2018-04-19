@@ -9,7 +9,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			{{test.Desc}}
 		</p>
 		<md-input-container class="md-no-margin">
-			<input type="hidden" ng-model="test.UTAID" value="<?=$this->ion_auth->logged_in()?$this->ion_auth->user()->row()->username:''?>" required />
+			<input type="hidden" ng-model="test.UTAID" ng-init="test.UTAID = '<?=$this->ion_auth->logged_in()?$this->ion_auth->user()->row()->username:''?>'" required />
 		</md-input-container>
 	</div>
 	<div>

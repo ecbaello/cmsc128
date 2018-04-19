@@ -26,6 +26,9 @@ $ci =& get_instance();
 			<md-button class="md-primary md-raised" ng-click="deleteTable(key)">
 				<span>Delete Table</span>
 			</md-button>
+			<md-button class="md-primary md-raised" ng-click="addField">
+				<span>Add Field</span>
+			</md-button>
 		</div>
 		<div layout-fill class="md-no-padding">
 			<form name="student">

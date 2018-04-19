@@ -18,6 +18,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script src="<?= base_url().'js/angular-aria.min.js' ?>"></script>
 	<script src="<?= base_url().'js/angular-messages.min.js' ?>"></script>
 	<script src="<?= base_url().'js/angular-material.min.js' ?>"></script>
+	<script src="<?= base_url().'js/ng-table-to-csv.min.js' ?>"></script>
 	<script src="<?= base_url().'js/app.js' ?>"></script>
 	
 	<style>
