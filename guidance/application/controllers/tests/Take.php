@@ -5,7 +5,6 @@ class Take extends TestsController {
 
 	public function body()
 	{
-		//$this->load->view('tests_take');
 		show_404();
 	}
 	

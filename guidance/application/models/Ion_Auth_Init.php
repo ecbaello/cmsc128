@@ -50,6 +50,7 @@ if($this->db->table_exists(self::UsersTableName) || $this->db->table_exists(self
   `last_name` varchar(50) DEFAULT NULL,
   `company` varchar(100) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
+  'pword' varchar(10) DEFAULT NULL
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 		

@@ -18,6 +18,13 @@ class BaseController extends CI_Controller{
 		$this->load->library('ion_auth');
 	}
 	
+	protected function permissionRestrict(){
+		if(!$this->ion_auth->is_admin()){
+			$this->permissionError();
+			return;
+		}
+	}
+	
 	public function index(){
 		$this->load->view('header');
 		$this->body();
@@ -50,6 +57,7 @@ class StudentInfoController extends BaseController {
 		parent::__construct();
 		$this->load->model('test_maker');
 		$this->load->model('student_information');
+		$this->permissionRestrict();
 	}
 	
 	public function get($data=null,$arg0=null){

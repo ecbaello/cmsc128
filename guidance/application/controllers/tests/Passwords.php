@@ -5,7 +5,7 @@ class Passwords extends TestsController {
 
 	public function __construct(){
 		parent::__construct();
-		
+		$this->permissionRestrict();
 	}
 	
 	public function body(){
@@ -18,31 +18,54 @@ class Passwords extends TestsController {
 		if($mode===null || $arg===null)
 			show_404();
 		
+		$result = '';
 		switch($mode){
 			case 0:
-				if(!preg_match('^\\d{4}$',$arg))
+				if(!preg_match('/^\\d{4}$/',$arg)){
 					$this->responseJSON(false,'Invalid Year');
+					return;
+				}
+				$result = $this->test_maker->getPasswords(0,$arg);
 				break;
 			case 1:
-				if(!preg_match('^\\d{4}-{5}$',$arg))
+				if(!preg_match('/^\\d{4}-\\d{5}$/',$arg)){
 					$this->responseJSON(false,'Invalid Student Number');
+					return;
+				}
+				$result = $this->test_maker->getPasswords(1,$arg);
 				break;
 			default:
 				show_404();
+				return;
+		}
+		
+		if($result != ''){
+			echo json_encode($result);
 		}
 	}
 	
 	public function generatePasswords($mode=null,$arg=null){
 		if($mode===null || $arg===null)
 			show_404();
-		
+		//print_r($mode);die();
 		switch($mode){
 			case 0:
+				if(!preg_match('/^\\d{4}$/',$arg)){
+					$this->responseJSON(false,'Invalid Year');
+					return;
+				}
+				$this->test_maker->generatePasswords(0,$arg);
 				break;
 			case 1:
+				if(!preg_match('/^\\d{4}-\\d{5}$/',$arg)){
+					$this->responseJSON(false,'Invalid Student Number');
+					return;
+				}
+				$this->test_maker->generatePasswords(1,$arg);
 				break;
 			default:
 				show_404();
+				return;
 		}
 	}
 	

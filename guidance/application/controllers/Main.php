@@ -56,5 +56,4 @@ class Main extends BaseController {
 		$this->ion_auth->logout();
 		redirect(base_url());
 	}
-	
 }

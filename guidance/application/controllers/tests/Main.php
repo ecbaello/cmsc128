@@ -5,7 +5,11 @@ class Main extends TestsController {
 
 	public function body()
 	{
-		$this->load->view('tests_nav');
+		if($this->ion_auth->logged_in()){
+			$this->load->view('tests_nav');
+		}else{
+			$this->load->view('login');
+		}
 	}
 	
 	public function get($type){
@@ -20,6 +24,7 @@ class Main extends TestsController {
 	}
 	
 	public function post($type){
+		$this->permissionRestrict();
 		switch($type){
 			case 'add':
 				$this->add();

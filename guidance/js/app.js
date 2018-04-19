@@ -407,17 +407,47 @@ app.controller('tests_edit',function($scope,$rootScope,$window){
 });
 
 app.controller('tests_passwords',function($scope,$rootScope,$window,$mdDialog,$http){
-	$scope.passwords = {};
-	$scope.submit = function(year){
-		$http.get($rootScope.baseURL+'tests/passwords/getPasswords/'+year)
-		.then();
+	$scope.disp={};
+	$scope.gen={};
+	$scope.passwords={};
+	$scope.search = function(){
+		if($scope.disp.option == '' || $scope.disp.value == '')
+			$rootScope.customAlert('Error','Please fill-up the required fields');
+		$rootScope.busy =true;
+		$http.get($rootScope.baseURL+'tests/passwords/getPasswords/'+$scope.disp.option+'/'+$scope.disp.value)
+		.then(function(response){
+			if(response.data.hasOwnProperty('success')){
+				if(!response.data.success){
+					$rootScope.customAlert('Error',response.data.msg);
+					$rootScope.busy = false;
+					return;
+				}
+			}
+			$rootScope.busy = false;
+			$scope.passwords = response.data;
+		});
 	}
-	$scope.search = function(snumber){
-	}
-	$scope.generate = function(year){
+	$scope.submit = function(){
+		if($scope.gen.option == '' || $scope.gen.value == '')
+			$rootScope.customAlert('Error','Please fill-up the required fields');
 		$rootScope.customConfirm('Warning','Generating passwords will overwrite previous passwords. Do you want to continue?',function(){
+			$rootScope.busy = true;
+			$http.get($rootScope.baseURL+'tests/passwords/generatePasswords/'+$scope.gen.option+'/'+$scope.gen.value)
+			.then(function(response){
+				if(response.data.hasOwnProperty('success')){
+					if(!response.data.success){
+						$rootScope.customAlert('Error',response.data.msg);
+						$rootScope.busy = false;
+						return;
+					}
+				}else{
+					$rootScope.customAlert('Success','Passwords generated successfully.');
+					$rootScope.busy = false;
+				}
+			});
 		},
 		function(){
+			$rootScope.busy = false;
 		});
 	}
 });

@@ -389,13 +389,44 @@ class Test_Maker extends CI_Model{
 	}
 	
 	public function getPasswords($mode,$arg){
-		$this->db->select('username,passwords');
+		//$mode = 0 => batch, 1=>indiv
+		$this->db->select('username,pword');
 		$this->db->where('id!=',1);
+		if($mode == 0){
+			$this->db->like('username',$arg,'after');
+		}else{
+			$this->db->where('username',$arg);
+		}
+		//print($this->db->get_compiled_select(Ion_Auth_Init::UsersTableName));die();
 		return $this->db->get(Ion_Auth_Init::UsersTableName)->result_array();
 	}
 	
 	public function generatePasswords($mode,$arg){
-		$this->ion_auth('users')->result_array();
+		$this->db->select(StudentInfoBaseModel::StudentNumberFieldName);
+		$this->db->where(StudentInfoBaseModel::FlagFieldName.' !=',Flags::DELETED);
+		if($mode == 0){
+			$this->db->like(StudentInfoBaseModel::StudentNumberFieldName,$arg,'after');
+		}else{
+			$this->db->where(StudentInfoBaseModel::StudentNumberFieldName,$arg);
+		}
+		$subquery = $this->db->get_compiled_select(StudentInfoBaseModel::BaseTableTableName);
+		
+		$this->db->select('id');
+		$this->db->where("username in ($subquery)",null,false);
+		$res = $this->db->get(Ion_Auth_Init::UsersTableName)->result_array();
+		//print_r($res);die();
+		foreach($res as $r){
+			$this->ion_auth->delete_user($r['id']);
+		}	
+		
+		$res = $this->db->query($subquery)->result_array();
+		//print_r($res);die();
+		foreach($res as $r){
+			$password = bin2hex(openssl_random_pseudo_bytes(4));
+			$this->ion_auth->register($r[StudentInfoBaseModel::StudentNumberFieldName],$password,'ex@ex.com',array(
+				'pword'=>$password
+			));
+		}
 	}
 }
 

@@ -1,8 +1,8 @@
 --
 Client
 --
-admin privileges -in-progress
-student password generator -in-progress
+admin privileges - done 4/20/2018
+student password generator - done 4/20/18
 print student data
 
 --
@@ -15,10 +15,6 @@ student results filters
 specific student information db meta - done 4/14/18
 date formatting -done 4/14/18
 restructure multiple choice (store data as json) -done 4/18/18
-archives
-	- table archives
-	- record archives
-	- test archives
 
 --
 Delayed
@@ -28,3 +24,7 @@ student results filters
 	- limit results number
 test formula + test result
 print student data
+archives
+	- table archives
+	- record archives
+	- test archives
