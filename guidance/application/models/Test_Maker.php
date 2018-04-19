@@ -387,6 +387,16 @@ class Test_Maker extends CI_Model{
 		
 		return $output;
 	}
+	
+	public function getPasswords($mode,$arg){
+		$this->db->select('username,passwords');
+		$this->db->where('id!=',1);
+		return $this->db->get(Ion_Auth_Init::UsersTableName)->result_array();
+	}
+	
+	public function generatePasswords($mode,$arg){
+		$this->ion_auth('users')->result_array();
+	}
 }
 
 ?>

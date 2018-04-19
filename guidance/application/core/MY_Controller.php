@@ -14,6 +14,8 @@ class BaseController extends CI_Controller{
 	public function __construct(){
 		parent::__construct();
 		$this->load->model("ion_auth_init");
+		$this->load->add_package_path(APPPATH.'third_party/ion_auth/');
+		$this->load->library('ion_auth');
 	}
 	
 	public function index(){
@@ -23,6 +25,10 @@ class BaseController extends CI_Controller{
 	}
 	
 	public function body(){
+	}
+	
+	public function permissionError(){
+		show_error('The user doesn\'t have the permission to perform this action.', 403, 'Forbidden');
 	}
 	
 	protected function responseJSON($isSuccessful,$msg){

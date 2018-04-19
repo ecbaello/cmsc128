@@ -5,12 +5,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div ng-controller="tests_take" ng-init='init(<?=$test?>)'>
 	<div layout="column" layout-padding>
 		<h2>{{test.Title}}</h2>
-		<p>
+		<p ng-if="test.Desc!=''">
 			{{test.Desc}}
 		</p>
 		<md-input-container class="md-no-margin">
 			<label>Student Number</label>
 			<input type="text" ng-model="test.UTAID" required />
+		</md-input-container>
+		<md-input-container class="md-no-margin">
+			<label>Password</label>
+			<input type="password" ng-model="test.password" required />
 		</md-input-container>
 	</div>
 	<div>

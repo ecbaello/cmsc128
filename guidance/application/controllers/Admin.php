@@ -5,7 +5,8 @@ class Admin extends BaseController {
 
 	public function body()
 	{
-		$this->load->view('login');
+		$this->load->view($this->ion_auth->logged_in()?'admin':'login');
 	}
+
 	
 }

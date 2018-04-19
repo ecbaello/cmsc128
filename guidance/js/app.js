@@ -406,6 +406,22 @@ app.controller('tests_edit',function($scope,$rootScope,$window){
 	
 });
 
+app.controller('tests_passwords',function($scope,$rootScope,$window,$mdDialog,$http){
+	$scope.passwords = {};
+	$scope.submit = function(year){
+		$http.get($rootScope.baseURL+'tests/passwords/getPasswords/'+year)
+		.then();
+	}
+	$scope.search = function(snumber){
+	}
+	$scope.generate = function(year){
+		$rootScope.customConfirm('Warning','Generating passwords will overwrite previous passwords. Do you want to continue?',function(){
+		},
+		function(){
+		});
+	}
+});
+
 app.controller('tests_nav',function($scope,$rootScope,$window,$mdDialog,$http){
 	
 	$scope.newTest = {};
@@ -465,4 +481,29 @@ app.controller('tests_nav',function($scope,$rootScope,$window,$mdDialog,$http){
 		$window.location.href=$scope.baseURL+'tests/take/test/'+encodeURIComponent(testTitle);
 	}
 	
+});
+
+app.controller('login',function($scope,$rootScope,$http,$mdDialog,$window){
+	$scope.account = {};
+	$scope.login = function(){
+		if($scope.username=='' || $scope.password==''){
+			$rootScope.customAlert('Error','Please fill-up the required fields.','Ok');
+		}
+
+		$rootScope.post($rootScope.baseURL+'main/login',$scope.account
+		,function(response){
+			$window.location.reload();
+		},function(response){
+			$rootScope.customAlert('Error',response.msg,'Ok');
+		})
+	}
+});
+
+app.controller('admin',function($scope,$rootScope,$http,$mdDialog,$window){
+	$scope.account={};
+	$scope.init = function(){
+		$http.get($rootScope.baseURL+'admin/getaccount').then(function(response){
+		
+		});
+	}
 });

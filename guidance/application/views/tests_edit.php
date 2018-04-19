@@ -16,6 +16,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<textarea ng-model="test.Desc" rows="2" md-maxlength="400"></textarea>
 		</md-input-container>
 		<div>
+			<md-button class="md-raised md-primary md-no-margin">
+				Delete Test
+			</md-button>
 			<md-button class="md-raised md-primary md-no-margin" ng-click="submit()">
 				Submit
 			</md-button>

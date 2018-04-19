@@ -5,6 +5,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<div flex layout="row" layout-align="center center" layout-padding>
 		<span class="md-headline">UPB Guidance Tests</span> <span><md-button title="Add Tests" class="md-primary md-raised md-fab" ng-click="addDialog()"><i class="fas fa-plus"></i></md-button></span>
 	</div>
+	<div layout="row" layout-align="center center">
+		<a class="md-primary md-button md-no-margin md-raised" href="<?=base_url().'tests/passwords'?>">Student Passwords</a>
+	</div>
 	<div>
 		<md-content layout="row" layout-wrap layout-align="center center" layout-margin>
 			<md-card ng-repeat="(i,v) in tests" flex="25">

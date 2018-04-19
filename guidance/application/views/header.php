@@ -38,7 +38,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<md-toolbar layout="row" layout-align="start center" style="background-color:maroon" >
 			<img layout-padding style="width:10%;min-width:75px" src="<?=base_url().'logos/up.png'?>"/>
 			<div layout="column" layout-align="start stretch" flex>
-				<span class="md-display-1" style="font-family: 'Century Gothic'; color:white">University of the Philippines Baguio</span>
+				<div layout="row">
+					<span flex class="md-display-1" style="font-family: 'Century Gothic'; color:white">University of the Philippines Baguio</span>
+					<?php if ($this->ion_auth->logged_in()):?>
+					<div layout="row" layout-padding>
+						<span class="md-subhead" style="color:white">
+							Logged in as: <?=$this->ion_auth->user()->row()->username?>
+						</span>
+						<a class="md-button md-no-margin md-no-padding" style="color:white" href="<?=base_url().'main/logout'?>">Logout</a>
+					</div>
+					<?php endif;?>
+				</div>
 				<span style="padding:5px; font-family: 'Century Gothic'; color:white;">Guidance Homepage</span>
 				<md-content layout="row" layout-align="start center" style="background-color:inherit;font-size:0.8em;color:white">
 					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#014421" href="<?=base_url().'studentinfo'?>">Student Information</a>

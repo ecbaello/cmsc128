@@ -1,10 +1,8 @@
 --
 Client
 --
-add table + add field (student information) - in-progress
-test formula + test result
-admin privileges
-student password generator
+admin privileges -in-progress
+student password generator -in-progress
 print student data
 
 --
@@ -13,8 +11,20 @@ Developer
 4/18/18:
 operation overlays (loading screen) - done 4/18/18 (instead of overlay, buttons were just disabled)
 student results filters
-	- limit results number
 	- like operator -done 4/8/18
 specific student information db meta - done 4/14/18
 date formatting -done 4/14/18
 restructure multiple choice (store data as json) -done 4/18/18
+archives
+	- table archives
+	- record archives
+	- test archives
+
+--
+Delayed
+--
+add table + add field (student information) - in-progress
+student results filters
+	- limit results number
+test formula + test result
+print student data
