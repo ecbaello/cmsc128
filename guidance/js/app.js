@@ -230,8 +230,10 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http){
 		$scope.currCategory = $scope.tables[categoryKey];
 	}
 	
-	$scope.submit = function(){
-	};
+	$scope.editField = function(key){
+		console.log($scope.tables[$scope.currCategoryKey].Fields[key].ID);
+		//$rootScope.post($rootScope.baseURL+'studentinfo/formedit/action/editfield/').then();
+	}
 	
 });
 

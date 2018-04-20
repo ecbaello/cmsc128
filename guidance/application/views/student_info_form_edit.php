@@ -13,7 +13,6 @@ $ci =& get_instance();
 			<span layout-padding>{{value.Table.Title}}</span>
 		</md-button>
 		<md-button class="md-raised md-primary" ng-click="addTable()">Add Table</md-button>
-		<md-button class="md-raised md-primary" ng-disabled="busy" ng-click="submit()">Submit</md-button>
 	</md-content>
 	
 	<div layout="column" layout-align="start start" flex layout-padding layout-fill  ng-if="!isTests">
@@ -26,7 +25,7 @@ $ci =& get_instance();
 			<md-button class="md-primary md-raised" ng-click="deleteTable(key)">
 				<span>Delete Table</span>
 			</md-button>
-			<md-button class="md-primary md-raised" ng-click="addField">
+			<md-button class="md-primary md-raised" ng-click="addField(key)">
 				<span>Add Field</span>
 			</md-button>
 		</div>
@@ -111,10 +110,45 @@ $ci =& get_instance();
 							<md-button class="md-primary md-raised md-no-margin md-no-padding">Add Custom Choice</md-button>
 						</fieldset>
 					</fieldset>
+					<div layout="row" layout-align="center center">
+						<md-button class="md-raised md-primary md-no-margin" ng-disabled="busy" ng-click="editField(key)">
+								Save Changes
+						</md-button>
+					</div>
 				</fieldset>
 			</form>
 		</div>
 
+	</div>
+	
+	<div style="visibility: hidden">
+		<div class="md-dialog-container" id="addDialog">
+			<md-dialog flex="40">
+				<md-toolbar style="background-color:maroon" layout-padding>
+					<h4 class="md-no-margin" style="color:white">ADD TEST</h4>
+				</md-toolbar>
+				<md-dialog-content layout="column" layout-padding>
+				<form>
+					<div layout="column">
+						
+						<md-input-container class="md-no-margin">
+							<label>Title</label>
+							<input ng-model="newTest.Title" type="text" required></input>
+						</md-input-container>
+						<md-input-container class="md-no-margin">
+							<label>Description</label>
+							<textarea ng-model="newTest.Description" md-maxlength="300"></textarea>
+						</md-input-container>
+						
+					</div>
+					<div layout="row" layout-align="end center">
+						<md-button class="md-no-margin" ng-click="closeDialog()" >Cancel</md-button>
+						<md-button class="md-no-margin" ng-click="add()" type="submit" ng-disabled="!newTest.Title">Submit</md-button>
+					</div>
+				</form>
+				</md-dialog-content>
+			</md-dialog>
+		</div>
 	</div>
 
 </div>
