@@ -42,23 +42,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div layout="row">
 					<div flex>
 						<div layout="row">
-							<span flex class="md-display-1" style="font-family: 'Century Gothic'; color:white">University of the Philippines Baguio</span>
+							<span flex class="md-display-1" style="font-size:2em;font-family: 'Ostrich Sans'; color:white">University of the Philippines Baguio</span>
 						</div>
 						<span style="padding:5px; font-family: 'Century Gothic'; color:white;">Guidance Homepage</span>
 					</div>
-					<div layout="column" >
-						<?php if ($this->ion_auth->logged_in()):?>
-							<div layout="column" style="padding:0 2vw 0 0" layout-align="start end">
-								<span class="md-subhead" style="color:white">
-									Logged in as: <?=$this->ion_auth->user()->row()->username?>
-								</span>
-								<span class="md-subhead"><a class="md-primary" style="color:white;" href="<?=base_url().'main/logout'?>">Logout</a></span>						
-							</div>
-						<?php endif;?>
-					</div>
+					
 				</div>
 				<md-content layout="row" layout-align="start center" style="background-color:inherit;font-size:0.8em;color:white">
-					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#014421" href="<?=base_url().'studentinfo'?>">Student Information</a>
+					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#014421" href="<?=base_url().'studentinfo'?>">Student Info</a>
 					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#014421" href="<?=base_url()?>">Home</a>
 					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#014421" href="<?=base_url().'tests'?>">Tests</a>
 				</md-content>
