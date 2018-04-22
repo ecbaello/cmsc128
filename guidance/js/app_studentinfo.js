@@ -1,0 +1,341 @@
+app.controller('student_form',function($scope,$rootScope,$http,$window){
+	
+	$scope.currCategoryKey = 0;
+	$scope.currCategory = {};
+	$scope.tableData = {};
+	$scope.input = {};
+	$scope.tests = {};
+	$scope.isTests = false;
+	$scope.currTest = {};
+	$scope.currTestKey = 0;
+	
+	$scope.init = function(info=''){
+		$http.get($rootScope.baseURL+'studentinfo/add/get/form')
+		.then(function(response){
+			$scope.tableData = response.data;
+			$scope.currCategory = response.data[$scope.currCategoryKey];
+			console.log($scope.tableData);
+		});
+		
+		if(info!=''){
+			$scope.input = info;
+			$scope.tests = info['Test Answers'];
+		}
+	}
+
+	$scope.getCardinality = function(baseTableName,FEName){
+		var number = 1;
+		for(key in $scope.tableData){
+			if($scope.tableData[key].Table.Name == baseTableName){
+				var table = $scope.tableData[key];
+				for(key2 in table.Fields){
+					if(table.Fields[key2].Name == FEName){
+						var field = table.Fields[key2];
+						var cardinalityField = field.FE['Cardinality Field Name'];
+						
+						if(!(table.Table.Name in $scope.input)){
+							number = field.FE['Default Cardinality'];
+							$scope.input[table.Table.Name] = {};
+							$scope.input[table.Table.Name][cardinalityField] = parseInt(number);
+							break;
+						}
+						if(!(cardinalityField in $scope.input[table.Table.Name])){
+							number = field.FE['Default Cardinality'];
+							$scope.input[table.Table.Name][cardinalityField] = parseInt(number);
+							break;
+						}else{
+							number = $scope.input[table.Table.Name][cardinalityField];
+							
+							var validNumber = true;
+							validNumber = validNumber && !isNaN(parseInt(number));
+							validNumber = validNumber && !( (parseFloat(number)%1 != 0) || parseFloat(number)<1);
+							
+							$scope.input[table.Table.Name][cardinalityField] = number = validNumber?number:1;
+							
+							break;
+						}
+					}
+				}
+			}
+		}
+		return new Array(parseInt(number));
+	}
+
+	
+	$scope.changeCategory = function(categoryKey){
+		$scope.currCategoryKey = categoryKey;
+		$scope.currCategory = $scope.tableData[categoryKey];
+		$scope.isTests = false;
+	}
+	
+	$scope.changeTest = function(testKey){
+		$scope.isTests =true;
+		$scope.currTestKey = testKey;
+		$scope.currTest = $scope.tests[testKey];
+	}
+	
+	$scope.getLength = function(object){
+		return Object.keys(object).length;
+	}
+	
+	$scope.submit = function(type,studentid){
+		console.log($scope.tests);
+		var url = '';
+		
+		if(type=='add'){
+			url=$rootScope.baseURL+'studentinfo/add/post/add';
+		}else if(type=='manage'){
+			if(studentid == ''){
+				return;
+			}
+			url=$rootScope.baseURL+'studentinfo/manage/post/edit/'+studentid;
+		}else{
+			return;
+		}
+		$rootScope.busy = true;
+		action =function(){
+			success = function(response) {
+				$rootScope.customConfirm('Success',response.msg,function(){
+					$window.location.reload();
+				},
+				function(){
+					$window.location.reload();
+				});
+			}
+			error = function(response){
+				$rootScope.customAlert('Error',response.msg);
+				$rootScope.busy = false;
+			}
+			$rootScope.post(url,$scope.input,success,error);
+		}
+		
+		if(type=='manage'){
+			$rootScope.customConfirm('Warning','Are you sure you want to continue?',action,function(){})
+		}else{
+			action();
+		}
+	}
+	
+	$scope.categoryNav = function(direction){
+		var index = $scope.currCategoryKey;
+		if(direction=='left'){
+			index=index-1<0?0:index-1;
+		}else if(direction=='right'){
+			index=index+1>$scope.getLength($scope.tableData)-1?$scope.getLength($scope.tableData)-1:index+1;
+		}else{
+			return;
+		}
+		$scope.currCategoryKey = index;
+		$scope.currCategory = $scope.tableData[index];
+		console.log($scope.tableData);
+	}
+	
+	$scope.test = function(index){
+		
+		console.log($scope.input);
+	}
+});
+
+app.controller('student_form_edit',function($scope,$rootScope,$window,$http){
+	
+	$scope.tables = {};
+	$scope.currCategoryKey = 0;
+	$scope.currCategory = {};
+	
+	$scope.newTable = {};
+	$scope.newField = {};
+	
+	$scope.placeholder;
+	
+	$scope.fields = {};
+	/*
+	fields = {
+		table key:{
+			order: 1 - fields.length
+			expanded: boolean
+			id: field id
+		}
+	}
+	*/
+	
+	$scope.init = function(){
+		$http.get($rootScope.baseURL+'studentinfo/formedit/get/form/false').then(function(response){
+			$scope.tables = response.data;
+			$scope.currCategory = $scope.tables[$scope.currCategoryKey];
+			console.log($scope.tables);
+			for(key in $scope.tables){
+				$scope.fields[key] = [];
+				for(key2 in $scope.tables[key].Fields){
+					field = {
+						'order' : $scope.tables[key].Fields[key2]['Input Order'],
+						'id' : $scope.tables[key].Fields[key2]['ID'],
+						'expanded':false
+					}
+					$scope.fields[key].push(field);
+				}
+				$scope.fields[key].sort(function(a,b){
+					res = parseInt(a.order,10)-parseInt(b.order,10);
+					return res==0? parseInt(a.id,10)-parseInt(b.id,10):res;
+				});
+				console.log($scope.fields[key]);
+				updateOrder(key);
+			}
+		});
+	}
+	
+	$scope.changeCategory = function(categoryKey){
+		$scope.currCategoryKey = categoryKey;
+		$scope.currCategory = $scope.tables[categoryKey];
+	}
+	
+	$scope.changeField = function(mode,key){
+		
+		switch(mode){
+			case 'delete':
+				id=$scope.tables[$scope.currCategoryKey].Fields[key].ID;
+				url = $rootScope.baseURL+'studentinfo/formedit/action/deletefield/'+id;
+				break;
+			case 'edit':
+				id=$scope.tables[$scope.currCategoryKey].Fields[key].ID;
+				url = $rootScope.baseURL+'studentinfo/formedit/action/editfield/'+id;
+				break;
+			default:
+				return;
+		}
+		data = $scope.tables[$scope.currCategoryKey].Fields[key];
+		success = function(response){
+			$rootScope.customAlert('Success',response.msg);
+			$rootScope.busy = false;
+			$window.location.reload();
+		}
+		failure = function(response){
+			$rootScope.customAlert('Error',response.msg);
+			$rootScope.busy = false;
+		}
+		
+		$rootScope.customConfirm('Warning','Are you sure about this? Changes to other fields will be discarded.',function(){
+			$rootScope.busy = true;
+			$rootScope.post(url,data,success,failure);
+		},function(){});
+	}
+	
+	$scope.addField = function(){
+	
+	}
+	
+	$scope.addTable = function(){
+	}
+	
+	$scope.deleteTable = function(){
+		$rootScope.customConfirm('Warning','Are you sure about this?',function(){
+			$rootScope.busy = true;
+			$http.get($rootScope.baseURL+'studentinfo/formedit/action/deletetable/'+$scope.tables[currCategoryKey].Table.ID)
+			.then(function(){
+				$rootScope.busy = false;
+				$window.location.reload();
+			});
+		},function(){});
+	}
+	
+	$scope.changeOrder = function(currIndex,desIndex){
+		if(currIndex == desIndex)
+			return;
+		currIndex = currIndex-1;
+		desIndex = desIndex-1;
+		var currValue = $scope.fields[$scope.currCategoryKey][currIndex];
+		$scope.fields[$scope.currCategoryKey].splice(currIndex,1);
+		$scope.fields[$scope.currCategoryKey].splice(desIndex,0,currValue); 
+		
+		console.log('Orders: '+currIndex+' '+desIndex);
+		
+		updateOrder();
+	}
+	
+	function updateOrder(tableKey=''){
+		postData={};
+		tableKey = tableKey=='' ? $scope.currCategoryKey:tableKey;
+		for(var i= 0 ; i<$scope.fields[tableKey].length ; i++){
+			for(var j = 0 ; j<$scope.tables[tableKey].Fields.length ; j++){
+				if($scope.tables[tableKey].Fields[j].ID==$scope.fields[tableKey][i].id){
+					$scope.tables[tableKey].Fields[j]['Input Order'] = i+1;
+					$scope.fields[tableKey][i].order = i+1;
+					postData[$scope.fields[tableKey][i].id]=i+1;
+				}
+			}
+		}
+		$rootScope.busy =true;
+		url = $rootScope.baseURL+'studentinfo/formedit/action/updateorder/';
+		success=function(){
+			$rootScope.busy = false;
+		}
+		fail = function(){
+			$rootScope.busy = false;
+		}
+		$rootScope.post(url,postData,success,fail);
+	}
+	
+	$scope.getNumber = function(num) {
+		return new Array(num);   
+	}
+	
+	$scope.toggleSettings = function(key){
+	}
+	
+});
+
+
+app.controller('student_search',function($scope,$rootScope,$window,$http){
+	
+	$scope.params = {};
+	$scope.filters = [];
+	$scope.results = [];
+	
+	$scope.init = function(){
+		//alert('debug');
+		//console.log($rootScope.baseURL+'studentinfo/manage/get/params');
+		
+		$http.get($rootScope.baseURL+'studentinfo/manage/get/params')
+		.then(function(response){
+			$scope.params = response.data;
+			console.log($scope.params);
+		});
+	}
+	
+	$scope.addFilter = function(type){
+		
+		var toAdd = JSON.parse($scope.toAddFilter);
+		console.log(toAdd);
+		var filter = {
+			name:toAdd.name,
+			title:toAdd.title,
+			type:type
+		};
+		$scope.filters.push(filter);
+		//console.log($scope.filters);
+	}
+	
+	$scope.removeFilter = function(index){
+		$scope.filters.splice(index,1);
+		console.log($scope.filters);
+	}
+	
+	$scope.getLength = function(object){
+		return Object.keys(object).length;
+	}
+	
+	$scope.search = function(){
+		if($scope.getLength($scope.filters) == 0){
+			$rootScope.customAlert('Error','At least one filter is required.');
+			return;
+		}
+		$rootScope.busy = true;
+		console.log($rootScope.baseURL+'studentinfo/manage/get/search/'+encodeURIComponent(angular.toJson($scope.filters)));
+		$http.get($rootScope.baseURL+'studentinfo/manage/get/search/'+encodeURIComponent(angular.toJson($scope.filters)))
+		.then(function(response){
+			$scope.results = response.data;
+			console.log($scope.results);
+			$rootScope.busy = false;
+		});
+	}
+
+});

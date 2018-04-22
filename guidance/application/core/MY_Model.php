@@ -263,7 +263,7 @@ class StudentInfoBaseModel extends CI_Model{
 		//$this->db->select(self::FieldNameFieldName.','.self::FieldTitleFieldName.','.self::FieldInputTypeFieldName.','.self::FieldInputRequiredFieldName.','.self::FieldInputRegexFieldName.','.self::FieldInputOrderFieldName.','.self::FieldInputRegexErrMsgFieldName.','.self::FieldInputTipFieldName.','.self::FlagFieldName.','.self::EssentialFieldName);
 		$this->db->where(self::TableRegistryPKName,$tableID);
 		foreach($whereQuery as $index=>$key){
-			$this->db->where($index,$key);
+			$this->db->where($index,$key,false);
 		}
 		$result = $this->db->get(self::FieldRegistryTableName)->result_array();
 		
@@ -296,17 +296,15 @@ class StudentInfoBaseModel extends CI_Model{
 		
 	}
 	
-	public function getTables($whereQuery=array()){
+	public function getTables($whereQuery=array(),$showDeleted=false){
 		
 		//$this->db->select(self::TableTitleFieldName.','.self::TableNameFieldName.','.self::FlagFieldName.','.self::EssentialFieldName);
 		foreach($whereQuery as $index=>$key){
-			$this->db->where($index,$key);
+			$this->db->where($index,$key,false);
 		}
 		$result = $this->db->get(self::TableRegistryTableName)->result_array();
 		return $result;
 	}
-	
-	
 	
 	private function registerField($tableID,$fieldData = array()){
 		
@@ -342,7 +340,12 @@ class StudentInfoBaseModel extends CI_Model{
 		
 	}
 	
-	
+	public function editInputOrder($fieldID,$order){
+		$this->db->where(self::FieldRegistryPKName,$fieldID);
+		$this->db->update(self::FieldRegistryTableName,array(
+			self::FieldInputOrderFieldName=>$order
+		));
+	}
 	
 }
 
@@ -429,9 +432,9 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 			$this->dbforge->add_field(self::FECardinalityFieldIDFieldName.' int unsigned not null');
 			$this->dbforge->add_field(self::FEDefaultCardinalityFieldName.' int unsigned not null');
 			
-			$this->dbforge->add_field('foreign key ('.self::BaseTableIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.')');
-			$this->dbforge->add_field('foreign key ('.self::FEIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.')');
-			$this->dbforge->add_field('foreign key ('.self::FECardinalityFieldIDFieldName.') references '.StudentInfoBaseModel::FieldRegistryTableName.'('.StudentInfoBaseModel::FieldRegistryPKName.')');
+			$this->dbforge->add_field('foreign key ('.self::BaseTableIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.') on update cascade on delete cascade');
+			$this->dbforge->add_field('foreign key ('.self::FEIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.') on update cascade on delete cascade');
+			$this->dbforge->add_field('foreign key ('.self::FECardinalityFieldIDFieldName.') references '.StudentInfoBaseModel::FieldRegistryTableName.'('.StudentInfoBaseModel::FieldRegistryPKName.') on update cascade on delete cascade');
 			
 			$this->dbforge->create_table(self::FERegistryTableName,TRUE);
 			
@@ -448,8 +451,8 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 			$this->dbforge->add_field(self::MCTypeFieldName.' int unsigned not null default 1');
 			
 			$this->dbforge->add_field('primary key ('.self::MCRegistryPKName.')');
-			$this->dbforge->add_field('foreign key ('.self::BaseTableIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.')');
-			$this->dbforge->add_field('foreign key ('.self::MCFieldIDFieldName.') references '.StudentInfoBaseModel::FieldRegistryTableName.'('.StudentInfoBaseModel::FieldRegistryPKName.')');
+			$this->dbforge->add_field('foreign key ('.self::BaseTableIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.') on update cascade on delete cascade');
+			$this->dbforge->add_field('foreign key ('.self::MCFieldIDFieldName.') references '.StudentInfoBaseModel::FieldRegistryTableName.'('.StudentInfoBaseModel::FieldRegistryPKName.') on update cascade on delete cascade');
 			
 			$this->dbforge->create_table(self::MCRegistryTableName,TRUE);
 			
@@ -465,7 +468,7 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 			$this->dbforge->add_field(self::ChoiceCustomFieldName.' boolean not null default 0');
 			$this->dbforge->add_field(self::ChoiceTitleFieldName.' varchar(100) not null default ""');
 			
-			$this->dbforge->add_field('foreign key ('.self::MCRegistryPKName.') references '.self::MCRegistryTableName.'('.self::MCRegistryPKName.')');
+			$this->dbforge->add_field('foreign key ('.self::MCRegistryPKName.') references '.self::MCRegistryTableName.'('.self::MCRegistryPKName.') on update cascade on delete cascade');
 			
 			$this->dbforge->create_table(self::ChoiceRegistryTableName,TRUE);
 		}

@@ -20,6 +20,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script src="<?= base_url().'js/angular-material.min.js' ?>"></script>
 	<script src="<?= base_url().'js/ng-table-to-csv.min.js' ?>"></script>
 	<script src="<?= base_url().'js/app.js' ?>"></script>
+	<script src="<?= base_url().'js/app_studentinfo.js' ?>"></script>
+	<script src="<?= base_url().'js/app_tests.js' ?>"></script>
 	
 	<style>
 		.md-no-margin{

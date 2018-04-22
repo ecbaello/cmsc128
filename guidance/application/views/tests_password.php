@@ -22,6 +22,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     text-align: left;
     background-color: #800000;
     color: white;
+	font-weight:normal;
 }
 </style>
 <div ng-controller="tests_passwords">
@@ -79,23 +80,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<a class="md-button md-fab md-raised md-mini" ng-click="csv.generate()" ng-href="{{csv.link()}}" download="<?=date('Y-M-d-')?>passwords.csv">
 			<i class="fas fa-print"></i>
 		</a>
-		<table id="tables" export-csv="csv">
-			<tr>
-				<th>
-					Student Number
-				</th>
-				<th>
-					Password
-				</th>
-			</tr>
-			<tr ng-repeat="(k,v) in passwords">
-				<td>
-					{{v.username}}
-				</td>
-				<td>
-					{{v.pword}}
-				</td>
-			</tr>
-		</table>
+		<div layout-margin layout-padding>
+			<table id="tables" export-csv="csv">
+				<tr>
+					<th>
+						Student Number
+					</th>
+					<th>
+						Last Name
+					</th>
+					<th>
+						First Name
+					</th>
+					<th>
+						Middle Name
+					</th>
+					<th>
+						Password
+					</th>
+				</tr>
+				<tr ng-repeat="(k,v) in passwords">
+					<td>
+						{{v.username}}
+					</td>
+					<td>
+						{{v.pword}}
+					</td>
+				</tr>
+			</table>
+		</div>
 	</div>
 </div>
