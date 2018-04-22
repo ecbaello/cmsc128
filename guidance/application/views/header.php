@@ -31,6 +31,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			padding:0;
 		}
 		
+		#loadingOverlay {
+			position: fixed; /* Sit on top of the page content */
+			width: 100%; /* Full width (cover the whole page) */
+			height: 100%; /* Full height (cover the whole page) */
+			top: 0; 
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+			z-index: 50; /* Specify a stack order in case you're using a different order for other elements */
+		}
+		
 	</style>
 	
 </head>
@@ -59,5 +71,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			
 		</md-toolbar>
 	</header>
-
+	
+	<div id="loadingOverlay" ng-controller="loading" ng-if="busy" layout="row" layout-align="center center">
+		<md-progress-circular md-mode="indeterminate"></md-progress-circular>
+	</div>
+	
 	<main layout="column" flex="noshrink">

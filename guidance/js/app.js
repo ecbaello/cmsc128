@@ -97,3 +97,6 @@ app.controller('admin',function($scope,$rootScope,$http,$mdDialog,$window){
 		});
 	}
 });
+
+app.controller('loading',function($rootScope){
+});

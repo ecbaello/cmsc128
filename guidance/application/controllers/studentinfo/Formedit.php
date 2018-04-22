@@ -71,6 +71,8 @@ class Formedit extends StudentInfoController {
 		foreach($data as $id=>$o){
 			$this->student_information->editInputOrder($id,$o);
 		}
+		$this->responseJSON(true,'Success');
+		return;
 	}
 	
 }

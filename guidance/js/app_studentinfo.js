@@ -178,8 +178,9 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http){
 					return res==0? parseInt(a.id,10)-parseInt(b.id,10):res;
 				});
 				console.log($scope.fields[key]);
-				updateOrder(key);
+				updateOrder(false,key);
 			}
+			updateOrder(true);
 		});
 	}
 	
@@ -247,11 +248,10 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http){
 		$scope.fields[$scope.currCategoryKey].splice(desIndex,0,currValue); 
 		
 		console.log('Orders: '+currIndex+' '+desIndex);
-		
 		updateOrder();
 	}
 	
-	function updateOrder(tableKey=''){
+	function updateOrder(toPost=true,tableKey=''){
 		postData={};
 		tableKey = tableKey=='' ? $scope.currCategoryKey:tableKey;
 		for(var i= 0 ; i<$scope.fields[tableKey].length ; i++){
@@ -263,15 +263,17 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http){
 				}
 			}
 		}
-		$rootScope.busy =true;
-		url = $rootScope.baseURL+'studentinfo/formedit/action/updateorder/';
-		success=function(){
-			$rootScope.busy = false;
+		if(toPost){
+			$rootScope.busy =true;
+			url = $rootScope.baseURL+'studentinfo/formedit/action/updateorder/';
+			success=function(){
+				$rootScope.busy = false;
+			}
+			fail = function(){
+				$rootScope.busy = false;
+			}
+			$rootScope.post(url,postData,success,fail);
 		}
-		fail = function(){
-			$rootScope.busy = false;
-		}
-		$rootScope.post(url,postData,success,fail);
 	}
 	
 	$scope.getNumber = function(num) {

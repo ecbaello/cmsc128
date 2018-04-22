@@ -38,7 +38,7 @@ $ci =& get_instance();
 		</div>
 		<div layout-fill class="md-no-padding">
 			<form name="student">
-				<div ng-repeat="(key,value) in currCategory.Fields">
+				<div ng-repeat="(key,value) in currCategory.Fields | orderBy:'\u0022Input Order\u0022'">
 				
 					<div ng-if="value['Input Type'] != 'FE'" class="md-no-margin">
 						<?=
@@ -57,7 +57,7 @@ $ci =& get_instance();
 						<div layout="column" layout-padding layout-margin>
 							<div layout = "column" style="border:1px solid lightgray" flex layout-align="start stretch" ng-repeat="(i,x) in getCardinality(currCategory.Table.Name,value.FE.Table.Name) track by $index">
 								<span layout-padding>#{{$index+1}}</span>
-								<div layout="column" ng-repeat="(k,v) in value.FE.Fields" class="md-no-padding">
+								<div layout="column" ng-repeat="(k,v) in value.FE.Fields | orderBy:'\u0022Input Order\u0022'" class="md-no-padding">
 									<?=
 										$this->load->view('student_info_form_input',array(
 											'model'=>'input[currCategory.Table.Name][value.Name][i][v.Name]',

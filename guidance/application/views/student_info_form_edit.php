@@ -1,8 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-$ci =& get_instance();
 ?><!DOCTYPE html>
-
 
 <div ng-controller="student_form_edit" layout="row" layout-align="center start" flex ng-init='init()'>
 	<md-content layout="column" layout-align="start start" flex='20'>
@@ -39,7 +37,7 @@ $ci =& get_instance();
 						</div>
 						<div layout="row" class="md-subhead" layout-align="center center" layout-padding>
 							<span class="md-no-padding">Order: </span>
-							<md-select ng-model="fields[currCategoryKey][key].order" ng-change="changeOrder(value['Input Order'],fields[currCategoryKey][key].order)" class="md-no-margin">
+							<md-select ng-disabled="busy" ng-model="fields[currCategoryKey][key].order" ng-change="changeOrder(value['Input Order'],fields[currCategoryKey][key].order)" class="md-no-margin">
 								<md-option ng-repeat="i in getNumber(tables[currCategoryKey].Fields.length) track by $index" value={{$index+1}}>{{$index+1}}</md-option>
 							</md-select>
 							<md-button class="md-no-margin md-no-padding md-primary md-raised" ng-click="toggleSettings(key)">
