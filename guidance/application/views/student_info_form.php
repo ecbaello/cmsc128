@@ -20,7 +20,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<span layout-padding>{{value.Table.Title}}</span>
 		</md-button>
 		<div layout="row">
-			<a ng-if="'<?=$mode?>'=='manage'" class="md-button md-primary md-raised">Print</a>
+			<a ng-if="'<?=$mode?>'=='manage'" class="md-button md-primary md-raised" href="<?=base_url().'studentinfo/manage/printstudent/'.(isset($student_number)?$student_number:'')?>">Print</a>
 			<md-button ng-disabled="busy" class="md-raised md-primary" ng-click="submit('<?=$mode?>','<?=isset($student_id)? $student_id: ""?>')">Submit</md-button>
 		</div>
 		<div layout-margin ng-if="'<?=$mode?>'!='add'">
@@ -53,7 +53,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 					
 					<md-content ng-if="value['Input Type'] == 'FE'">
-						<span>{{value.FE.Table.Title}}</span>
+						<span>{{value.Title}}</span>
 						<p ng-if="value['Input Tip']!=''" class="md-caption">({{value['Input Tip']}})</p>
 						<div layout="column" layout-padding layout-margin>
 							<div layout = "column" style="border:1px solid lightgray" flex layout-align="start stretch" ng-repeat="(i,x) in getCardinality(key) track by $index">

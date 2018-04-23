@@ -99,13 +99,6 @@ class Student_Information extends AdvancedInputsModel{
 			//Floating Entities
 			
 			//Guardian
-			$this->addField(self::FamilyDataTableName,array(
-				'name'=>'family_guardian_cardinality',
-				'title'=>'',
-				'type'=>'int',
-				'constraints'=>'not null default 1',
-				'input_type'=>'hidden'
-			));
 			$this->addTable(self::FamilyGuardianTableName,'Guardian',Flags::FLOATING);
 
 			$this->addField(self::FamilyGuardianTableName,array(
@@ -141,16 +134,9 @@ class Student_Information extends AdvancedInputsModel{
 			$this->addFEField(self::FamilyDataTableName,self::FamilyGuardianTableName,array(
 				'title'=>'Guardian',
 				'name'=>'guardian'
-			),'family_guardian_cardinality',1);
+			),null,1);
 			
 			//Emergency Contact
-			$this->addField(self::FamilyDataTableName,array(
-				'name'=>'family_emercon_cardinality',
-				'title'=>'',
-				'type'=>'int',
-				'constraints'=>'not null default 1',
-				'input_type'=>'hidden'
-			));
 			$this->addTable(self::FamilyEmergencyContactTableName,'Emergency Contact',Flags::FLOATING);
 			$this->addField(self::FamilyEmergencyContactTableName,array(
 				'name'=>'emergency_contact_id',
@@ -185,17 +171,9 @@ class Student_Information extends AdvancedInputsModel{
 			$this->addFEField(self::FamilyDataTableName,self::FamilyEmergencyContactTableName,array(
 				'title'=>'Emergency Contact',
 				'name'=>'emergency_contact'
-			),'family_emercon_cardinality',1);
+			),null,1);
 			
 			//Parent
-			
-			$this->addField(self::FamilyDataTableName,array(
-				'name'=>'family_parent_cardinality',
-				'title'=>'',
-				'type'=>'int',
-				'constraints'=>'not null default 2',
-				'input_type'=>'hidden'
-			));
 			
 			$this->addTable(self::FamilyParentTableName,'Parents',Flags::FLOATING);
 			
@@ -225,7 +203,7 @@ class Student_Information extends AdvancedInputsModel{
 			$this->addFEField(self::FamilyDataTableName,self::FamilyParentTableName,array(
 				'title'=>'Parents',
 				'name'=>'parents'
-			),'family_parent_cardinality',2);
+			),null,2);
 			
 			//Children
 			

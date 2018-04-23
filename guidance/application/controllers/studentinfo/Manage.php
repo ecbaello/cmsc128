@@ -21,6 +21,18 @@ class Manage extends StudentInfoController {
 		
 	}
 	
+	public function printStudent($studentNumber){
+		
+		$studentNumber = urldecode($studentNumber);
+		
+		$studentInfo = $this->getStudentData($studentNumber);
+		
+		$this->load->view('header');
+		//$this->load->view('student_info_print',array('mode'=>'manage','student_id'=>$this->student_information->getBasePK($studentNumber),'student_number'=>$studentNumber,'student_info'=>json_encode($studentInfo,JSON_HEX_APOS|JSON_NUMERIC_CHECK)));
+		$this->load->view('footer');
+		
+	}
+	
 	private function getStudentData($studentNumber){
 		
 		$tables = $this->student_information->getTables();

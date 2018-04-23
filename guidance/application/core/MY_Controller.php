@@ -348,7 +348,7 @@ class StudentInfoController extends BaseController {
 				}
 			}else{
 				
-				if(isset($inputData[ $field['FE']['Cardinality Field Name'] ])){
+				if($field['FE']['Cardinality Field Name']!='' && isset($inputData[ $field['FE']['Cardinality Field Name'] ])){
 					$cardinality = $inputData[ $field['FE']['Cardinality Field Name'] ];
 				}else{
 					$cardinality = $field['FE']['Default Cardinality'];

@@ -53,7 +53,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<md-switch ng-model="value['Input Required']" ng-true-value="1" ng-false-value="0">
 							Required?
 						</md-switch>
-						<md-input-container class="md-no-margin" ng-if="value['Input Type']!='FE'">
+						<md-input-container class="md-no-margin">
 							<label>Name</label>
 							<input type="text" ng-model="value.Name" disabled></input>
 						</md-input-container>
@@ -74,20 +74,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<input type="text" ng-model="value['Input Regex Error Message']"></input>
 						</md-input-container>
 						<div layout="row" class="md-no-padding">
-							<span layout-margin>Input Type: </span>
-							<md-select ng-model="value['Input Type']" class="md-no-padding md-no-margin" flex>
+							<span layout-margin>Input Type: 
+								<span ng-if="value['Input Type']=='FE'">
+									Floating Entity
+								</span>
+								<span ng-if="value['Input Type']=='MC'">
+									Multiple Choice
+								</span>
+							</span>
+							<md-select ng-if="value['Input Type']!='FE' && value['Input Type']!='MC'" ng-model="value['Input Type']" class="md-no-padding md-no-margin" flex>
 								<md-option value='text'>Text</md-option>
 								<md-option value='number'>Number</md-option>
 								<md-option value='date'>Date</md-option>
-								<md-option value='MC'>Multiple Choice</md-option>
-								<md-option value='FE'>Floating Entity</md-option>
 							</md-select>
 						</div>
 						<fieldset layout="column" ng-if="value['Input Type']=='FE'" layout-padding>
 							<legend>Floating Entity Settings</legend>
 							<div>Referenced Table Name: {{value.FE.Table.Name}}</div>
 							<div>Referenced Table Title: {{value.FE.Table.Title}}</div>
-							<div>Cardinality Field: {{value.FE['Cardinality Field Name']}}</div>
+							<div layout="row">
+								<span>Cardinality Field:</span>
+								<md-select ng-model="value.FE['Cardinality Field Name']" class="md-no-margin" flex>
+									<md-option ng-repeat="field in getCardinalityCandidates()" ng-value="field.Name">
+										{{field.Title}}
+									</md-option>
+								</md-select>
+							</div>
 							<md-input-container>
 								<label>Default Cardinality</label>
 								<input type="number" ng-model="value.FE['Default Cardinality']" ng-pattern="/^[0-9]$/"></input>
@@ -148,7 +160,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<md-switch ng-model="newField['Input Required']" ng-true-value="1" ng-false-value="0">
 							Required?
 						</md-switch>
-						<md-input-container class="md-no-margin" ng-if="newField['Input Type']!='FE'">
+						<md-input-container class="md-no-margin">
 							<label>Name</label>
 							<input type="text" ng-model="newField.Name" disabled></input>
 						</md-input-container>

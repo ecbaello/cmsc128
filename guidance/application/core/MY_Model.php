@@ -368,6 +368,10 @@ class StudentInfoBaseModel extends CI_Model{
 		$this->db->where(self::FieldNameFieldName,$fieldName);
 		$result = $this->db->get(self::FieldRegistryTableName)->result_array();
 		
+		if(count($result)!=1) {
+			return;
+		}
+		
 		return $result[0][self::FieldRegistryPKName];
 	}
 	
@@ -514,7 +518,7 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		return $this->db->insert(self::ChoiceRegistryTableName,$fields);
 	}
 	
-	public function addFEField($tableName,$FEName,$fieldData = array(),$FECardinalityFieldName,$defaultCardinality=1){
+	public function addFEField($tableName,$FEName,$fieldData = array(),$FECardinalityFieldName=null,$defaultCardinality=1){
 		/*
 		$fieldData = array(
 			'title'=>title
@@ -569,7 +573,7 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 			
 			$this->dbforge->add_field(self::FieldRegistryPKName.' int unsigned not null unique');
 			$this->dbforge->add_field(self::FEIDFieldName.' int unsigned not null');
-			$this->dbforge->add_field(self::FECardinalityFieldIDFieldName.' int unsigned not null');
+			$this->dbforge->add_field(self::FECardinalityFieldIDFieldName.' int unsigned');
 			$this->dbforge->add_field(self::FEDefaultCardinalityFieldName.' int unsigned not null');
 			
 			$this->dbforge->add_field('foreign key ('.self::FieldRegistryPKName.') references '.StudentInfoBaseModel::FieldRegistryTableName.'('.StudentInfoBaseModel::FieldRegistryPKName.') on update cascade on delete cascade');
@@ -620,6 +624,9 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		$this->db->select(self::FECardinalityFieldIDFieldName);
 		$this->db->where(self::FieldRegistryPKName,$fieldID);
 		$FEFieldID = $this->db->get(self::FERegistryTableName)->result_array()[0][self::FECardinalityFieldIDFieldName];
+		
+		if($FEFieldID==null)
+			return '';
 		
 		$this->db->select(StudentInfoBaseModel::FieldNameFieldName);
 		$this->db->where(StudentInfoBaseModel::FieldRegistryPKName,$FEFieldID);
