@@ -514,20 +514,37 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		return $this->db->insert(self::ChoiceRegistryTableName,$fields);
 	}
 	
-	public function addFEField($tableName,$FEName,$fieldTitle,$FECardinalityFieldName,$defaultCardinality=1,$input_tip=''){
-		$baseTableID = $this->getTableID($tableName);
+	public function addFEField($tableName,$FEName,$fieldData = array(),$FECardinalityFieldName,$defaultCardinality=1){
+		/*
+		$fieldData = array(
+			'title'=>title
+			'name'=>name
+			'input_tip'=>input tip
+		)
+		*/
+		
+		if(!isset($fieldData['name'])||!isset($fieldData['title'])){
+			return 'Name or title not set';
+		}
+		
 		$FEID = $this->getTableID($FEName);
 		$cardinalityFieldID = $this->getFieldID($tableName,$FECardinalityFieldName);
 		
-		$this->registerFE($baseTableID,$FEID,$cardinalityFieldID,$defaultCardinality);
-
-		$this->addField($tableName,array(
-			'name'=>$FEName,
-			'title'=>$fieldTitle,
+		$res = $this->addField($tableName,array(
+			'name'=>$fieldData['name'],
+			'title'=>$fieldData['title'],
 			'type'=>'int',
 			'input_type'=>'FE',
-			'input_tip'=>$input_tip
+			'input_tip'=>isset($fieldData['input_tip'])?$fieldData['input_tip']:''
 		));
+		
+		if($res !== null)
+			return $res;
+		
+		$fieldID = $this->getFieldID($tableName,$fieldData['name']);
+		
+		$this->registerFE($fieldID,$FEID,$cardinalityFieldID,$defaultCardinality);
+		
 	}
 	
 	public function addMCField($tableName,$choiceType,$fieldName,$fieldTitle,$fieldRequired=false,$fieldTip=''){
@@ -550,12 +567,12 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 	public function createFERegistry(){
 		if(!$this->db->table_exists(self::FERegistryTableName)){
 			
-			$this->dbforge->add_field(self::BaseTableIDFieldName.' int unsigned not null');
+			$this->dbforge->add_field(self::FieldRegistryPKName.' int unsigned not null unique');
 			$this->dbforge->add_field(self::FEIDFieldName.' int unsigned not null');
 			$this->dbforge->add_field(self::FECardinalityFieldIDFieldName.' int unsigned not null');
 			$this->dbforge->add_field(self::FEDefaultCardinalityFieldName.' int unsigned not null');
 			
-			$this->dbforge->add_field('foreign key ('.self::BaseTableIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.') on update cascade on delete cascade');
+			$this->dbforge->add_field('foreign key ('.self::FieldRegistryPKName.') references '.StudentInfoBaseModel::FieldRegistryTableName.'('.StudentInfoBaseModel::FieldRegistryPKName.') on update cascade on delete cascade');
 			$this->dbforge->add_field('foreign key ('.self::FEIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.') on update cascade on delete cascade');
 			$this->dbforge->add_field('foreign key ('.self::FECardinalityFieldIDFieldName.') references '.StudentInfoBaseModel::FieldRegistryTableName.'('.StudentInfoBaseModel::FieldRegistryPKName.') on update cascade on delete cascade');
 			
@@ -597,13 +614,11 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		}
 	}
 	
-	public function getFECardinalityFieldName($baseTableName,$FETableName){
-		$baseTableID = $this->getTableID($baseTableName);
-		$FEID = $this->getTableID($FETableName);
+	public function getFECardinalityFieldName($tableName,$fieldName){
+		$fieldID = $this->getFieldID($tableName,$fieldName);
 		
 		$this->db->select(self::FECardinalityFieldIDFieldName);
-		$this->db->where(self::BaseTableIDFieldName,$baseTableID);
-		$this->db->where(self::FEIDFieldName,$FEID);
+		$this->db->where(self::FieldRegistryPKName,$fieldID);
 		$FEFieldID = $this->db->get(self::FERegistryTableName)->result_array()[0][self::FECardinalityFieldIDFieldName];
 		
 		$this->db->select(StudentInfoBaseModel::FieldNameFieldName);
@@ -613,15 +628,37 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		return $result[0][StudentInfoBaseModel::FieldNameFieldName];
 	}
 	
-	public function getFEDefaultCardinality($baseTableName,$FETableName){
-		$baseTableID = $this->getTableID($baseTableName);
-		$FEID = $this->getTableID($FETableName);
+	public function getFEDefaultCardinality($tableName,$fieldName){
+		$fieldID = $this->getFieldID($tableName,$fieldName);
 		
 		$this->db->select(self::FEDefaultCardinalityFieldName);
-		$this->db->where(self::BaseTableIDFieldName,$baseTableID);
-		$this->db->where(self::FEIDFieldName,$FEID);
+		$this->db->where(self::FieldRegistryPKName,$fieldID);
 		$result = $this->db->get(self::FERegistryTableName)->result_array();
 		return $result[0][self::FEDefaultCardinalityFieldName];
+	}
+	
+	public function getFETableName($tableName,$fieldName){
+		$fieldID = $this->getFieldID($tableName,$fieldName);
+		$this->db->select(self::FEIDFieldName);
+		$this->db->where(self::FieldRegistryPKName,$fieldID);
+		$FEID = $this->db->get(self::FERegistryTableName)->result_array()[0][self::FEIDFieldName];
+		
+		$this->db->select(StudentInfoBaseModel::TableNameFieldName);
+		$this->db->where(StudentInfoBaseModel::TableRegistryPKName,$FEID);
+		$result = $this->db->get(StudentInfoBaseModel::TableRegistryTableName)->result_array();
+		return $result[0][StudentInfoBaseModel::TableNameFieldName];
+	}
+	
+	public function getFETableTitle($tableName,$fieldName){
+		$fieldID = $this->getFieldID($tableName,$fieldName);
+		$this->db->select(self::FEIDFieldName);
+		$this->db->where(self::FieldRegistryPKName,$fieldID);
+		$FEID = $this->db->get(self::FERegistryTableName)->result_array()[0][self::FEIDFieldName];
+		
+		$this->db->select(StudentInfoBaseModel::TableTitleFieldName);
+		$this->db->where(StudentInfoBaseModel::TableRegistryPKName,$FEID);
+		$result = $this->db->get(StudentInfoBaseModel::TableRegistryTableName)->result_array();
+		return $result[0][StudentInfoBaseModel::TableTitleFieldName];
 	}
 	
 	public function getMCChoices($tableName,$fieldName){
@@ -654,10 +691,10 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		
 	}
 	
-	private function registerFE($baseTableID,$FEID,$FECardinalityFieldID,$defaultCardinality){
+	private function registerFE($fieldID,$FEID,$FECardinalityFieldID,$defaultCardinality){
 		
 		$data = array(
-			self::BaseTableIDFieldName => $baseTableID,
+			self::FieldRegistryPKName => $fieldID,
 			self::FEIDFieldName => $FEID,
 			self::FECardinalityFieldIDFieldName => $FECardinalityFieldID,
 			self::FEDefaultCardinalityFieldName => $defaultCardinality

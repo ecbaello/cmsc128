@@ -23,42 +23,31 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		}
 	}
 
-	$scope.getCardinality = function(baseTableName,FEName){
+	$scope.getCardinality = function(fieldIndex){
 		var number = 1;
-		for(key in $scope.tableData){
-			if($scope.tableData[key].Table.Name == baseTableName){
-				var table = $scope.tableData[key];
-				for(key2 in table.Fields){
-					if(table.Fields[key2].Name == FEName){
-						var field = table.Fields[key2];
-						var cardinalityField = field.FE['Cardinality Field Name'];
-						
-						if(!(table.Table.Name in $scope.input)){
-							number = field.FE['Default Cardinality'];
-							$scope.input[table.Table.Name] = {};
-							$scope.input[table.Table.Name][cardinalityField] = parseInt(number);
-							break;
-						}
-						if(!(cardinalityField in $scope.input[table.Table.Name])){
-							number = field.FE['Default Cardinality'];
-							$scope.input[table.Table.Name][cardinalityField] = parseInt(number);
-							break;
-						}else{
-							number = $scope.input[table.Table.Name][cardinalityField];
-							
-							var validNumber = true;
-							validNumber = validNumber && !isNaN(parseInt(number));
-							validNumber = validNumber && !( (parseFloat(number)%1 != 0) || parseFloat(number)<1);
-							
-							$scope.input[table.Table.Name][cardinalityField] = number = validNumber?number:1;
-							
-							break;
-						}
-					}
-				}
+		
+		cardinalityField = $scope.currCategory.Fields[fieldIndex].FE['Cardinality Field Name'];
+		defaultCardinality = $scope.currCategory.Fields[fieldIndex].FE['Default Cardinality'];
+		
+		if(!$scope.input.hasOwnProperty($scope.currCategory.Table.Name)){
+			$scope.input[$scope.currCategory.Table.Name]={
+				cardinalityField:defaultCardinality
+			};
+		}
+		if(!$scope.input[$scope.currCategory.Table.Name].hasOwnProperty(cardinalityField)){
+			$scope.input[$scope.currCategory.Table.Name].cardinalityField = defaultCardinality;
+		}
+		
+		if($scope.input[$scope.currCategory.Table.Name][cardinalityField]==''){
+			$scope.input[$scope.currCategory.Table.Name][cardinalityField] = defaultCardinality;
+		}else{
+			$scope.input[$scope.currCategory.Table.Name][cardinalityField]= parseInt($scope.input[$scope.currCategory.Table.Name][cardinalityField],10);
+			if(isNaN($scope.input[$scope.currCategory.Table.Name][cardinalityField])){
+				$scope.input[$scope.currCategory.Table.Name][cardinalityField] = defaultCardinality;
 			}
 		}
-		return new Array(parseInt(number));
+		number = $scope.input[$scope.currCategory.Table.Name][cardinalityField];
+		return new Array(parseInt(number,10));
 	}
 
 	
@@ -79,7 +68,7 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 	}
 	
 	$scope.submit = function(type,studentid){
-		console.log($scope.tests);
+		console.log($scope.input);
 		var url = '';
 		
 		if(type=='add'){

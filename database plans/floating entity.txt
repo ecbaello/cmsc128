@@ -1,14 +1,15 @@
 --
-Base
+Base Table
 --
-Floating Entity Table Name => \Input Type = 'AET', Field Name = AET Name, Field Title = AET Title
+Field ID(pk)
+Field Name => \Input Type = 'FE'
 Floating Entity Cardinality Field
 Data ...
 
 --
 Floating Entity Tables Registry
 --
-Base Table ID
+Field ID
 Floating Entity Table ID
 Default Cardinality
 Cardinality Field ID

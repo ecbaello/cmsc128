@@ -48,7 +48,8 @@ class Manage extends StudentInfoController {
 			foreach($fieldsTemp as $i=>$field){
 				
 				if($field[StudentInfoBaseModel::FieldInputTypeFieldName]=='FE'){
-					$FEFields = $this->student_information->getStudentData($field[StudentInfoBaseModel::FieldNameFieldName],$studentNumber,true);
+					$FETableName = $this->student_information->getFETableName($table[StudentInfoBaseModel::TableNameFieldName],$field[StudentInfoBaseModel::FieldNameFieldName]);
+					$FEFields = $this->student_information->getStudentData($FETableName,$studentNumber,true);
 					$FEData = array();
 					foreach($FEFields as $index=>$FEField){
 						foreach($FEField as $name=>$value){

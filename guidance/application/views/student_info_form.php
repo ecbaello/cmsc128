@@ -56,7 +56,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<span>{{value.FE.Table.Title}}</span>
 						<p ng-if="value['Input Tip']!=''" class="md-caption">({{value['Input Tip']}})</p>
 						<div layout="column" layout-padding layout-margin>
-							<div layout = "column" style="border:1px solid lightgray" flex layout-align="start stretch" ng-repeat="(i,x) in getCardinality(currCategory.Table.Name,value.FE.Table.Name) track by $index">
+							<div layout = "column" style="border:1px solid lightgray" flex layout-align="start stretch" ng-repeat="(i,x) in getCardinality(key) track by $index">
 								<span layout-padding>#{{$index+1}}</span>
 								<div layout="column" ng-repeat="(k,v) in value.FE.Fields | orderBy:'\u0022Input Order\u0022'" class="md-no-padding">
 									<?=

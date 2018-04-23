@@ -234,12 +234,14 @@ class StudentInfoController extends BaseController {
 			$FEData = array();
 			if($field[StudentInfoBaseModel::FieldInputTypeFieldName]=='FE'){
 				
-				$FEFields = $this->getTableFields($field[StudentInfoBaseModel::FieldNameFieldName]);
+				$FEFields = $this->getTableFields(
+					$this->student_information->getFETableName($tableName,$field[StudentInfoBaseModel::FieldNameFieldName])
+				);
 				
 				$FEData = array(
 					'Table'=>array(
-						'Title'=>$field[StudentInfoBaseModel::FieldTitleFieldName],
-						'Name'=>$field[StudentInfoBaseModel::FieldNameFieldName]
+						'Title'=>$this->student_information->getFETableTitle($tableName,$field[StudentInfoBaseModel::FieldNameFieldName]),
+						'Name'=>$this->student_information->getFETableName($tableName,$field[StudentInfoBaseModel::FieldNameFieldName])
 					),
 					'Cardinality Field Name' => $this->student_information->getFECardinalityFieldName($tableName,$field[StudentInfoBaseModel::FieldNameFieldName]),
 					'Default Cardinality'=>$this->student_information->getFEDefaultCardinality($tableName,$field[StudentInfoBaseModel::FieldNameFieldName]),
@@ -353,11 +355,11 @@ class StudentInfoController extends BaseController {
 				}
 				
 				for($i = 0 ; $i<$cardinality ; $i++){
-					if(!isset( $inputData[ $field['FE']['Table']['Name'] ][$i])){
-						$this->responseJSON(false,'Incomplete Data. Please fill-in at least one field in '.$field['FE']['Table']['Title'].' #'.($i+1));
+					if(!isset( $inputData[ $field['Name'] ][$i])){
+						$this->responseJSON(false,'Incomplete Data. Please fill-in at least one field in '.$field['Title'].' #'.($i+1));
 						return;
 					}
-					$toInsertArray = $this->prepareAndValidateInput($toInsertArray,$field['FE'],$inputData[ $field['FE']['Table']['Name'] ][$i]);
+					$toInsertArray = $this->prepareAndValidateInput($toInsertArray,$field['FE'],$inputData[ $field['Name'] ][$i]);
 				}	
 			}
 		}
