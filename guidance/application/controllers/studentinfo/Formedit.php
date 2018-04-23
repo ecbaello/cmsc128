@@ -20,15 +20,17 @@ class Formedit extends StudentInfoController {
 			return;
 		};
 		
+		if($data==null){
+			$this->responseJSON(false,'Empty input.');
+			return;
+		}
+		
 		switch($mode){
 			case 'addfield':
-				if($data==null){
-					$this->responseJSON(false,'Empty input.');
-					return;
-				}
+				$this->addField($data);
 				break;
 			case 'editfield':
-				if($data==null||$arg===null){
+				if($arg===null){
 					$this->responseJSON(false,'Empty input.');
 					return;
 				}
@@ -38,24 +40,19 @@ class Formedit extends StudentInfoController {
 					$this->responseJSON(false,'Incomplete arguments.');
 					return;
 				}
+				$this->deleteField($arg);
 				break;
 			case 'addtable':
-				if($data==null){
-					$this->responseJSON(false,'Empty input.');
-					return;
-				}
+				$this->addTable($data);
 				break;
 			case 'deletetable':
 				if($arg===null){
 					$this->responseJSON(false,'Incomplete arguments.');
 					return;
 				}
+				$this->deleteTable($arg);
 				break;
 			case 'updateorder':
-				if($data ==null){
-					$this->responseJSON(false,'Empty input.');
-					return;
-				}
 				$this->updateOrder($data);
 			default:
 				return;
@@ -75,4 +72,56 @@ class Formedit extends StudentInfoController {
 		return;
 	}
 	
+	
+	private function addField($data){
+		/*
+			$data = array(
+			)
+		*/
+		
+		$fieldData = array();
+		
+	}
+	
+	private function deleteField($fieldID){
+		$res = $this->student_information->deletedField($fieldID);
+		if($res !== null){
+			$this->responeJSON(false,$res);
+			return;
+		}
+		$this->responseJSON(true,'Field deleted.');
+		return;
+	}
+	
+	private function editField($fieldID,$fieldData){
+	}
+	
+	private function addTable($data){
+		/*
+			$data = array(
+				Title=>title,
+				Name=>name,
+				Floating=>floating
+			)
+		*/
+		$res = $this->student_information->addTable($data['Name'],$data['Title'],$data['Floating']?Flags::FLOATING:Flags::DEF);
+		if($res !=null){
+			$this->responseJSON(false,$res);
+			return;
+		}else{
+			$this->responseJSON(true,'Successfully added table.');
+			return;
+		}
+	}
+	
+	private function deleteTable($tableID){
+		
+		$res = $this->student_information->deleteTable($tableID);
+		if($res !== null){
+			$this->responseJSON(false,$res);
+			return;
+		}
+		$this->responseJSON(true,'Table deleted.');
+		return;
+	}
 }

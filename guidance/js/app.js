@@ -32,6 +32,7 @@ app.run(function($rootScope,$http,$httpParamSerializer,$mdDialog){
 		
 		error = function(response){
 			$rootScope.customAlert('Error','Something went wrong');
+			$rootScope.busy = false;
 		}
 		
 		$http({

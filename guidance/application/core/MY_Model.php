@@ -235,6 +235,50 @@ class StudentInfoBaseModel extends CI_Model{
 		
 	}
 	
+	public function deleteField($fieldID,$permanent=false){
+		
+		$this->db->select(self::EssentialFieldName);
+		$this->db->where(self::FieldRegistryPKName,$fieldID);
+		$res = $this->db->get(self::FieldRegistryTableName)->result_array();
+		
+		if(count($res)<1){
+			return 'No such field found.';
+		}
+		
+		if($res[0][self::EssentialFieldName]){
+			return 'Field is essential.';
+		}
+		
+		if(!$permanent){
+			$this->db->where(self::FieldRegistryPKName,$fieldID);
+			$this->db->set(self::FlagFieldName,self::FlagFieldName.'|'.Flags::DELETED,false);
+			$this->db->update(self::FieldRegistryTableName);
+		}
+		return null;
+	}
+	
+	public function deleteTable($tableID,$permanent=false){
+		
+		$this->db->select(self::EssentialFieldName);
+		$this->db->where(self::TableRegistryPKName,$tableID);
+		$res = $this->db->get(self::TableRegistryTableName)->result_array();
+		
+		if(count($res)<1){
+			return 'No such table found.';
+		}
+		
+		if($res[0][self::EssentialFieldName]){
+			return 'Table is essential.';
+		}
+		
+		if(!$permanent){
+			$this->db->where(self::TableRegistryPKName,$tableID);
+			$this->db->set(self::FlagFieldName,self::FlagFieldName.'|'.Flags::DELETED,false);
+			$this->db->update(self::TableRegistryTableName);
+		}
+		return null;
+	}
+	
 	protected function getFieldID ($tableName,$fieldName){
 		$tableID = $this->getTableID($tableName);
 		

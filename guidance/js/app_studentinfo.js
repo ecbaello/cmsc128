@@ -263,21 +263,47 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 		$mdDialog.hide();
 	}
 	
-	addField = function(){
+	$scope.addField = function(){
 		
 	}
 	
-	addTable = function(){
+	$scope.addTable = function(){
+		$rootScope.busy = true;
+		$rootScope.post(
+			$rootScope.baseURL+'studentinfo/formedit/action/addtable',
+			$scope.newTable,
+			function(response){
+				$rootScope.customAlert('Success',response.msg);
+				$rootScope.busy = false;
+				$scope.init();
+			},
+			function(response){
+				$rootScope.customAlert('Error',response.msg);
+				$rootScope.busy = false;
+			}
+		);
 	}
 	
 	$scope.deleteTable = function(){
 		$rootScope.customConfirm('Warning','Are you sure about this?',function(){
 			$rootScope.busy = true;
-			$http.get($rootScope.baseURL+'studentinfo/formedit/action/deletetable/'+$scope.tables[currCategoryKey].Table.ID)
-			.then(function(){
-				$rootScope.busy = false;
-				$window.location.reload();
-			});
+			$rootScope.post(
+				$rootScope.baseURL+'studentinfo/formedit/action/deletetable/'+$scope.tables[$scope.currCategoryKey].Table.ID,
+				{placeholder:'test'},
+				function(response){
+					$rootScope.busy=false;
+					$rootScope.customConfirm('Success',response.msg,function(){
+						$window.location.reload();
+					},function(){
+						$window.location.reload();
+					});
+				},
+				function(response){
+					$rootScope.busy=false;
+					$rootScope.customAlert('Error',response.msg);
+				}
+			);
+			
 		},function(){});
 	}
 	

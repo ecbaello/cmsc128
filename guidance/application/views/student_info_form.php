@@ -20,8 +20,10 @@ $ci =& get_instance();
 		<md-button layout-fill style="text-align:left" ng-repeat="(key,value) in tableData"  ng-click="changeCategory(key)" ng-class="{'md-primary md-raised':key == currCategoryKey&&!isTests}">
 			<span layout-padding>{{value.Table.Title}}</span>
 		</md-button>
-		<md-button ng-disabled="busy" class="md-raised md-primary" ng-click="submit('<?=$mode?>','<?=isset($student_id)? $student_id: ""?>')">Submit</md-button>
-		<!--<md-button class="md-raised md-primary" ng-click="test()">Check Input</md-button>-->
+		<div layout="row">
+			<a ng-if="'<?=$mode?>'=='manage'" class="md-button md-primary md-raised">Print</a>
+			<md-button ng-disabled="busy" class="md-raised md-primary" ng-click="submit('<?=$mode?>','<?=isset($student_id)? $student_id: ""?>')">Submit</md-button>
+		</div>
 		<div layout-margin ng-if="'<?=$mode?>'!='add'">
 			<h2>Test Results: </h2>
 		</div>

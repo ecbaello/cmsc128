@@ -171,7 +171,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<md-option value='number'>Number</md-option>
 								<md-option value='date'>Date</md-option>
 								<md-option value='MC'>Multiple Choice</md-option>
-								<md-option value='FE'>Floating Entity</md-option>
+								<md-option ng-if="currCategory.Table.Flag!=<?=Flags::FLOATING?>" value='FE'>Floating Entity</md-option>
 							</md-select>
 						</div>
 						<fieldset layout="column" ng-if="newField['Input Type']=='FE'" layout-padding>
