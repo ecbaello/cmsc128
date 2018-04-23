@@ -38,6 +38,7 @@ class Formedit extends StudentInfoController {
 					$this->responseJSON(false,'Empty input.');
 					return;
 				}
+				$this->editField($arg,$data);
 				break;
 			case 'deletefield':
 				if($arg===null){
@@ -141,6 +142,25 @@ class Formedit extends StudentInfoController {
 	}
 	
 	private function editField($fieldID,$fieldData){
+		if(!isset($fieldID)){
+			$this->responseJSON(false,'Missing field id.');
+			return;		
+		}
+		$baseData = array(
+			'title'=>$fieldData['Title'],
+			'input_required'=>$fieldData['Input Required'],
+			'input_tip'=>$fieldData['Input Tip'],
+			'input_regex'=>$fieldData['Input Regex'],
+			'input_regex_error_msg'=>$fieldData['Input Regex Error Message']
+		);
+		
+		$res = $this->student_information->editField($fieldID,$baseData);
+		if($res != null){
+			$this->responseJSON(false,$res);
+			return;
+		}
+		$this->responseJSON(true,'Edited field successfully.');
+		return;
 	}
 	
 	private function addTable($data){

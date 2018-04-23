@@ -301,41 +301,33 @@ class StudentInfoBaseModel extends CI_Model{
 	}
 	
 	public function editField($fieldID,$fieldData){
-		if(!isset($fieldData['input_type'])){
-			log_message('error','Edit Field: Input Type not defined');
-			return 'Type not defined.';
+		
+		$this->db->where(self::FieldRegistryPKName,$fieldID);
+		$res = $this->db->get(self::FieldRegistryTableName)->result_array();
+		if(count($res)!=1){
+			return 'No such field.';
 		}
-		//Default values
-		if(!isset($fieldData['input_type'])){
-			$fieldData['input_type'] = 'hidden';
+		
+		$data = array();
+		
+		if(!$res[0][self::EssentialFieldName]&&isset($fieldData['input_required'])){
+			$data[self::FieldInputRequiredFieldName]=$fieldData['input_required'];
 		}
-		if(!isset($fieldData['input_required'])){
-			$fieldData['input_required'] = false;
+		if(isset($fieldData['input_regex'])){
+			$data[self::FieldInputRegexFieldName]=$fieldData['input_regex'];
 		}
-		if(!isset($fieldData['input_regex'])){
-			$fieldData['input_regex'] = NULL;
+		if(isset($fieldData['input_tip'])){
+			$data[self::FieldInputTipFieldName]=$fieldData['input_tip'];
 		}
-		if(!isset($fieldData['constraints'])){
-			$fieldData['constraints'] = '';
+		if(isset($fieldData['input_regex_error_msg'])){
+			$data[self::FieldInputRegexErrMsgFieldName]=$fieldData['input_regex_error_msg'];
 		}
-		if(!isset($fieldData['input_order'])){
-			$fieldData['input_order'] = '';
+		if(isset($fieldData['title'])){
+			$data[self::FieldTitleFieldName]=$fieldData['title'];
 		}
-		if(!isset($fieldData['input_tip'])){
-			$fieldData['input_tip'] = '';
-		}
-		if(!isset($fieldData['input_regex_error_msg'])){
-			$fieldData['input_regex_error_msg'] = '';
-		}
-		if(!isset($fieldData['title'])){
-			$fieldData['title']='';
-		}
-		if(!isset($fieldData['flag'])){
-			$fieldData['flag']=Flags::DEF;
-		}
-		if(!isset($fieldData['essential'])){
-			$fieldData['essential']=false;
-		}
+		
+		$this->db->where(self::FieldRegistryPKName,$fieldID);
+		$this->db->update(self::FieldRegistryTableName,$data);
 		
 	}
 	

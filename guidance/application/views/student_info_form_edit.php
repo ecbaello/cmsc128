@@ -49,8 +49,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 				</md-toolbar>
 				<md-card-content ng-if="fields[currCategoryKey][key].expanded">
-					<form name="student" layout="column" layout-padding>
-						<md-switch ng-model="value['Input Required']" ng-true-value="1" ng-false-value="0">
+					<form layout="column" layout-padding>
+						<md-switch ng-if="!value.Essential" ng-model="value['Input Required']" ng-true-value="1" ng-false-value="0">
 							Required?
 						</md-switch>
 						<md-input-container class="md-no-margin">
@@ -81,20 +81,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<span ng-if="value['Input Type']=='MC'">
 									Multiple Choice
 								</span>
+								<span ng-if="value['Input Type']=='text'">
+									Text
+								</span>
+								<span ng-if="value['Input Type']=='date'">
+									Date
+								</span>
+								<span ng-if="value['Input Type']=='number'">
+									Number
+								</span>
 							</span>
-							<md-select ng-if="value['Input Type']!='FE' && value['Input Type']!='MC'" ng-model="value['Input Type']" class="md-no-padding md-no-margin" flex>
-								<md-option value='text'>Text</md-option>
-								<md-option value='number'>Number</md-option>
-								<md-option value='date'>Date</md-option>
-							</md-select>
 						</div>
 						<fieldset layout="column" ng-if="value['Input Type']=='FE'" layout-padding>
 							<legend>Floating Entity Settings</legend>
-							<div>Referenced Table Name: {{value.FE.Table.Name}}</div>
-							<div>Referenced Table Title: {{value.FE.Table.Title}}</div>
-							<div layout="row">
+							<div layout="row" layout-align="center center" layout-padding>
+								<span>Referenced Table: </span>
+								<md-select ng-model="value.FE.Table.Name" class="md-no-margin" ng-required="true" flex>
+									<md-option ng-repeat="table in tables" ng-if="table.Table.Flag=='<?=Flags::FLOATING?>'" ng-value="table.Table.Name">
+										{{table.Table.Title}}
+									</md-option>
+								</md-select>
+							</div>
+							<div layout="row" layout-align="center center" layout-padding>
 								<span>Cardinality Field:</span>
 								<md-select ng-model="value.FE['Cardinality Field Name']" class="md-no-margin" flex>
+									<md-option value=''>None</md-option>
 									<md-option ng-repeat="field in getCardinalityCandidates()" ng-value="field.Name">
 										{{field.Title}}
 									</md-option>
@@ -180,6 +191,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<label>Input Regex Error Message</label>
 							<input type="text" ng-model="newField['Input Regex Error Message']"></input>
 						</md-input-container>
+						<div layout="row" layout-align="center">
+							<p>WARNING. Input type CANNOT be changed upon addition of field.</p>
+						</div>
 						<div layout="row" class="md-no-padding">
 							<span layout-margin>Input Type: </span>
 							<md-select ng-model="newField['Input Type']" class="md-no-padding md-no-margin" flex>
@@ -192,9 +206,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						<fieldset layout="column" ng-if="newField['Input Type']=='FE'" layout-padding>
 							<legend>Floating Entity Settings</legend>
-							<div>Referenced Table Name: {{newField.FE.Table.Name}}</div>
-							<div>Referenced Table Title: {{newField.FE.Table.Title}}</div>
-							<div>Cardinality Field: {{newField.FE['Cardinality Field Name']}}</div>
+							<div layout="row" layout-align="center center" layout-padding>
+								<span>Referenced Table: </span>
+								<md-select ng-model="newField.FE.Table.Name" class="md-no-margin" ng-required="true" flex>
+									<md-option ng-repeat="(tabIndex,table) in tables" ng-if="table.Table.Flag=='<?=Flags::FLOATING?>'" ng-value="table.Table.Name">
+										{{table.Table.Title}}
+									</md-option>
+								</md-select>
+							</div>
+							<div layout="row" layout-align="center center" layout-padding>
+								<span>Cardinality Field:</span>
+								<md-select ng-model="newField.FE['Cardinality Field Name']" class="md-no-margin" flex>
+									<md-option value=''>None</md-option>
+									<md-option ng-repeat="field in getCardinalityCandidates()" ng-value="field.Name">
+										{{field.Title}}
+									</md-option>
+								</md-select>
+							</div>
 							<md-input-container>
 								<label>Default Cardinality</label>
 								<input type="number" ng-model="newField.FE['Default Cardinality']" ng-pattern="/^[0-9]+$/"></input>

@@ -154,7 +154,7 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 				'Name':''
 			},
 			'Cardinality Field Name':'',
-			'Default Cardinality':''
+			'Default Cardinality':1
 		},
 		'MC':{
 			'Type':1,
@@ -236,7 +236,7 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 			$rootScope.busy = false;
 		}
 		
-		$rootScope.customConfirm('Warning','Are you sure about this? Changes to other fields will be discarded.',function(){
+		$rootScope.customConfirm('Warning','Are you sure about this?',function(){
 			$rootScope.busy = true;
 			$rootScope.post(url,data,success,failure);
 		},function(){});
