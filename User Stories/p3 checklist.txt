@@ -9,7 +9,7 @@ edit input orders - done 4/22/18
 delete table & fields - done 4/23/18
 
 add field
-	- text, number, date
+	- text, number, date - done/4/23/18
 	- fe
 	- mc
 edit field

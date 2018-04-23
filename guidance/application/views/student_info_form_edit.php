@@ -15,7 +15,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	<div layout="column" layout-align="start start" flex layout-padding layout-fill>
 		<h2 class="md-no-margin">
-			{{currCategory.Table.Title}} 
+			{{currCategory.Table.Title}} <span ng-if="currCategory.Table.Flag=='<?=Flags::FLOATING?>'">(Floating)</span>
 			<md-button class="md-fab md-mini md-raised" ng-click="showEditTableTitle()">
 				<i class="fas fa-edit"></i>
 			</md-button>
@@ -66,7 +66,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<input type="text" ng-model="value['Input Tip']"></input>
 						</md-input-container>
 						<md-input-container class="md-no-margin" ng-if="value['Input Type']!='FE'&&value['Input Type']!='MC'&&value['Input Type']!='date'">
-							<label>Input Regex</label>
+							<label>Input Regex (Leave this blank if you don't know what it is.)</label>
 							<input type="text" ng-model="value['Input Regex']"></input>
 						</md-input-container>
 						<md-input-container class="md-no-margin" ng-if="value['Input Type']!='FE'&&value['Input Type']!='MC'&&value['Input Type']!='date'">
@@ -161,7 +161,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<input type="text" ng-model="newField['Input Tip']"></input>
 						</md-input-container>
 						<md-input-container class="md-no-margin" ng-if="newField['Input Type']!='FE'&&newField['Input Type']!='MC'&&newField['Input Type']!='date'">
-							<label>Input Regex</label>
+							<label>Input Regex (Leave this blank if you don't know what it is.)</label>
 							<input type="text" ng-model="newField['Input Regex']"></input>
 						</md-input-container>
 						<md-input-container class="md-no-margin" ng-if="newField['Input Type']!='FE'&&newField['Input Type']!='MC'&&newField['Input Type']!='date'">
@@ -250,8 +250,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<span>{{newTable.Name}}</span>
 							</div>
 							<md-switch ng-model="newTable['Floating']" ng-true-value="1" ng-false-value="0">
-								Floating?
+								Floating? 
 							</md-switch>
+						</div>
+						<div>
+							<p>Warning. You can't change the 'floating' attribute once the table is created.</p>
 						</div>
 						<div layout="row" layout-align="end center">
 							<md-button class="md-no-margin" ng-click="closeDialog()" >Cancel</md-button>

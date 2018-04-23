@@ -177,7 +177,7 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 	/*
 	fields = {
 		table key:{
-			order: 1 - fields.length
+			order: 
 			expanded: boolean
 			id: field id
 		}
@@ -274,8 +274,9 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 	
 	$scope.addField = function(){
 		$rootScope.busy = true;
+		$scope.newField['Input Order'] = $scope.fields[$scope.currCategoryKey].length+1
 		$rootScope.post(
-			$rootScope.baseURL+'studentinfo/formedit/action/addfield/'+$scope.currCategoryKey,
+			$rootScope.baseURL+'studentinfo/formedit/action/addfield/'+$scope.currCategory.Table.Name,
 			$scope.newField,
 			function(response){
 				$rootScope.customAlert('Success',response.msg);
@@ -373,7 +374,7 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 			return;
 		}
 		input = (input.replace(re, '')).toLowerCase();
-		$scope.newField.Name = input.replace(' ','_');
+		$scope.newField.Name = input.replace(/ /g,'_');
 	}
 	
 	$scope.updateTableName = function(){

@@ -31,7 +31,7 @@ class Formedit extends StudentInfoController {
 					$this->responseJSON(false,'Incomplete arguments.');
 					return;
 				}
-				$this->addField($data);
+				$this->addField($arg,$data);
 				break;
 			case 'editfield':
 				if($arg===null){
@@ -84,11 +84,13 @@ class Formedit extends StudentInfoController {
 	}
 	
 	
-	private function addField($data){
-		/*
-			$data = array(
-			)
-		*/
+	private function addField($tableName,$data){
+		
+		$res = $this->student_information->getTableID($tableName);
+		if($res == null){
+			$this->responseJSON(false,'Table not found.');
+			return;
+		}
 		
 		if(!isset($data['Title'])||!isset($data['Input Type'])||!isset($data['Name'])){
 			$this->responseJSON(false,'Title, Name, and Input Type must be defined');
@@ -102,8 +104,20 @@ class Formedit extends StudentInfoController {
 			case 'number':
 			case 'date':
 				$field['title'] = $data['Title'];
-				
-				$this->student_information->addField();
+				$field['input_type'] = $data['Input Type'];
+				$field['name'] = $data['Name'];
+				$field['input_tip']=isset($data['Input Tip'])?$data['Input Tip']:null;
+				$field['input_required']=isset($data['Input Required'])?$data['Input Required']:null;
+				$field['input_regex']=isset($data['Input Regex'])?$data['Input Regex']:null;
+				$field['input_order']=isset($data['Input Order'])?$data['Input Order']:null;
+				$field['input_regex_error_msg']=isset($data['Input Regex Error Message'])?$data['Input Regex Error Message']:null;
+				$res = $this->student_information->addField($tableName,$field);
+				if($res !== null){
+					$this->responseJSON(false,$res);
+					return;
+				}
+				$this->responseJSON(true,'Successfully added field');
+				return;
 				break;
 			case 'FE':
 				break;
@@ -113,8 +127,6 @@ class Formedit extends StudentInfoController {
 				$this->responseJSON(false,'Invalid Input Type');
 				return;
 		}
-		
-		$fieldData = array();
 		
 	}
 	
@@ -132,13 +144,6 @@ class Formedit extends StudentInfoController {
 	}
 	
 	private function addTable($data){
-		/*
-			$data = array(
-				Title=>title,
-				Name=>name,
-				Floating=>floating
-			)
-		*/
 		$res = $this->student_information->addTable($data['Name'],$data['Title'],$data['Floating']?Flags::FLOATING:Flags::DEF);
 		if($res !=null){
 			$this->responseJSON(false,$res);
