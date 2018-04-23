@@ -13,13 +13,12 @@ add field
 	- fe
 	- mc
 edit field
-	- text, number, date
+	- text, number, date - done 4/23/18
 	- fe
 	- mc
 
 print student data
 test formula + test result
-
 
 --
 Developer
