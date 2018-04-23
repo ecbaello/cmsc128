@@ -14,7 +14,7 @@ class Main extends StudentInfoController {
 			if($this->ion_auth->is_admin()){
 				$this->load->view('student_info_nav');
 			}else{
-				$this->permissionError();
+				$this->load->view('permission_error');
 				return;
 			}
 		}else{

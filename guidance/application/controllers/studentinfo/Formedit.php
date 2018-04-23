@@ -84,9 +84,9 @@ class Formedit extends StudentInfoController {
 	}
 	
 	private function deleteField($fieldID){
-		$res = $this->student_information->deletedField($fieldID);
+		$res = $this->student_information->deleteField($fieldID);
 		if($res !== null){
-			$this->responeJSON(false,$res);
+			$this->responseJSON(false,$res);
 			return;
 		}
 		$this->responseJSON(true,'Field deleted.');

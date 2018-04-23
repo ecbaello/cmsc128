@@ -232,9 +232,12 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 		}
 		data = $scope.tables[$scope.currCategoryKey].Fields[key];
 		success = function(response){
-			$rootScope.customAlert('Success',response.msg);
 			$rootScope.busy = false;
-			$window.location.reload();
+			$rootScope.customConfirm('Success',response.msg,function(){
+				$scope.init();
+			},function(){
+				$scope.init();
+			});
 		}
 		failure = function(response){
 			$rootScope.customAlert('Error',response.msg);
