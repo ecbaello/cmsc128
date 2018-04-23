@@ -27,6 +27,10 @@ class Formedit extends StudentInfoController {
 		
 		switch($mode){
 			case 'addfield':
+				if($arg==null){
+					$this->responseJSON(false,'Incomplete arguments.');
+					return;
+				}
 				$this->addField($data);
 				break;
 			case 'editfield':
@@ -44,6 +48,13 @@ class Formedit extends StudentInfoController {
 				break;
 			case 'addtable':
 				$this->addTable($data);
+				break;
+			case 'edittabletitle':
+				if($arg===null){
+					$this->responseJSON(false,'Incomplete arguments.');
+					return;
+				}
+				$this->editTableTitle($arg,$data);
 				break;
 			case 'deletetable':
 				if($arg===null){
@@ -78,6 +89,30 @@ class Formedit extends StudentInfoController {
 			$data = array(
 			)
 		*/
+		
+		if(!isset($data['Title'])||!isset($data['Input Type'])||!isset($data['Name'])){
+			$this->responseJSON(false,'Title, Name, and Input Type must be defined');
+			return;
+		}
+		
+		$field= array();
+		
+		switch($data['Input Type']){
+			case 'text':
+			case 'number':
+			case 'date':
+				$field['title'] = $data['Title'];
+				
+				$this->student_information->addField();
+				break;
+			case 'FE':
+				break;
+			case 'MC':
+				break;
+			default:
+				$this->responseJSON(false,'Invalid Input Type');
+				return;
+		}
 		
 		$fieldData = array();
 		
@@ -122,6 +157,21 @@ class Formedit extends StudentInfoController {
 			return;
 		}
 		$this->responseJSON(true,'Table deleted.');
+		return;
+	}
+	
+	private function editTableTitle($tableID,$data){
+		if(!isset($data['title'])){
+			$this->responseJSON(false,'Incomplete data.');
+			return;
+		}
+		
+		$res = $this->student_information->editTableTitle($tableID,$data['title']);
+		if($res!==null){
+			$this->responseJSON(false,$res);
+			return;
+		}
+		$this->responseJSON(true,'Table title edited.');
 		return;
 	}
 }

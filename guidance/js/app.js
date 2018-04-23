@@ -94,10 +94,24 @@ app.controller('admin',function($scope,$rootScope,$http,$mdDialog,$window){
 	$scope.account={};
 	$scope.init = function(){
 		$http.get($rootScope.baseURL+'admin/getaccount').then(function(response){
-		
+			$scope.account = response.data;
 		});
 	}
-});
-
-app.controller('loading',function($rootScope){
+	
+	$scope.changePassword = function(){
+		$rootScope.post(
+			$rootScope.baseURL+'admin/action/changepass/',
+			$scope.account,
+			function(response){
+				$rootScope.customConfirm('Success',response.msg,function(){
+					$window.location.reload();
+				},function(){
+					$window.location.reload();
+				});
+			},function(response){
+				$rootScope.customAlert('Error',response.msg);
+			}
+		);
+	}
+	
 });

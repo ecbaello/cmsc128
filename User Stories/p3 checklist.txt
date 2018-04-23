@@ -3,28 +3,50 @@ Client
 --
 admin privileges - done 4/20/2018
 student password generator - done 4/20/18
+edit table title - done 4/23/18
+add table - done 4/23/18
+edit input orders - done 4/22/18
+
+add field
+	- text, number, date
+	- fe
+	- mc
+edit field
+	- text, number, date
+	- fe
+	- mc
+
 print student data
+test formula + test result
+
 
 --
 Developer
 --
 4/18/18:
-operation overlays (loading screen) - done 4/18/18 (instead of overlay, buttons were just disabled)
+operation overlays (loading screen) - done 4/23/18
 student results filters
 	- like operator -done 4/8/18
 specific student information db meta - done 4/14/18
 date formatting -done 4/14/18
 restructure multiple choice (store data as json) -done 4/18/18
 
---
-Delayed
---
-add table + add field (student information) - in-progress
+change admin account details
+	- change password
+	- change email
+	- change username
+	
 student results filters
 	- limit results number
-test formula + test result
-print student data
+	
 archives
 	- table archives
-	- record archives
+	- student record archives
 	- test archives
+	
+permanently delete
+	-tables & fields
+	-student records
+	-test results
+	-tests
+

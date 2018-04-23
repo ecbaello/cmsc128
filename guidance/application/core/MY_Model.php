@@ -61,9 +61,30 @@ class StudentInfoBaseModel extends CI_Model{
 		//fieldData: name*,type*,title,constraints,input_type,input_required,input_regex,input_order,input_tip,input_regex_error_msg,flag,essential
 		
 		//Error Checking
-		if(!isset($fieldData['name']) || !isset($fieldData['type'])){
-			log_message('error','Add Field: Name or type not defined');
-			return 'Name or type not defined.';
+		if(!isset($fieldData['name'])){
+			log_message('error','Add Field: Name not defined');
+			return 'Name not defined.';
+		}
+		
+		if(!isset($fieldData['type'])){
+			
+			if(isset($fieldData['input_type'])){
+				switch($fieldData['input_type']){
+					case 'text':
+						$fieldData['type'] = 'varchar(300)';
+						break;
+					case 'number':
+						$fieldData['type'] = 'int';
+						break;
+					case 'date':
+						$fieldData['type'] = 'date';
+						break;
+					default:
+						return 'Invalid input type.';
+				}
+			}else{
+				return 'Type not defined.';
+			}
 		}
 		
 		//Default values
@@ -276,6 +297,66 @@ class StudentInfoBaseModel extends CI_Model{
 			$this->db->set(self::FlagFieldName,self::FlagFieldName.'|'.Flags::DELETED,false);
 			$this->db->update(self::TableRegistryTableName);
 		}
+		return null;
+	}
+	
+	public function editField($fieldID,$fieldData){
+		if(!isset($fieldData['input_type'])){
+			log_message('error','Edit Field: Input Type not defined');
+			return 'Type not defined.';
+		}
+		//Default values
+		if(!isset($fieldData['input_type'])){
+			$fieldData['input_type'] = 'hidden';
+		}
+		if(!isset($fieldData['input_required'])){
+			$fieldData['input_required'] = false;
+		}
+		if(!isset($fieldData['input_regex'])){
+			$fieldData['input_regex'] = NULL;
+		}
+		if(!isset($fieldData['constraints'])){
+			$fieldData['constraints'] = '';
+		}
+		if(!isset($fieldData['input_order'])){
+			$fieldData['input_order'] = '';
+		}
+		if(!isset($fieldData['input_tip'])){
+			$fieldData['input_tip'] = '';
+		}
+		if(!isset($fieldData['input_regex_error_msg'])){
+			$fieldData['input_regex_error_msg'] = '';
+		}
+		if(!isset($fieldData['title'])){
+			$fieldData['title']='';
+		}
+		if(!isset($fieldData['flag'])){
+			$fieldData['flag']=Flags::DEF;
+		}
+		if(!isset($fieldData['essential'])){
+			$fieldData['essential']=false;
+		}
+		
+	}
+	
+	public function editTableTitle($tableID,$newTableTitle){
+		//Check for uniqueness
+		$this->db->where(self::TableTitleFieldName,$newTableTitle);
+		$res = $this->db->get(self::TableRegistryTableName)->result_array();
+		if(count($res)>0){
+			return 'Table with that title already exists.';
+		}
+		//Check for existence
+		$this->db->where(self::TableRegistryPKName,$tableID);
+		$res = $this->db->get(self::TableRegistryTableName)->result_array();
+		if(count($res)<1){
+			return 'No such table.';
+		}
+		
+		$this->db->where(self::TableRegistryPKName,$tableID);
+		$this->db->update(self::TableRegistryTableName,array(
+			self::TableTitleFieldName=>$newTableTitle
+		));
 		return null;
 	}
 	

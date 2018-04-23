@@ -14,18 +14,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</md-content>
 	
 	<div layout="column" layout-align="start start" flex layout-padding layout-fill>
-		<div>
-			<h2 class="md-headline">
-				<span>Table Title: {{currCategory.Table.Title}}<span>
-			</h2>
+		<h2 class="md-no-margin">
+			{{currCategory.Table.Title}} 
+			<md-button class="md-fab md-mini md-raised" ng-click="showEditTableTitle()">
+				<i class="fas fa-edit"></i>
+			</md-button>
+		</h2>
+		<div layout="column">
 			<span>Table Name: {{currCategory.Table.Name}}</span>
-			<br/>
-			<md-button class="md-primary md-raised" ng-disabled="busy" ng-click="deleteTable(key)">
-				<span>Delete Table</span>
-			</md-button>
-			<md-button class="md-primary md-raised" ng-disabled="busy" ng-click="showAddField()">
-				<span>Add Field</span>
-			</md-button>
+			<div>
+				<md-button class="md-primary md-raised" ng-disabled="busy" ng-click="deleteTable(key)">
+					<span>Delete Table</span>
+				</md-button>
+				<md-button class="md-primary md-raised" ng-disabled="busy" ng-click="showAddField()">
+					<span>Add Field</span>
+				</md-button>
+			</div>
 		</div>
 		<div layout-fill class="md-no-padding">
 			<md-card layout="column" ng-repeat="(key,value) in currCategory.Fields | orderBy:'\u0022Input Order\u0022'" ng-if="value['Input Type']!='hidden'">
@@ -252,6 +256,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div layout="row" layout-align="end center">
 							<md-button class="md-no-margin" ng-click="closeDialog()" >Cancel</md-button>
 							<md-button class="md-no-margin" ng-click="addTable()" type="submit" ng-disabled="!newTable.Title">Submit</md-button>
+						</div>
+					</form>
+				</md-dialog-content>
+			</md-dialog>
+		</div>
+	</div>
+	
+	<div style="visibility: hidden">
+		<div class="md-dialog-container" id="editTableTitle">
+			<md-dialog flex="30">
+				<md-toolbar style="background-color:#014421;color:white" layout-padding>
+					<h4 class="md-no-margin">Edit Table Title</h4>
+				</md-toolbar>
+				<md-dialog-content>
+					<form layout="column" layout-padding>
+						<div layout="column" layout-margin>
+							<md-input-container class="md-no-margin">
+								<label>Title</label>
+								<input ng-model="currCategory.Table.Title" type="text" required></input>
+							</md-input-container>
+						</div>
+						<div layout="row" layout-align="end center" class="md-no-padding">
+							<md-button class="md-no-margin" ng-click="closeDialog()" >Cancel</md-button>
+							<md-button class="md-no-margin" ng-click="editTableTitle()" type="submit">Submit</md-button>
 						</div>
 					</form>
 				</md-dialog-content>

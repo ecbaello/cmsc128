@@ -72,7 +72,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</md-toolbar>
 	</header>
 	
-	<div id="loadingOverlay" ng-controller="loading" ng-if="busy" layout="row" layout-align="center center">
+	<div id="loadingOverlay" ng-controller="initializer" ng-if="busy" layout="row" layout-align="center center">
 		<md-progress-circular md-mode="indeterminate"></md-progress-circular>
 	</div>
 	

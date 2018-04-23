@@ -262,12 +262,31 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 			clickOutsideToClose: true
 		});
 	}
+	$scope.showEditTableTitle=function(){
+		$mdDialog.show({
+			contentElement: '#editTableTitle',
+			clickOutsideToClose: true
+		});
+	}
 	$scope.closeDialog = function(){
 		$mdDialog.hide();
 	}
 	
 	$scope.addField = function(){
-		
+		$rootScope.busy = true;
+		$rootScope.post(
+			$rootScope.baseURL+'studentinfo/formedit/action/addfield/'+$scope.currCategoryKey,
+			$scope.newField,
+			function(response){
+				$rootScope.customAlert('Success',response.msg);
+				$rootScope.busy = false;
+				$scope.init();
+			},
+			function(response){
+				$rootScope.customAlert('Error',response.msg);
+				$rootScope.busy = false;
+			}
+		);
 	}
 	
 	$scope.addTable = function(){
@@ -299,6 +318,29 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 						$window.location.reload();
 					},function(){
 						$window.location.reload();
+					});
+				},
+				function(response){
+					$rootScope.busy=false;
+					$rootScope.customAlert('Error',response.msg);
+				}
+			);
+			
+		},function(){});
+	}
+	
+	$scope.editTableTitle = function(){
+		$rootScope.customConfirm('Warning','Are you sure about this?',function(){
+			$rootScope.busy = true;
+			$rootScope.post(
+				$rootScope.baseURL+'studentinfo/formedit/action/edittabletitle/'+$scope.tables[$scope.currCategoryKey].Table.ID,
+				{'title':$scope.currCategory.Table.Title},
+				function(response){
+					$rootScope.busy=false;
+					$rootScope.customConfirm('Success',response.msg,function(){
+						$scope.init();
+					},function(){
+						$scope.init();
 					});
 				},
 				function(response){
