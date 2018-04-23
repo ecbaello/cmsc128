@@ -175,7 +175,9 @@ class StudentInfoController extends BaseController {
 	}
 	
 	private function getForm($returnOnly = false,$hideFE = true){
-		$tables = $this->student_information->getTables();
+		$tables = $this->student_information->getTables(array(
+			StudentInfoBaseModel::FlagFieldName.'!=' => StudentInfoBaseModel::FlagFieldName.'|'.Flags::DELETED
+		));
 		$data = array();
 		foreach($tables as $table){
 			
@@ -188,7 +190,8 @@ class StudentInfoController extends BaseController {
 					'ID'=>$table[StudentInfoBaseModel::TableRegistryPKName],
 					'Title'=>$table[StudentInfoBaseModel::TableTitleFieldName],
 					'Name'=>$table[StudentInfoBaseModel::TableNameFieldName],
-					'Essential'=>$table[StudentInfoBaseModel::EssentialFieldName]
+					'Essential'=>$table[StudentInfoBaseModel::EssentialFieldName],
+					'Flag'=>$table[StudentInfoBaseModel::FlagFieldName]
 				),
 				'Fields'=>$fields
 			));
@@ -219,7 +222,9 @@ class StudentInfoController extends BaseController {
 	
 	private function getTableFields($tableName){
 		
-		$fieldsTemp = $this->student_information->getFields($tableName);
+		$fieldsTemp = $this->student_information->getFields($tableName,array(
+			StudentInfoBaseModel::FlagFieldName.'!=' => StudentInfoBaseModel::FlagFieldName.'|'.Flags::DELETED
+		));
 		$fields = array();
 			
 		foreach($fieldsTemp as $field){

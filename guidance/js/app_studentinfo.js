@@ -136,14 +136,40 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 	}
 });
 
-app.controller('student_form_edit',function($scope,$rootScope,$window,$http){
+app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdDialog){
 	
 	$scope.tables = {};
 	$scope.currCategoryKey = 0;
 	$scope.currCategory = {};
 	
-	$scope.newTable = {};
-	$scope.newField = {};
+	$scope.newTable = {
+		'Title':'',
+		'Name':'',
+		'Floating':false,
+	};
+	$scope.newField = {
+		'Title':'',
+		'Name':'',
+		'Input Type':'text',
+		'Input Required':false,
+		'Input Regex':'',
+		'Input Regex Error Message':'',
+		'Input Order':0,
+		'Input Tip':'',
+		'FE':{
+			'Table':{
+				'Title':'',
+				'Name':''
+			},
+			'Cardinality Field Name':'',
+			'Default Cardinality':''
+		},
+		'MC':{
+			'Type':1,
+			'Choices':[],
+			'Custom':[]
+		}
+	};
 	
 	$scope.placeholder;
 	
@@ -163,6 +189,7 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http){
 			$scope.tables = response.data;
 			$scope.currCategory = $scope.tables[$scope.currCategoryKey];
 			console.log($scope.tables);
+			
 			for(key in $scope.tables){
 				$scope.fields[key] = [];
 				for(key2 in $scope.tables[key].Fields){
@@ -220,11 +247,27 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http){
 		},function(){});
 	}
 	
-	$scope.addField = function(){
-	
+	$scope.showAddField = function(){
+		$mdDialog.show({
+			contentElement: '#addField',
+			clickOutsideToClose: true
+		});
+	}
+	$scope.showAddTable = function(){
+		$mdDialog.show({
+			contentElement: '#addTable',
+			clickOutsideToClose: true
+		});
+	}
+	$scope.closeDialog = function(){
+		$mdDialog.hide();
 	}
 	
-	$scope.addTable = function(){
+	addField = function(){
+		
+	}
+	
+	addTable = function(){
 	}
 	
 	$scope.deleteTable = function(){
@@ -249,6 +292,28 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http){
 		
 		console.log('Orders: '+currIndex+' '+desIndex);
 		updateOrder();
+	}
+	
+	$scope.updateFieldName = function(){
+		var re = /[^a-zA-Z0-9/_ -]+/g;
+		var input = $scope.newField.Title;
+		if(input == '') {
+			$scope.newField.Name = '';
+			return;
+		}
+		input = (input.replace(re, '')).toLowerCase();
+		$scope.newField.Name = input.replace(' ','_');
+	}
+	
+	$scope.updateTableName = function(){
+		var re = /[^a-zA-Z0-9/_ -]+/g;
+		var input = $scope.newTable.Title;
+		if(input == '') {
+			$scope.newTable.Name ='';
+			return;
+		}
+		input = (input.replace(re, '')).toLowerCase();
+		$scope.newTable.Name = input.replace(/ /g,'_');
 	}
 	
 	function updateOrder(toPost=true,tableKey=''){
@@ -281,6 +346,7 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http){
 	}
 	
 	$scope.toggleSettings = function(key){
+		$scope.fields[$scope.currCategoryKey][key].expanded = !$scope.fields[$scope.currCategoryKey][key].expanded;
 	}
 	
 });

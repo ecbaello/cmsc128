@@ -296,9 +296,7 @@ class StudentInfoBaseModel extends CI_Model{
 		
 	}
 	
-	public function getTables($whereQuery=array(),$showDeleted=false){
-		
-		//$this->db->select(self::TableTitleFieldName.','.self::TableNameFieldName.','.self::FlagFieldName.','.self::EssentialFieldName);
+	public function getTables($whereQuery=array()){	
 		foreach($whereQuery as $index=>$key){
 			$this->db->where($index,$key,false);
 		}
@@ -391,7 +389,7 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		return $this->db->insert(self::ChoiceRegistryTableName,$fields);
 	}
 	
-	public function addFEField($tableName,$FEName,$FECardinalityFieldName,$defaultCardinality=1,$input_tip=''){
+	public function addFEField($tableName,$FEName,$fieldTitle,$FECardinalityFieldName,$defaultCardinality=1,$input_tip=''){
 		$baseTableID = $this->getTableID($tableName);
 		$FEID = $this->getTableID($FEName);
 		$cardinalityFieldID = $this->getFieldID($tableName,$FECardinalityFieldName);
@@ -400,7 +398,7 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 
 		$this->addField($tableName,array(
 			'name'=>$FEName,
-			'title'=>$this->getTableTitle($FEName),
+			'title'=>$fieldTitle,
 			'type'=>'int',
 			'input_type'=>'FE',
 			'input_tip'=>$input_tip

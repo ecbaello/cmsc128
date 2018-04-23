@@ -138,7 +138,7 @@ class Student_Information extends AdvancedInputsModel{
 				'input_required'=>TRUE
 			));
 			
-			$this->addFEField(self::FamilyDataTableName,self::FamilyGuardianTableName,'family_guardian_cardinality',1);
+			$this->addFEField(self::FamilyDataTableName,self::FamilyGuardianTableName,'Guardian','family_guardian_cardinality',1);
 			
 			//Emergency Contact
 			$this->addField(self::FamilyDataTableName,array(
@@ -179,7 +179,7 @@ class Student_Information extends AdvancedInputsModel{
 				'input_required'=>TRUE
 			));
 			
-			$this->addFEField(self::FamilyDataTableName,self::FamilyEmergencyContactTableName,'family_emercon_cardinality',1);
+			$this->addFEField(self::FamilyDataTableName,self::FamilyEmergencyContactTableName,'Emergency Contact','family_emercon_cardinality',1);
 			
 			//Parent
 			
@@ -216,7 +216,7 @@ class Student_Information extends AdvancedInputsModel{
 				'input_required'=>TRUE
 			));
 			
-			$this->addFEField(self::FamilyDataTableName,self::FamilyParentTableName,'family_parent_cardinality',2);
+			$this->addFEField(self::FamilyDataTableName,self::FamilyParentTableName,'Parents','family_parent_cardinality',2);
 			
 			//Children
 			
@@ -252,7 +252,7 @@ class Student_Information extends AdvancedInputsModel{
 				'input_type'=>'number'
 			));
 			
-			$this->addFEField(self::FamilyDataTableName,self::FamilyChildrenTableName,'family_children_cardinality',1,'Enter student details first.');
+			$this->addFEField(self::FamilyDataTableName,self::FamilyChildrenTableName,'Children In Family','family_children_cardinality',1,'Enter student details first.');
 			
 		}
 		
