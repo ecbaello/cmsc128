@@ -6,6 +6,7 @@ student password generator - done 4/20/18
 edit table title - done 4/23/18
 add table - done 4/23/18
 edit input orders - done 4/22/18
+delete table & fields - done 4/23/18
 
 add field
 	- text, number, date
