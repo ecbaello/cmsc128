@@ -498,8 +498,8 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		$FEID = $this->getTableID($FEName);
 		$cardinalityFieldID = $this->getFieldID($tableName,$FECardinalityFieldName);
 		
-		if($FEID==null||$cardinalityFieldID==null){
-			return 'Table or Cardinality field does not exist.';
+		if($FEID==null){
+			return 'Table does not exist.';
 		}
 		
 		$res = $this->addField($tableName,array(
