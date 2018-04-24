@@ -397,8 +397,26 @@ class Test_Maker extends CI_Model{
 		}else{
 			$this->db->where('username',$arg);
 		}
-		//print($this->db->get_compiled_select(Ion_Auth_Init::UsersTableName));die();
-		return $this->db->get(Ion_Auth_Init::UsersTableName)->result_array();
+		$res = $this->db->get(Ion_Auth_Init::UsersTableName)->result_array();
+		
+		$passwords = array();
+		foreach($res as $r){
+			$this->db->select(StudentInfoBaseModel::LastNameFieldName.','.StudentInfoBaseModel::FirstNameFieldName.','.StudentInfoBaseModel::MiddleNameFieldName);
+			$this->db->where(StudentInfoBaseModel::StudentNumberFieldName,$r['username']);
+			$result=$this->db->get(StudentInfoBaseModel::BaseTableTableName)->result_array();
+			if(count($result)==0){
+				$this->db->where('username',$r['username']);
+				$this->db->delete(Ion_Auth_Init::UsersTableName);
+			}
+			array_push($passwords,array(
+				'username'=>$r['username'],
+				'lastname'=>$result[0][StudentInfoBaseModel::LastNameFieldName],
+				'firstname'=>$result[0][StudentInfoBaseModel::FirstNameFieldName],
+				'middlename'=>$result[0][StudentInfoBaseModel::MiddleNameFieldName],
+				'pword'=>$r['pword']
+			));
+		}
+		return $passwords;
 	}
 	
 	public function generatePasswords($mode,$arg){
@@ -427,6 +445,8 @@ class Test_Maker extends CI_Model{
 				'pword'=>$password
 			));
 		}
+		
+		return $this->getPasswords($mode,$arg);
 	}
 }
 

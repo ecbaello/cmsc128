@@ -117,45 +117,42 @@ app.controller('tests_passwords',function($scope,$rootScope,$window,$mdDialog,$h
 	$scope.disp={};
 	$scope.gen={};
 	$scope.passwords={};
-	$scope.search = function(){
-		if($scope.disp.option == '' || $scope.disp.value == '')
-			$rootScope.customAlert('Error','Please fill-up the required fields');
-		$rootScope.busy =true;
-		$http.get($rootScope.baseURL+'tests/passwords/getPasswords/'+$scope.disp.option+'/'+$scope.disp.value)
-		.then(function(response){
-			if(response.data.hasOwnProperty('success')){
-				if(!response.data.success){
-					$rootScope.customAlert('Error',response.data.msg);
-					$rootScope.busy = false;
-					return;
-				}
-			}
-			$rootScope.busy = false;
-			$scope.passwords = response.data;
-		});
-	}
-	$scope.submit = function(){
-		if($scope.gen.option == '' || $scope.gen.value == '')
-			$rootScope.customAlert('Error','Please fill-up the required fields');
-		$rootScope.customConfirm('Warning','Generating passwords will overwrite previous passwords. Do you want to continue?',function(){
+
+	$scope.submit = function(type){
+		post = function(){
 			$rootScope.busy = true;
-			$http.get($rootScope.baseURL+'tests/passwords/generatePasswords/'+$scope.gen.option+'/'+$scope.gen.value)
-			.then(function(response){
-				if(response.data.hasOwnProperty('success')){
-					if(!response.data.success){
-						$rootScope.customAlert('Error',response.data.msg);
-						$rootScope.busy = false;
-						return;
-					}
-				}else{
-					$rootScope.customAlert('Success','Passwords generated successfully.');
+			console.log($rootScope.baseURL+'tests/passwords/action/'+type);
+			$rootScope.post(
+				$rootScope.baseURL+'tests/passwords/action/'+type
+				,{
+					'mode':type==0 ? $scope.disp.option : $scope.gen.option,
+					'value':type==0 ? $scope.disp.value : $scope.gen.value
+				}
+				,function(response){
+					$rootScope.busy = false;
+					if(type==1)
+						$rootScope.customAlert('Success','Passwords generated successfully');
+					$scope.passwords = response.data;
+				}
+				,function(response){
+					$rootScope.customAlert('Error',response.msg);
 					$rootScope.busy = false;
 				}
-			});
-		},
-		function(){
-			$rootScope.busy = false;
-		});
+			)
+		}
+		
+		if(type==0){
+			if($scope.disp.option == '' || $scope.disp.value == '')
+				$rootScope.customAlert('Error','Please fill-up the required fields');
+			post();
+		}else if(type==1){
+			if($scope.gen.option == '' || $scope.gen.value == '')
+				$rootScope.customAlert('Error','Please fill-up the required fields');
+			$rootScope.customConfirm('Warning','Generating passwords will overwrite previous passwords. Do you want to continue?',post,function(){});
+		}else{
+			return;
+		}
+		
 	}
 });
 
