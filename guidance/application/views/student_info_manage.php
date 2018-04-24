@@ -29,13 +29,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div ng-controller="student_search" ng-init="init()" >
 	<form layout="column" layout-align="start">
 		<h2 layout-padding layout-margin>Search Student</h2>
-		<div ng-repeat="(key,value) in filters" layout="row" layout-align="start center" class="md-no-padding">
+		<div ng-repeat="(key,value) in filters" layout="row" layout-align="center" class="md-no-padding">
 			<span layout-padding>
 				<md-button ng-click="removeFilter(key)" class="md-raised md-primary md-fab md-mini md-no-margin md-no-padding"><i class="fas fa-times"></i></md-button>
 			</span>
-			<span ng-if="!$first">{{value.type}}</span>
-			<div layout="column" layout-padding flex>
-				<md-input-container class="md-no-margin md-no-padding">
+			<div ng-if="!$first" layout="column" layout-align="center">
+				<span layout-padding>{{value.type}}</span>
+			</div>
+			<div layout="column" flex layout-padding>
+				<md-input-container class="md-no-margin md-no-padding" layout="row" layout-align="center">
 					<label>{{value.title}}</label>
 					<input ng-model="value.value" type="text"/>
 				</md-input-container>

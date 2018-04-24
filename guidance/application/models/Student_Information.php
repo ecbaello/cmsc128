@@ -16,7 +16,64 @@ class Student_Information extends AdvancedInputsModel{
 	
 	public function __construct(){
 		parent::__construct();
+		$this->createBaseTable();
 		$this->initDefaults();
+	}
+	
+	private function createBaseTable(){
+		if(!$this->db->table_exists(StudentInfoBaseModel::BaseTableTableName)){
+			$this->dbforge->add_field(StudentInfoBaseModel::BaseTablePKName.' int unsigned not null auto_increment unique');
+			$this->dbforge->add_field(StudentInfoBaseModel::FlagFieldName.' int unsigned not null default '.Flags::DEF);
+			$this->dbforge->add_field('primary key ('.StudentInfoBaseModel::BaseTablePKName.')');
+			$this->dbforge->create_table(StudentInfoBaseModel::BaseTableTableName,true);
+			$this->registerTable(StudentInfoBaseModel::BaseTableTableName,'Background Information',Flags::DEF,TRUE);
+			
+			$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+				'name'=>StudentInfoBaseModel::StudentNumberFieldName,
+				'title'=>'Student Number',
+				'type'=>'varchar(11)',
+				'constraints'=>'not null unique',
+				'input_type'=>'text',
+				'input_required'=>TRUE,
+				'input_regex'=>'^\d{4}-\d{5}$',
+				'input_regex_error_msg'=>'Must follow the format xxxx-xxxxx',
+				'input_tip'=>'Must be unique',
+				'essential'=>TRUE
+			));
+			
+			$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+				'name'=>StudentInfoBaseModel::LastNameFieldName,
+				'title'=>'Last Name',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>TRUE,
+				'essential'=>TRUE
+			));
+			
+			$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+				'name'=>StudentInfoBaseModel::FirstNameFieldName,
+				'title'=>'First Name',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'input_required'=>TRUE,
+				'essential'=>TRUE
+			));
+			
+			$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+				'name'=>StudentInfoBaseModel::MiddleNameFieldName,
+				'title'=>'Middle Name',
+				'type'=>'varchar(30)',
+				'constraints'=>'not null',
+				'input_type'=>'text',
+				'essential'=>TRUE
+			));
+			
+			$this->addMCField(StudentInfoBaseModel::BaseTableTableName,MCTypes::SINGLE,StudentInfoBaseModel::SexFieldName,'Sex',true);
+			$this->addChoice(StudentInfoBaseModel::BaseTableTableName,StudentInfoBaseModel::SexFieldName,'Male');
+			$this->addChoice(StudentInfoBaseModel::BaseTableTableName,StudentInfoBaseModel::SexFieldName,'Female');
+		}
 	}
 	
 	public function initDefaults(){
@@ -37,15 +94,6 @@ class Student_Information extends AdvancedInputsModel{
 			'constraints'=>'not null',
 			'input_type'=>'text',
 			'input_required'=>FALSE
-		));
-		
-		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
-			'name'=>'sex',
-			'title'=>'Sex',
-			'type'=>'varchar(15)',
-			'constraints'=>'not null',
-			'input_type'=>'text',
-			'input_required'=>TRUE,
 		));
 		
 		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(

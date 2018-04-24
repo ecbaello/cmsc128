@@ -31,6 +31,10 @@ class StudentInfoBaseModel extends CI_Model{
 	const BaseTablePKName = "student_id";
 	
 	const StudentNumberFieldName = "student_number";
+	const LastNameFieldName = "last_name";
+	const FirstNameFieldName = "first_name";
+	const MiddleNameFieldName = "middle_name";
+	const SexFieldName = "sex";
 	
 	const TableTitleFieldName = "table_title";
 	const TableNameFieldName = "table_name";
@@ -53,7 +57,6 @@ class StudentInfoBaseModel extends CI_Model{
 		$this->load->dbforge();
 		
 		$this->createRegistry();
-		$this->createBaseTable();
 	}
 	
 	public function addField($tableName,$fieldData = array()){
@@ -120,6 +123,9 @@ class StudentInfoBaseModel extends CI_Model{
 		}
 		
 		$tableID = $this->getTableID($tableName);
+		if($tableID==null){
+			return 'Table does not exist.';
+		}
 		
 		//Check first if column exists
 		$this->db->where(self::FieldNameFieldName,$fieldData['name']);
@@ -144,7 +150,6 @@ class StudentInfoBaseModel extends CI_Model{
 		
 		//Check first if table exists
 		if($this->db->table_exists($tableName)){
-			log_message('error','Add Table: Table already exists.');
 			return 'Table already exists.';
 		}
 		
@@ -168,58 +173,6 @@ class StudentInfoBaseModel extends CI_Model{
 		$this->registerTable($tableName,$tableTitle,$flag,$essential);
 		return null;
 		
-	}
-	
-	private function createBaseTable(){
-		if(!$this->db->table_exists(self::BaseTableTableName)){
-			$this->dbforge->add_field(self::BaseTablePKName.' int unsigned not null auto_increment unique');
-			$this->dbforge->add_field(self::FlagFieldName.' int unsigned not null default '.Flags::DEF);
-			$this->dbforge->add_field('primary key ('.self::BaseTablePKName.')');
-			$this->dbforge->create_table(self::BaseTableTableName,true);
-			$this->registerTable(self::BaseTableTableName,'Background Information',Flags::DEF,TRUE);
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>self::StudentNumberFieldName,
-				'title'=>'Student Number',
-				'type'=>'varchar(11)',
-				'constraints'=>'not null unique',
-				'input_type'=>'text',
-				'input_required'=>TRUE,
-				'input_regex'=>'^\d{4}-\d{5}$',
-				'input_regex_error_msg'=>'Must follow the format xxxx-xxxxx',
-				'input_tip'=>'Must be unique',
-				'essential'=>TRUE
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'last_name',
-				'title'=>'Last Name',
-				'type'=>'varchar(30)',
-				'constraints'=>'not null',
-				'input_type'=>'text',
-				'input_required'=>TRUE,
-				'essential'=>TRUE
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'first_name',
-				'title'=>'First Name',
-				'type'=>'varchar(30)',
-				'constraints'=>'not null',
-				'input_type'=>'text',
-				'input_required'=>TRUE,
-				'essential'=>TRUE
-			));
-			
-			$this->addField(self::BaseTableTableName,array(
-				'name'=>'middle_name',
-				'title'=>'Middle Name',
-				'type'=>'varchar(30)',
-				'constraints'=>'not null',
-				'input_type'=>'text',
-				'essential'=>TRUE
-			));
-		}
 	}
 	
 	private function createRegistry(){
@@ -305,7 +258,7 @@ class StudentInfoBaseModel extends CI_Model{
 		$this->db->where(self::FieldRegistryPKName,$fieldID);
 		$res = $this->db->get(self::FieldRegistryTableName)->result_array();
 		if(count($res)!=1){
-			return 'No such field.';
+			return 'No such field found.';
 		}
 		
 		$data = array();
@@ -328,7 +281,7 @@ class StudentInfoBaseModel extends CI_Model{
 		
 		$this->db->where(self::FieldRegistryPKName,$fieldID);
 		$this->db->update(self::FieldRegistryTableName,$data);
-		
+		return null;
 	}
 	
 	public function editTableTitle($tableID,$newTableTitle){
@@ -342,7 +295,7 @@ class StudentInfoBaseModel extends CI_Model{
 		$this->db->where(self::TableRegistryPKName,$tableID);
 		$res = $this->db->get(self::TableRegistryTableName)->result_array();
 		if(count($res)<1){
-			return 'No such table.';
+			return 'No such table found.';
 		}
 		
 		$this->db->where(self::TableRegistryPKName,$tableID);
@@ -381,7 +334,6 @@ class StudentInfoBaseModel extends CI_Model{
 	public function getFields($tableName,$whereQuery=array()){
 		$tableID = $this->getTableID($tableName);
 		
-		//$this->db->select(self::FieldNameFieldName.','.self::FieldTitleFieldName.','.self::FieldInputTypeFieldName.','.self::FieldInputRequiredFieldName.','.self::FieldInputRegexFieldName.','.self::FieldInputOrderFieldName.','.self::FieldInputRegexErrMsgFieldName.','.self::FieldInputTipFieldName.','.self::FlagFieldName.','.self::EssentialFieldName);
 		$this->db->where(self::TableRegistryPKName,$tableID);
 		foreach($whereQuery as $index=>$key){
 			$this->db->where($index,$key,false);
@@ -396,6 +348,9 @@ class StudentInfoBaseModel extends CI_Model{
 		$this->db->where(self::TableNameFieldName,$tableName);
 		$result = $this->db->get(self::TableRegistryTableName)->result_array();
 		
+		if(count($result)!=1)
+			return;
+		
 		return $result[0][self::TableTitleFieldName];
 	}
 	
@@ -409,7 +364,6 @@ class StudentInfoBaseModel extends CI_Model{
 		$result = $this->db->get()->result_array();
 		
 		if(count($result)!=1) {
-			log_message('error','Get Table ID: Multiple/No table(s) found.');
 			return;
 		}
 		
@@ -425,7 +379,7 @@ class StudentInfoBaseModel extends CI_Model{
 		return $result;
 	}
 	
-	private function registerField($tableID,$fieldData = array()){
+	protected function registerField($tableID,$fieldData = array()){
 		
 		// fieldData : title, name, input_type, input_required, ...
 		
@@ -501,13 +455,24 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 	
 	public function addChoice($tableName, $fieldName, $choiceValue, $isCustom = false, $customTitle = ''){
 		$MCID = $this->getMCID($tableName,$fieldName);
+		
+		//Check for existence first
+		if($MCID==null)
+			return 'Multiple choice field does not exist.';
+		$this->db->where(self::MCRegistryPKName,$MCID);
+		$this->db->where(self::ChoiceValueFieldName,$choiceValue);
+		$res = $this->db->get(self::ChoiceRegistryTableName)->result_array();
+		if(count($res)!=0)
+			return 'Choice already exists.';
+		
 		$fields =array(
 			self::MCRegistryPKName => $MCID,
 			self::ChoiceValueFieldName => $choiceValue,
 			self::ChoiceCustomFieldName => $isCustom,
 			self::ChoiceTitleFieldName => $customTitle
 		);
-		return $this->db->insert(self::ChoiceRegistryTableName,$fields);
+		$this->db->insert(self::ChoiceRegistryTableName,$fields);
+		return;
 	}
 	
 	public function addFEField($tableName,$FEName,$fieldData = array(),$FECardinalityFieldName=null,$defaultCardinality=1){
@@ -519,12 +484,23 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		)
 		*/
 		
+		//Check for existence
+		$fieldID = $this->getFieldID($tableName,$fieldData['name']);
+		$this->db->where(self::FEIDFieldName,$fieldID);
+		$res = $this->db->get(self::FERegistryTableName)->result_array();
+		if(count($res)!=0)
+			return 'Field already registered.';
+		
 		if(!isset($fieldData['name'])||!isset($fieldData['title'])){
 			return 'Name or title not set';
 		}
 		
 		$FEID = $this->getTableID($FEName);
 		$cardinalityFieldID = $this->getFieldID($tableName,$FECardinalityFieldName);
+		
+		if($FEID==null||$cardinalityFieldID==null){
+			return 'Table or Cardinality field does not exist.';
+		}
 		
 		$res = $this->addField($tableName,array(
 			'name'=>$fieldData['name'],
@@ -538,6 +514,8 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 			return $res;
 		
 		$fieldID = $this->getFieldID($tableName,$fieldData['name']);
+		if($fieldID==null)
+			return 'FE field does not exist.';
 		
 		$this->registerFE($fieldID,$FEID,$cardinalityFieldID,$defaultCardinality);
 		
@@ -545,8 +523,17 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 	
 	public function addMCField($tableName,$choiceType,$fieldName,$fieldTitle,$fieldRequired=false,$fieldTip=''){
 		$tableID = $this->getTableID($tableName);
+		if($tableID==null)
+			return 'Table does not exist.';
 		
-		$this->addField($tableName, array(
+		//Check for existence
+		$fieldID = $this->getFieldID($tableName,$fieldName);
+		$this->db->where(self::MCFieldIDFieldName,$fieldID);
+		$res = $this->db->get(self::MCRegistryTableName)->result_array();
+		if(count($res)!=0)
+			return 'Field already registered';
+		
+		$res = $this->addField($tableName, array(
 			'name'=>$fieldName,
 			'title'=>$fieldTitle,
 			'type'=>'varchar(1200)',
@@ -554,6 +541,9 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 			'input_required'=>$fieldRequired,
 			'input_tip'=>$fieldTip
 		));
+		if($res!=null){
+			return $res;
+		}
 		
 		$fieldID = $this->getFieldID($tableName,$fieldName);
 		$this->registerMC($tableID,$fieldID,$choiceType);
@@ -633,6 +623,9 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		$this->db->select(self::FEDefaultCardinalityFieldName);
 		$this->db->where(self::FieldRegistryPKName,$fieldID);
 		$result = $this->db->get(self::FERegistryTableName)->result_array();
+		if(count($result)!=1){
+			return 1;
+		}
 		return $result[0][self::FEDefaultCardinalityFieldName];
 	}
 	
@@ -640,11 +633,17 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		$fieldID = $this->getFieldID($tableName,$fieldName);
 		$this->db->select(self::FEIDFieldName);
 		$this->db->where(self::FieldRegistryPKName,$fieldID);
-		$FEID = $this->db->get(self::FERegistryTableName)->result_array()[0][self::FEIDFieldName];
+		$res = $this->db->get(self::FERegistryTableName)->result_array();
+		if(count($res)!=1)
+			return;
+		
+		$FEID = $res[0][self::FEIDFieldName];
 		
 		$this->db->select(StudentInfoBaseModel::TableNameFieldName);
 		$this->db->where(StudentInfoBaseModel::TableRegistryPKName,$FEID);
 		$result = $this->db->get(StudentInfoBaseModel::TableRegistryTableName)->result_array();
+		if(count($result)!=1)
+			return;
 		return $result[0][StudentInfoBaseModel::TableNameFieldName];
 	}
 	
@@ -652,11 +651,16 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		$fieldID = $this->getFieldID($tableName,$fieldName);
 		$this->db->select(self::FEIDFieldName);
 		$this->db->where(self::FieldRegistryPKName,$fieldID);
-		$FEID = $this->db->get(self::FERegistryTableName)->result_array()[0][self::FEIDFieldName];
+		$res = $this->db->get(self::FERegistryTableName)->result_array();
+		if(count($res)!=1)
+			return;
+		$FEID = $res[0][self::FEIDFieldName];
 		
 		$this->db->select(StudentInfoBaseModel::TableTitleFieldName);
 		$this->db->where(StudentInfoBaseModel::TableRegistryPKName,$FEID);
 		$result = $this->db->get(StudentInfoBaseModel::TableRegistryTableName)->result_array();
+		if(count($result)!=1)
+			return;
 		return $result[0][StudentInfoBaseModel::TableTitleFieldName];
 	}
 	
@@ -673,11 +677,12 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		$this->db->select(self::MCTypeFieldName);
 		$this->db->where(self::MCRegistryPKName,$MCID);
 		$result = $this->db->get(self::MCRegistryTableName)->result_array();
+		if(count($result)!=1)
+			return;
 		return $result[0][self::MCTypeFieldName];
 	}
 	
 	public function getMCID($tableName,$fieldName){
-		
 		$tableID = $this->getTableID($tableName);
 		$fieldID = $this->getFieldID($tableName,$fieldName);
 		
@@ -685,9 +690,9 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		$this->db->where(self::BaseTableIDFieldName,$tableID);
 		$this->db->where(self::MCFieldIDFieldName,$fieldID);
 		$result = $this->db->get(self::MCRegistryTableName)->result_array();
-		
+		if(count($result)!=1)
+			return;
 		return $result[0][self::MCRegistryPKName];
-		
 	}
 	
 	private function registerFE($fieldID,$FEID,$FECardinalityFieldID,$defaultCardinality){
