@@ -259,7 +259,7 @@ class StudentInfoController extends BaseController {
 				$MCCustom = array();
 				foreach($choices as $choice){
 					if(isset($choice[AdvancedInputsModel::ChoiceCustomFieldName]) && $choice[AdvancedInputsModel::ChoiceCustomFieldName]==true){
-						array_push($MCCustom,$choice[AdvancedInputsModel::ChoiceTitleFieldName]);
+						array_push($MCCustom,$choice[AdvancedInputsModel::ChoiceValueFieldName]);
 					}else{
 						array_push($MCChoices,$choice[AdvancedInputsModel::ChoiceValueFieldName]);
 					}

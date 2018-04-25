@@ -21,15 +21,15 @@ class Student_Information extends AdvancedInputsModel{
 	}
 	
 	private function createBaseTable(){
-		if(!$this->db->table_exists(StudentInfoBaseModel::BaseTableTableName)){
-			$this->dbforge->add_field(StudentInfoBaseModel::BaseTablePKName.' int unsigned not null auto_increment unique');
-			$this->dbforge->add_field(StudentInfoBaseModel::FlagFieldName.' int unsigned not null default '.Flags::DEF);
-			$this->dbforge->add_field('primary key ('.StudentInfoBaseModel::BaseTablePKName.')');
-			$this->dbforge->create_table(StudentInfoBaseModel::BaseTableTableName,true);
-			$this->registerTable(StudentInfoBaseModel::BaseTableTableName,'Background Information',Flags::DEF,TRUE);
+		if(!$this->db->table_exists(self::BaseTableTableName)){
+			$this->dbforge->add_field(self::BaseTablePKName.' int unsigned not null auto_increment unique');
+			$this->dbforge->add_field(self::FlagFieldName.' int unsigned not null default '.Flags::DEF);
+			$this->dbforge->add_field('primary key ('.self::BaseTablePKName.')');
+			$this->dbforge->create_table(self::BaseTableTableName,true);
+			$this->registerTable(self::BaseTableTableName,'Background Information',Flags::DEF,TRUE);
 			
-			$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
-				'name'=>StudentInfoBaseModel::StudentNumberFieldName,
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>self::StudentNumberFieldName,
 				'title'=>'Student Number',
 				'type'=>'varchar(11)',
 				'constraints'=>'not null unique',
@@ -41,8 +41,8 @@ class Student_Information extends AdvancedInputsModel{
 				'essential'=>TRUE
 			));
 			
-			$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
-				'name'=>StudentInfoBaseModel::LastNameFieldName,
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>self::LastNameFieldName,
 				'title'=>'Last Name',
 				'type'=>'varchar(30)',
 				'constraints'=>'not null',
@@ -51,8 +51,8 @@ class Student_Information extends AdvancedInputsModel{
 				'essential'=>TRUE
 			));
 			
-			$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
-				'name'=>StudentInfoBaseModel::FirstNameFieldName,
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>self::FirstNameFieldName,
 				'title'=>'First Name',
 				'type'=>'varchar(30)',
 				'constraints'=>'not null',
@@ -61,8 +61,8 @@ class Student_Information extends AdvancedInputsModel{
 				'essential'=>TRUE
 			));
 			
-			$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
-				'name'=>StudentInfoBaseModel::MiddleNameFieldName,
+			$this->addField(self::BaseTableTableName,array(
+				'name'=>self::MiddleNameFieldName,
 				'title'=>'Middle Name',
 				'type'=>'varchar(30)',
 				'constraints'=>'not null',
@@ -70,16 +70,16 @@ class Student_Information extends AdvancedInputsModel{
 				'essential'=>TRUE
 			));
 			
-			$this->addMCField(StudentInfoBaseModel::BaseTableTableName,MCTypes::SINGLE,StudentInfoBaseModel::SexFieldName,'Sex',true);
-			$this->addChoice(StudentInfoBaseModel::BaseTableTableName,StudentInfoBaseModel::SexFieldName,'Male');
-			$this->addChoice(StudentInfoBaseModel::BaseTableTableName,StudentInfoBaseModel::SexFieldName,'Female');
+			$this->addMCField(self::BaseTableTableName,MCTypes::SINGLE,self::SexFieldName,'Sex',true);
+			$this->addChoice(self::BaseTableTableName,self::SexFieldName,'Male');
+			$this->addChoice(self::BaseTableTableName,self::SexFieldName,'Female');
 		}
 	}
 	
 	public function initDefaults(){
 		
 		//Bacgkround Information 
-		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+		$this->addField(self::BaseTableTableName,array(
 			'name'=>'course_block',
 			'title'=>'Course/Block',
 			'type'=>'varchar(30)',
@@ -87,7 +87,7 @@ class Student_Information extends AdvancedInputsModel{
 			'input_required'=>FALSE,
 		));
 		
-		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+		$this->addField(self::BaseTableTableName,array(
 			'name'=>'nickname',
 			'title'=>'Nickname',
 			'type'=>'varchar(30)',
@@ -96,7 +96,7 @@ class Student_Information extends AdvancedInputsModel{
 			'input_required'=>FALSE
 		));
 		
-		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+		$this->addField(self::BaseTableTableName,array(
 			'name'=>'birthdate',
 			'title'=>'Date of Birth',
 			'type'=>'date',
@@ -105,7 +105,7 @@ class Student_Information extends AdvancedInputsModel{
 			'input_required'=>TRUE,
 		));
 		
-		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+		$this->addField(self::BaseTableTableName,array(
 			'name'=>'birthplace',
 			'title'=>'Place of Birth',
 			'type'=>'varchar(100)',
@@ -114,7 +114,7 @@ class Student_Information extends AdvancedInputsModel{
 			'input_required'=>FALSE,
 		));
 		
-		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+		$this->addField(self::BaseTableTableName,array(
 			'name'=>'nationality',
 			'title'=>'Nationality',
 			'type'=>'varchar(30)',
@@ -123,7 +123,7 @@ class Student_Information extends AdvancedInputsModel{
 			'input_required'=>FALSE,
 		));
 		
-		$this->addField(StudentInfoBaseModel::BaseTableTableName,array(
+		$this->addField(self::BaseTableTableName,array(
 			'name'=>'citizenship',
 			'title'=>'Citizenship',
 			'type'=>'varchar(30)',
@@ -142,7 +142,7 @@ class Student_Information extends AdvancedInputsModel{
 			$this->addChoice(self::FamilyDataTableName,'parents_marital_status','Parents separated');
 			$this->addChoice(self::FamilyDataTableName,'parents_marital_status','Father re-married');
 			$this->addChoice(self::FamilyDataTableName,'parents_marital_status','Mother re-married');
-			$this->addChoice(self::FamilyDataTableName,'parents_marital_status','',true,'Others (specify)');
+			$this->addChoice(self::FamilyDataTableName,'parents_marital_status','Others (specify)',true);
 			
 			//Floating Entities
 			
@@ -358,7 +358,7 @@ class Student_Information extends AdvancedInputsModel{
 			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','Farming/Fishing');
 			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','Own Business');
 			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','Pension');
-			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','',true,'Others (Pls. specify)');
+			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','Others (Pls. specify)',true);
 			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','None');
 			
 		}
@@ -367,9 +367,9 @@ class Student_Information extends AdvancedInputsModel{
 	public function insert($tableName,$fields = array()){
 		//fields: field_name => field_data
 		
-		if(isset($fields[StudentInfoBaseModel::StudentNumberFieldName])){
-			$this->db->where(StudentInfoBaseModel::StudentNumberFieldName,$fields[StudentInfoBaseModel::StudentNumberFieldName]);
-			$result = $this->db->get(StudentInfoBaseModel::BaseTableTableName)->result_array();
+		if(isset($fields[self::StudentNumberFieldName])){
+			$this->db->where(self::StudentNumberFieldName,$fields[self::StudentNumberFieldName]);
+			$result = $this->db->get(self::BaseTableTableName)->result_array();
 			
 			if(count($result)>0)
 				return 'Student Number already registered.';
@@ -398,9 +398,9 @@ class Student_Information extends AdvancedInputsModel{
 		$fields = $this->getFields($tableName);
 		$select= array();
 		foreach($fields as $field){
-			if($field[StudentInfoBaseModel::FieldInputTypeFieldName] == 'hidden' || $field[StudentInfoBaseModel::FieldInputTypeFieldName] == 'FE')
+			if($field[self::FieldInputTypeFieldName] == 'hidden' || $field[self::FieldInputTypeFieldName] == 'FE')
 				continue;
-			array_push($select,$field[StudentInfoBaseModel::FieldNameFieldName]);
+			array_push($select,$field[self::FieldNameFieldName]);
 		}
 		$this->db->select(implode(' , ',$select));
 		$this->db->where(self::BaseTablePKName,$pk);
@@ -418,8 +418,8 @@ class Student_Information extends AdvancedInputsModel{
 		
 		$fields = array();
 		foreach($fieldsTemp as $field){
-			if($field[StudentInfoBaseModel::FieldInputTypeFieldName]=='text'){
-				array_push($fields,$field[StudentInfoBaseModel::FieldNameFieldName]);
+			if($field[self::FieldInputTypeFieldName]=='text'){
+				array_push($fields,$field[self::FieldNameFieldName]);
 			}
 		}
 		

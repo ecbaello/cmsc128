@@ -159,6 +159,13 @@ class Formedit extends StudentInfoController {
 			$this->responseJSON(false,$res);
 			return;
 		}
+		
+		if(isset($fieldData['Input Type'])){
+			if($fieldData['Input Type']=='MC'){
+				//if(!isset(''))
+			}
+		}
+		
 		$this->responseJSON(true,'Edited field successfully.');
 		return;
 	}

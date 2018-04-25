@@ -444,7 +444,6 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 	
 	const ChoiceValueFieldName = 'choice_value';
 	const ChoiceCustomFieldName = 'is_custom';
-	const ChoiceTitleFieldName = 'choice_title';
 	
 	public function __construct(){
 		parent::__construct();
@@ -453,7 +452,7 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		$this->createChoiceRegistry();
 	}
 	
-	public function addChoice($tableName, $fieldName, $choiceValue, $isCustom = false, $customTitle = ''){
+	public function addChoice($tableName, $fieldName, $choiceValue, $isCustom = false){
 		$MCID = $this->getMCID($tableName,$fieldName);
 		
 		//Check for existence first
@@ -468,8 +467,7 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		$fields =array(
 			self::MCRegistryPKName => $MCID,
 			self::ChoiceValueFieldName => $choiceValue,
-			self::ChoiceCustomFieldName => $isCustom,
-			self::ChoiceTitleFieldName => $customTitle
+			self::ChoiceCustomFieldName => $isCustom
 		);
 		$this->db->insert(self::ChoiceRegistryTableName,$fields);
 		return;
@@ -533,6 +531,15 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		if(count($res)!=0)
 			return 'Field already registered';
 		
+		switch($choiceType){
+			case MCTypes::SINGLE:
+				break;
+			case MCTypes::MULTIPLE:
+				break;
+			default:
+				return 'Invalid Choice Type';
+		}
+		
 		$res = $this->addField($tableName, array(
 			'name'=>$fieldName,
 			'title'=>$fieldTitle,
@@ -546,7 +553,7 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		}
 		
 		$fieldID = $this->getFieldID($tableName,$fieldName);
-		$this->registerMC($tableID,$fieldID,$choiceType);
+		$this->registerMC($fieldID,$choiceType);
 		
 	}
 	
@@ -558,9 +565,9 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 			$this->dbforge->add_field(self::FECardinalityFieldIDFieldName.' int unsigned');
 			$this->dbforge->add_field(self::FEDefaultCardinalityFieldName.' int unsigned not null');
 			
-			$this->dbforge->add_field('foreign key ('.self::FieldRegistryPKName.') references '.StudentInfoBaseModel::FieldRegistryTableName.'('.StudentInfoBaseModel::FieldRegistryPKName.') on update cascade on delete cascade');
-			$this->dbforge->add_field('foreign key ('.self::FEIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.') on update cascade on delete cascade');
-			$this->dbforge->add_field('foreign key ('.self::FECardinalityFieldIDFieldName.') references '.StudentInfoBaseModel::FieldRegistryTableName.'('.StudentInfoBaseModel::FieldRegistryPKName.') on update cascade on delete cascade');
+			$this->dbforge->add_field('foreign key ('.self::FieldRegistryPKName.') references '.self::FieldRegistryTableName.'('.self::FieldRegistryPKName.') on update cascade on delete cascade');
+			$this->dbforge->add_field('foreign key ('.self::FEIDFieldName.') references '.self::TableRegistryTableName.'('.self::TableRegistryPKName.') on update cascade on delete cascade');
+			$this->dbforge->add_field('foreign key ('.self::FECardinalityFieldIDFieldName.') references '.self::FieldRegistryTableName.'('.self::FieldRegistryPKName.') on update cascade on delete cascade');
 			
 			$this->dbforge->create_table(self::FERegistryTableName,TRUE);
 			
@@ -568,17 +575,15 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 	}
 	
 	//for association of tables and choices
-	public function createMCRegistry(){
+	private function createMCRegistry(){
 		if(!$this->db->table_exists(self::MCRegistryTableName)){
 			
-			$this->dbforge->add_field(self::MCRegistryPKName.' int unsigned not null auto_increment unique');
-			$this->dbforge->add_field(self::BaseTableIDFieldName.' int unsigned not null');
-			$this->dbforge->add_field(self::MCFieldIDFieldName.' int unsigned not null');
+			$this->dbforge->add_field(self::MCRegistryPKName.' int unsigned not null auto_increment');
+			$this->dbforge->add_field(self::MCFieldIDFieldName.' int unsigned not null unique');
 			$this->dbforge->add_field(self::MCTypeFieldName.' int unsigned not null default 1');
 			
 			$this->dbforge->add_field('primary key ('.self::MCRegistryPKName.')');
-			$this->dbforge->add_field('foreign key ('.self::BaseTableIDFieldName.') references '.StudentInfoBaseModel::TableRegistryTableName.'('.StudentInfoBaseModel::TableRegistryPKName.') on update cascade on delete cascade');
-			$this->dbforge->add_field('foreign key ('.self::MCFieldIDFieldName.') references '.StudentInfoBaseModel::FieldRegistryTableName.'('.StudentInfoBaseModel::FieldRegistryPKName.') on update cascade on delete cascade');
+			$this->dbforge->add_field('foreign key ('.self::MCFieldIDFieldName.') references '.self::FieldRegistryTableName.'('.self::FieldRegistryPKName.') on update cascade on delete cascade');
 			
 			$this->dbforge->create_table(self::MCRegistryTableName,TRUE);
 			
@@ -586,18 +591,63 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 	}
 	
 	//for choices themselves
-	public function createChoiceRegistry(){
+	private function createChoiceRegistry(){
 		if(!$this->db->table_exists(self::ChoiceRegistryTableName)){
 			
 			$this->dbforge->add_field(self::MCRegistryPKName.' int unsigned not null');
 			$this->dbforge->add_field(self::ChoiceValueFieldName.' varchar(100) not null');
 			$this->dbforge->add_field(self::ChoiceCustomFieldName.' boolean not null default 0');
-			$this->dbforge->add_field(self::ChoiceTitleFieldName.' varchar(100) not null default ""');
 			
 			$this->dbforge->add_field('foreign key ('.self::MCRegistryPKName.') references '.self::MCRegistryTableName.'('.self::MCRegistryPKName.') on update cascade on delete cascade');
 			
 			$this->dbforge->create_table(self::ChoiceRegistryTableName,TRUE);
 		}
+	}
+	
+	public function deleteMCChoices($MCFieldID){
+		$this->db->select(self::MCRegistryPKName);
+		$this->db->where(self::MCFieldIDFieldName,$MCFieldID);
+		$res = $this->db->get(self::MCRegistryTableName)->result_array();
+		if(count($res)!=1){
+			return 'Field not registered as multiple choice.';
+		}
+		$MCID = $res[0][self::MCRegistryPKName];
+		$this->db->where(self::MCRegistryPKName,$MCID);
+		$this->db->delete(self::ChoiceRegistryTableName);
+	}
+	
+	public function editMCFieldType($MCFieldID,$MCType){
+		
+		switch($MCType){
+			case MCTypes::SINGLE:
+				break;
+			case MCTypes::MULTIPLE:
+				break;
+			default:
+				return 'Invalid Choice Type';
+		}
+		
+		$this->db->select(self::MCRegistryPKName);
+		$this->db->where(self::MCFieldIDFieldName,$MCFieldID);
+		$res = $this->db->get(self::MCRegistryTableName)->result_array();
+		if(count($res)!=1){
+			return 'Field not registered as multiple choice.';
+		}
+		$MCID = $res[0][self::MCRegistryPKName];
+		$this->db->where(self::MCRegistryPKName,$MCID);
+		$this->db->update(self::MCRegistryTableName,array(
+			self::MCTypeFieldName=>$MCType
+		));
+	}
+	
+	public function editFEDefaultCardinality($FEFieldID,$cardinality){
+		if(!is_int($cardinality)||$cardinality<1){
+			return 'Cardinality must be a positive integer';
+		}
+		$this->db->where(self::FieldRegistryPKName,$FEFieldID);
+		$this->db->update(self::FERegistryTableName,array(
+			self::FEDefaultCardinalityFieldName=>$cardinality
+		));
 	}
 	
 	public function getFECardinalityFieldName($tableName,$fieldName){
@@ -610,11 +660,11 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		if($FEFieldID==null)
 			return '';
 		
-		$this->db->select(StudentInfoBaseModel::FieldNameFieldName);
-		$this->db->where(StudentInfoBaseModel::FieldRegistryPKName,$FEFieldID);
-		$result = $this->db->get(StudentInfoBaseModel::FieldRegistryTableName)->result_array();
+		$this->db->select(self::FieldNameFieldName);
+		$this->db->where(self::FieldRegistryPKName,$FEFieldID);
+		$result = $this->db->get(self::FieldRegistryTableName)->result_array();
 		
-		return $result[0][StudentInfoBaseModel::FieldNameFieldName];
+		return $result[0][self::FieldNameFieldName];
 	}
 	
 	public function getFEDefaultCardinality($tableName,$fieldName){
@@ -639,12 +689,12 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		
 		$FEID = $res[0][self::FEIDFieldName];
 		
-		$this->db->select(StudentInfoBaseModel::TableNameFieldName);
-		$this->db->where(StudentInfoBaseModel::TableRegistryPKName,$FEID);
-		$result = $this->db->get(StudentInfoBaseModel::TableRegistryTableName)->result_array();
+		$this->db->select(self::TableNameFieldName);
+		$this->db->where(self::TableRegistryPKName,$FEID);
+		$result = $this->db->get(self::TableRegistryTableName)->result_array();
 		if(count($result)!=1)
 			return;
-		return $result[0][StudentInfoBaseModel::TableNameFieldName];
+		return $result[0][self::TableNameFieldName];
 	}
 	
 	public function getFETableTitle($tableName,$fieldName){
@@ -656,17 +706,17 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 			return;
 		$FEID = $res[0][self::FEIDFieldName];
 		
-		$this->db->select(StudentInfoBaseModel::TableTitleFieldName);
-		$this->db->where(StudentInfoBaseModel::TableRegistryPKName,$FEID);
-		$result = $this->db->get(StudentInfoBaseModel::TableRegistryTableName)->result_array();
+		$this->db->select(self::TableTitleFieldName);
+		$this->db->where(self::TableRegistryPKName,$FEID);
+		$result = $this->db->get(self::TableRegistryTableName)->result_array();
 		if(count($result)!=1)
 			return;
-		return $result[0][StudentInfoBaseModel::TableTitleFieldName];
+		return $result[0][self::TableTitleFieldName];
 	}
 	
 	public function getMCChoices($tableName,$fieldName){
 		$MCID = $this->getMCID($tableName,$fieldName);
-		$this->db->select(self::ChoiceValueFieldName.','.self::ChoiceCustomFieldName.','.self::ChoiceTitleFieldName);
+		$this->db->select(self::ChoiceValueFieldName.','.self::ChoiceCustomFieldName);
 		$this->db->where(self::MCRegistryPKName,$MCID);
 		$result = $this->db->get(self::ChoiceRegistryTableName)->result_array();
 		return $result;
@@ -683,11 +733,9 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 	}
 	
 	public function getMCID($tableName,$fieldName){
-		$tableID = $this->getTableID($tableName);
 		$fieldID = $this->getFieldID($tableName,$fieldName);
 		
 		$this->db->select(self::MCRegistryPKName);
-		$this->db->where(self::BaseTableIDFieldName,$tableID);
 		$this->db->where(self::MCFieldIDFieldName,$fieldID);
 		$result = $this->db->get(self::MCRegistryTableName)->result_array();
 		if(count($result)!=1)
@@ -695,8 +743,7 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		return $result[0][self::MCRegistryPKName];
 	}
 	
-	private function registerFE($fieldID,$FEID,$FECardinalityFieldID,$defaultCardinality){
-		
+	protected function registerFE($fieldID,$FEID,$FECardinalityFieldID,$defaultCardinality){
 		$data = array(
 			self::FieldRegistryPKName => $fieldID,
 			self::FEIDFieldName => $FEID,
@@ -707,21 +754,8 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		$this->db->insert(self::FERegistryTableName,$data);
 	}
 	
-	private function registerMC($tableID, $fieldID, $choiceType){
-		
-		switch($choiceType){
-			case MCTypes::SINGLE:
-				break;
-			case MCTypes::MULTIPLE:
-				break;
-			default:
-				log_message('error','Register MC: Invalid Choice Type');
-				return;
-				break;
-		}
-		
+	protected function registerMC($fieldID, $choiceType){
 		$data = array(
-			self::BaseTableIDFieldName => $tableID,
 			self::MCFieldIDFieldName => $fieldID,
 			self::MCTypeFieldName => $choiceType
 		);

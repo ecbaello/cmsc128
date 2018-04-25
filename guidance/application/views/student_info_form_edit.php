@@ -31,6 +31,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</md-button>
 			</div>
 		</div>
+		<form id="nfnewChoice"></form> <!--THESE FORMS ARE IMPORTANT-->
+		<form id="nfnewCustom"></form> <!--THESE FORMS ARE IMPORTANT-->
+		<form id="newChoice"></form> <!--THESE FORMS ARE IMPORTANT-->
+		<form id="newCustom"></form> <!--THESE FORMS ARE IMPORTANT-->
 		<div layout-fill class="md-no-padding">
 			<md-card layout="column" ng-repeat="(key,value) in currCategory.Fields | orderBy:'\u0022Input Order\u0022'" ng-if="value['Input Type']!='hidden'">
 				<md-toolbar layout="row" layout-align="space-between center" style="background-color:#014421;color:white">
@@ -66,7 +70,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<input type="text" ng-model="value['Input Tip']"></input>
 						</md-input-container>
 						<md-input-container class="md-no-margin" ng-if="value['Input Type']!='FE'&&value['Input Type']!='MC'&&value['Input Type']!='date'">
-							<label>Input Regex (Leave this blank if you don't know what it is.)</label>
+							<label>Input Regex <span class="md-subhead">(Leave this blank if you don't know what it is.)</span></label>
 							<input type="text" ng-model="value['Input Regex']"></input>
 						</md-input-container>
 						<md-input-container class="md-no-margin" ng-if="value['Input Type']!='FE'&&value['Input Type']!='MC'&&value['Input Type']!='date'">
@@ -125,27 +129,61 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</md-radio-group>
 							<fieldset layout-padding>
 								<legend>Choices:</legend>
-								<div layout="row" ng-repeat="(index,choice) in value.MC.Choices track by $index">
-									<span>{{$index+1}}</span>
+								<div layout="row" ng-repeat="(index,choice) in value.MC.Choices track by $index" layout="row" layout-align="center">
+									<div layout-padding>
+										{{$index+1}}
+									</div>
 									<md-input-container class="md-no-margin" flex>
 										<label>Value</label>
-										<input type="text" value="{{choice}}"/>
+										<input type="text" ng-model="value.MC.Choices[index]"/>
 									</md-input-container>
-									<md-button class="md-fab md-mini md-raised md-no-margin md-primary" layout-align="center center"><i class="fas fa-times"></i></md-button>
+									<div>
+										<md-button class="md-fab md-mini md-raised md-primary" layout-align="center center" ng-click="deleteChoice(key,false,index)"><i class="fas fa-times"></i></md-button>
+									</div>
 								</div>
-								<md-button class="md-primary md-raised md-no-margin md-no-padding">Add Choice</md-button>
+								<div layout="row" layout-align="center">
+									<div layout-padding>
+										New Choice: 
+									</div>
+									<md-input-container flex class="md-no-margin md-no-padding">
+										<label>Value </label>
+										<input type="text" form="newChoice" ng-model="newChoice[key]"/>
+									</md-input-container>
+									<div>
+										<md-button class="md-primary md-raised" type="submit" form="newChoice" ng-click="addChoice(key,false)">
+											Add Choice
+										</md-button>
+									</div>
+								</div>
 							</fieldset>
 							<fieldset layout-padding>
 								<legend>Custom Choices:</legend>
-								<div layout="row" ng-repeat="(index,choice) in value.MC.Custom track by $index">
-									<span>{{$index+1}}</span>
+								<div layout="row" ng-repeat="(index,choice) in value.MC.Custom track by $index" layout="row" layout-align="center">
+									<div layout-padding>
+										{{$index+1}}
+									</div>
 									<md-input-container class="md-no-margin" flex>
 										<label>Value</label>
-										<input type="text" value="{{choice}}"/>
+										<input type="text" ng-model="value.MC.Custom[index]"/>
 									</md-input-container>
-									<md-button class="md-fab md-mini md-raised md-no-margin md-primary" layout-align="center center"><i class="fas fa-times"></i></md-button>
+									<div>
+										<md-button class="md-fab md-mini md-raised md-primary" layout-align="center center" ng-click="deleteChoice(key,true,index)"><i class="fas fa-times"></i></md-button>
+									</div>
 								</div>
-								<md-button class="md-primary md-raised md-no-margin md-no-padding">Add Custom Choice</md-button>
+								<div layout="row" layout-align="center">
+									<div layout-padding>
+										New Choice: 
+									</div>
+									<md-input-container flex class="md-no-margin md-no-padding">
+										<label>Value</label>
+										<input type="text" form="newCustom" ng-model="newCustom[key]"/>
+									</md-input-container>
+									<div>
+										<md-button class="md-primary md-raised" type="submit" form="newCustom" ng-click="addChoice(key,true)">
+											Add Choice
+										</md-button>
+									</div>
+								</div>
 							</fieldset>
 						</fieldset>
 						<div layout="row" layout-align="center center">
@@ -184,7 +222,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<input type="text" ng-model="newField['Input Tip']"></input>
 						</md-input-container>
 						<md-input-container class="md-no-margin" ng-if="newField['Input Type']!='FE'&&newField['Input Type']!='MC'&&newField['Input Type']!='date'">
-							<label>Input Regex (Leave this blank if you don't know what it is.)</label>
+							<label>Input Regex <span class="md-subhead">(Leave this blank if you don't know what it is.)</span></label>
 							<input type="text" ng-model="newField['Input Regex']"></input>
 						</md-input-container>
 						<md-input-container class="md-no-margin" ng-if="newField['Input Type']!='FE'&&newField['Input Type']!='MC'&&newField['Input Type']!='date'">
@@ -237,27 +275,61 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</md-radio-group>
 							<fieldset layout-padding>
 								<legend>Choices:</legend>
-								<div layout="row" ng-repeat="(index,choice) in newField.MC.Choices track by $index">
-									<span>{{$index+1}}</span>
+								<div layout="row" ng-repeat="(index,choice) in newField.MC.Choices track by $index" layout="row" layout-align="center">
+									<div layout-padding>
+										{{$index+1}}
+									</div>
 									<md-input-container class="md-no-margin" flex>
 										<label>Value</label>
-										<input type="text" value="{{choice}}"/>
+										<input type="text" ng-model="newField.MC.Choices[index]"/>
 									</md-input-container>
-									<md-button class="md-fab md-mini md-raised md-no-margin md-primary" layout-align="center center"><i class="fas fa-times"></i></md-button>
+									<div>
+										<md-button class="md-fab md-mini md-raised md-primary" layout-align="center center" ng-click="deleteChoice(-1,false,index)"><i class="fas fa-times"></i></md-button>
+									</div>
 								</div>
-								<md-button class="md-primary md-raised md-no-margin md-no-padding">Add Choice</md-button>
+								<div layout="row" layout-align="center">
+									<div layout-padding>
+										New Choice: 
+									</div>
+									<md-input-container flex class="md-no-margin md-no-padding">
+										<label>Value</label>
+										<input type="text" form="nfnewChoice" ng-model="newField.newChoice"/>
+									</md-input-container>
+									<div>
+										<md-button class="md-primary md-raised" type="submit" form="nfnewChoice" ng-click="addChoice(-1,false)">
+											Add Choice
+										</md-button>
+									</div>
+								</div>
 							</fieldset>
 							<fieldset layout-padding>
 								<legend>Custom Choices:</legend>
-								<div layout="row" ng-repeat="(index,choice) in newField.MC.Custom track by $index">
-									<span>{{$index+1}}</span>
+								<div layout="row" ng-repeat="(index,choice) in newField.MC.Custom track by $index" layout="row" layout-align="center">
+									<div layout-padding>
+										{{$index+1}}
+									</div>
 									<md-input-container class="md-no-margin" flex>
 										<label>Value</label>
-										<input type="text" value="{{choice}}"/>
+										<input type="text" ng-model="newField.MC.Custom[index]"/>
 									</md-input-container>
-									<md-button class="md-fab md-mini md-raised md-no-margin md-primary" layout-align="center center"><i class="fas fa-times"></i></md-button>
+									<div>
+										<md-button class="md-fab md-mini md-raised md-primary" layout-align="center center" ng-click="deleteChoice(-1,true,index)"><i class="fas fa-times"></i></md-button>
+									</div>
 								</div>
-								<md-button class="md-primary md-raised md-no-margin md-no-padding">Add Custom Choice</md-button>
+								<div layout="row" layout-align="center">
+									<div layout-padding>
+										New Choice: 
+									</div>
+									<md-input-container flex class="md-no-margin md-no-padding">
+										<label>Value</label>
+										<input type="text" form="nfnewCustom" ng-model="newField.newCustom"/>
+									</md-input-container>
+									<div>
+										<md-button class="md-primary md-raised" type="submit" form="nfnewCustom" ng-click="addChoice(-1,true)">
+											Add Choice
+										</md-button>
+									</div>
+								</div>
 							</fieldset>
 						</fieldset>
 						<div layout="row" layout-align="end center" layout-padding>

@@ -162,6 +162,10 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 			'Custom':[]
 		}
 	};
+	$scope.newField.newChoice = '';
+	$scope.newField.newCustom = '';
+	$scope.newChoice = [];
+	$scope.newCustom = [];
 	
 	$scope.placeholder;
 	
@@ -421,6 +425,44 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 			}
 		}
 		return candidates;
+	}
+	
+	$scope.addChoice = function(fieldKey,isCustom){
+		if(fieldKey==-1){
+			if( (isCustom && $scope.newField.newCustom=='') || (!isCustom && $scope.newField.newChoice=='') ){
+				return;
+			}
+			if($scope.newField.MC[isCustom?'Custom':'Choices'].includes(isCustom?$scope.newField.newCustom:$scope.newField.newChoice)){
+				$rootScope.customAlert('Error','Choices must be unique.');
+				return;
+			}
+			$scope.newField.MC[isCustom?'Custom':'Choices'].push(isCustom?$scope.newField.newCustom:$scope.newField.newChoice);
+			$scope.newField.newChoice = '';
+			$scope.newField.newCustom = '';
+		}else{
+			if( (isCustom && $scope.newCustom[fieldKey]=='') || (!isCustom && $scope.newChoice[fieldKey]==''))
+				return;
+			if($scope.currCategory.Fields[fieldKey].MC[isCustom?'Custom':'Choices'].includes(isCustom?$scope.newCustom[fieldKey]:$scope.newChoice[fieldKey])){
+				$rootScope.customAlert('Error','Choices must be unique.');
+				return;
+			}
+			$scope.currCategory.Fields[fieldKey].MC[isCustom?'Custom':'Choices'].push(isCustom?$scope.newCustom[fieldKey]:$scope.newChoice[fieldKey]);
+			$scope.newCustom[fieldKey] = '';
+			$scope.newChoice[fieldKey] = '';
+		}
+		
+	}
+	
+	$scope.deleteChoice = function(fieldKey,isCustom,choiceIndex){
+		if(fieldKey==-1){
+			$scope.newField.MC[isCustom?'Custom':'Choices'].splice(choiceIndex,1);
+		}else{
+			$scope.currCategory.Fields[fieldKey].MC[isCustom?'Custom':'Choices'].splice(choiceIndex,1);
+		}
+	}
+	
+	$scope.ping = function(){
+		alert('pong');
 	}
 	
 });
