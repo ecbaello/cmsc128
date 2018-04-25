@@ -23,8 +23,14 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		}
 	}
 
-	$scope.getCardinality = function(fieldIndex){
+	$scope.getCardinality = function(fieldID){
 		var number = 1;
+		for(var i = 0 ; i<$scope.currCategory.Fields.length ; i++){
+			if($scope.currCategory.Fields[i].ID == fieldID){
+				fieldIndex = i;
+				break;
+			}
+		}
 		console.log($scope.currCategory.Fields[fieldIndex]);
 		var cardinalityField = $scope.currCategory.Fields[fieldIndex].FE['Cardinality Field Name'];
 		var defaultCardinality = $scope.currCategory.Fields[fieldIndex].FE['Default Cardinality'];
@@ -212,21 +218,24 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 		$scope.currCategory = $scope.tables[categoryKey];
 	}
 	
-	$scope.changeField = function(mode,key){
-		
+	$scope.changeField = function(mode,id){
+		var data = {};
 		switch(mode){
 			case 'delete':
-				id=$scope.tables[$scope.currCategoryKey].Fields[key].ID;
 				url = $rootScope.baseURL+'studentinfo/formedit/action/deletefield/'+id;
 				break;
 			case 'edit':
-				id=$scope.tables[$scope.currCategoryKey].Fields[key].ID;
 				url = $rootScope.baseURL+'studentinfo/formedit/action/editfield/'+id;
 				break;
 			default:
 				return;
 		}
-		data = $scope.tables[$scope.currCategoryKey].Fields[key];
+		for(var i = 0 ; i<$scope.currCategory.Fields.length ; i++){
+			if($scope.currCategory.Fields[i].ID == id){
+				data = $scope.currCategory.Fields[i];
+				break;
+			}
+		}
 		success = function(response){
 			$rootScope.busy = false;
 			$rootScope.customConfirm('Success',response.msg,function(){

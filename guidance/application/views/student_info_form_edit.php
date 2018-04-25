@@ -39,7 +39,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<md-card layout="column" ng-repeat="(key,value) in currCategory.Fields | orderBy:'\u0022Input Order\u0022'" ng-if="value['Input Type']!='hidden'">
 				<md-toolbar layout="row" layout-align="space-between center" style="background-color:#014421;color:white">
 					<div layout-padding>
-						<md-button ng-if="!value.Essential" ng-click="changeField('delete',key)" class="md-no-margin md-no-padding md-fab md-mini md-raised"><i class="fas fa-times"></i></md-button>
+						<md-button ng-if="!value.Essential" ng-click="changeField('delete',value['ID'])" class="md-no-margin md-no-padding md-fab md-mini md-raised"><i class="fas fa-times"></i></md-button>
 						<span class="md-subhead md-no-margin">{{value['Title']}}</span>
 					</div>
 					<div layout="row" class="md-subhead" layout-align="center center" layout-padding>

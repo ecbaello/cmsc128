@@ -475,12 +475,18 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 	
 	public function addFEField($tableName,$FEName,$fieldData = array(),$FECardinalityFieldName=null,$defaultCardinality=1){
 		/*
+		$tableName = base table name
+		$FEName = floating entity table name
 		$fieldData = array(
 			'title'=>title
 			'name'=>name
 			'input_tip'=>input tip
 		)
 		*/
+		
+		if(!is_int($defaultCardinality)||$defaultCardinality<1){
+			return 'Cardinality must be a positive integer';
+		}
 		
 		//Check for existence
 		$fieldID = $this->getFieldID($tableName,$fieldData['name']);
@@ -505,7 +511,8 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 			'title'=>$fieldData['title'],
 			'type'=>'int',
 			'input_type'=>'FE',
-			'input_tip'=>isset($fieldData['input_tip'])?$fieldData['input_tip']:''
+			'input_tip'=>isset($fieldData['input_tip'])?$fieldData['input_tip']:'',
+			'input_order'=>isset($fieldData['input_order'])?$fieldData['input_order']:null
 		));
 		
 		if($res !== null)
@@ -519,13 +526,16 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		
 	}
 	
-	public function addMCField($tableName,$choiceType,$fieldName,$fieldTitle,$fieldRequired=false,$fieldTip=''){
+	public function addMCField($tableName,$choiceType,$fieldData =array()){
 		$tableID = $this->getTableID($tableName);
 		if($tableID==null)
 			return 'Table does not exist.';
 		
+		if(!isset($fieldData['name'])||!isset($fieldData['title']))
+			return 'Missing field name or title';
+		
 		//Check for existence
-		$fieldID = $this->getFieldID($tableName,$fieldName);
+		$fieldID = $this->getFieldID($tableName,$fieldData['name']);
 		$this->db->where(self::MCFieldIDFieldName,$fieldID);
 		$res = $this->db->get(self::MCRegistryTableName)->result_array();
 		if(count($res)!=0)
@@ -541,18 +551,19 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		}
 		
 		$res = $this->addField($tableName, array(
-			'name'=>$fieldName,
-			'title'=>$fieldTitle,
+			'name'=>$fieldData['name'],
+			'title'=>$fieldData['title'],
 			'type'=>'varchar(1200)',
 			'input_type'=>'MC',
-			'input_required'=>$fieldRequired,
-			'input_tip'=>$fieldTip
+			'input_required'=>isset($fieldData['input_required'])?$fieldData['input_required']:false,
+			'input_tip'=>isset($fieldData['input_tip'])?$fieldData['input_tip']:'',
+			'input_order'=>isset($fieldData['input_order'])?$fieldData['input_order']:null
 		));
 		if($res!=null){
 			return $res;
 		}
 		
-		$fieldID = $this->getFieldID($tableName,$fieldName);
+		$fieldID = $this->getFieldID($tableName,$fieldData['name']);
 		$this->registerMC($fieldID,$choiceType);
 		
 	}

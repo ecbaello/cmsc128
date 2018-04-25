@@ -25,6 +25,8 @@ class Formedit extends StudentInfoController {
 			return;
 		}
 		
+		$arg = urldecode($arg);
+		
 		switch($mode){
 			case 'addfield':
 				if($arg==null){
@@ -99,28 +101,48 @@ class Formedit extends StudentInfoController {
 		}
 		
 		$field= array();
+		$field['title'] = $data['Title'];
+		$field['input_type'] = $data['Input Type'];
+		$field['name'] = $data['Name'];
+		$field['input_tip']=isset($data['Input Tip'])?$data['Input Tip']:null;
+		$field['input_required']=isset($data['Input Required'])?$data['Input Required']:null;
+		$field['input_regex']=isset($data['Input Regex'])?$data['Input Regex']:null;
+		$field['input_order']=isset($data['Input Order'])?$data['Input Order']:null;
+		$field['input_regex_error_msg']=isset($data['Input Regex Error Message'])?$data['Input Regex Error Message']:null;
 		
 		switch($data['Input Type']){
 			case 'text':
 			case 'number':
 			case 'date':
-				$field['title'] = $data['Title'];
-				$field['input_type'] = $data['Input Type'];
-				$field['name'] = $data['Name'];
-				$field['input_tip']=isset($data['Input Tip'])?$data['Input Tip']:null;
-				$field['input_required']=isset($data['Input Required'])?$data['Input Required']:null;
-				$field['input_regex']=isset($data['Input Regex'])?$data['Input Regex']:null;
-				$field['input_order']=isset($data['Input Order'])?$data['Input Order']:null;
-				$field['input_regex_error_msg']=isset($data['Input Regex Error Message'])?$data['Input Regex Error Message']:null;
 				$res = $this->student_information->addField($tableName,$field);
 				if($res !== null){
 					$this->responseJSON(false,$res);
 					return;
 				}
-				$this->responseJSON(true,'Successfully added field');
-				return;
 				break;
 			case 'FE':
+				if(!isset($data['FE'])){
+					$this->responseJSON(false,'Missing floating entity data.');
+					return;
+				}
+				if(!isset($data['FE']['Table']['Name'])){
+					$this->responseJSON(false,'Missing floating entity table data.');
+					return;
+				}
+				if(!isset($data['FE']['Default Cardinality'])){
+					$defaultCardinality = 1;
+				}else{
+					$defaultCardinality = $data['FE']['Default Cardinality'];
+				}
+				
+				$cardinalityField = isset($data['FE']['Cardinality Field Name'])?$data['FE']['Cardinality Field Name']:null;
+				
+				$res = $this->student_information->addFEField($tableName,$data['FE']['Table']['Name'],$field,$cardinalityField,$defaultCardinality);
+				
+				if($res !== null){
+					$this->responseJSON(false,$res);
+					return;
+				}
 				break;
 			case 'MC':
 				break;
@@ -128,6 +150,8 @@ class Formedit extends StudentInfoController {
 				$this->responseJSON(false,'Invalid Input Type');
 				return;
 		}
+		$this->responseJSON(true,'Successfully added field');
+		return;
 		
 	}
 	

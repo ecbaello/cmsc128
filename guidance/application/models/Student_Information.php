@@ -69,10 +69,6 @@ class Student_Information extends AdvancedInputsModel{
 				'input_type'=>'text',
 				'essential'=>TRUE
 			));
-			
-			$this->addMCField(self::BaseTableTableName,MCTypes::SINGLE,self::SexFieldName,'Sex',true);
-			$this->addChoice(self::BaseTableTableName,self::SexFieldName,'Male');
-			$this->addChoice(self::BaseTableTableName,self::SexFieldName,'Female');
 		}
 	}
 	
@@ -95,6 +91,14 @@ class Student_Information extends AdvancedInputsModel{
 			'input_type'=>'text',
 			'input_required'=>FALSE
 		));
+		
+		$this->addMCField(self::BaseTableTableName,MCTypes::SINGLE,array(
+			'name'=>self::SexFieldName,
+			'title'=>'Sex',
+			'input_required'=>true
+		));
+		$this->addChoice(self::BaseTableTableName,self::SexFieldName,'Male');
+		$this->addChoice(self::BaseTableTableName,self::SexFieldName,'Female');
 		
 		$this->addField(self::BaseTableTableName,array(
 			'name'=>'birthdate',
@@ -137,7 +141,12 @@ class Student_Information extends AdvancedInputsModel{
 			
 			$this->addTable(self::FamilyDataTableName, 'Family Data');
 
-			$this->addMCField(self::FamilyDataTableName,MCTypes::MULTIPLE,'parents_marital_status','Parent\'s Marital Status',true,'Check as many that applies');
+			$this->addMCField(self::FamilyDataTableName,MCTypes::MULTIPLE,array(
+				'name'=>'parents_marital_status',
+				'title'=>'Parent\'s Marital Status',
+				'input_required'=>true,
+				'input_tip'=>'Check as many that applies'
+			));
 			$this->addChoice(self::FamilyDataTableName,'parents_marital_status','Parents still married');
 			$this->addChoice(self::FamilyDataTableName,'parents_marital_status','Parents separated');
 			$this->addChoice(self::FamilyDataTableName,'parents_marital_status','Father re-married');
@@ -323,7 +332,12 @@ class Student_Information extends AdvancedInputsModel{
 				'type'=>'varchar(100)',
 				'input_type'=>'text'
 			));
-			$this->addMCField(self::EducationalBGTableName,MCTypes::MULTIPLE,'high_school_type','Type of High School',true,'Check as many as appropriate');
+			$this->addMCField(self::EducationalBGTableName,MCTypes::MULTIPLE,array(
+				'name'=>'high_school_type',
+				'title'=>'Type of High School',
+				'input_required'=>true,
+				'input_tip'=>'Check as many as appropriate'
+			));
 			$this->addChoice(self::EducationalBGTableName,'high_school_type','(Private) Exclusive');
 			$this->addChoice(self::EducationalBGTableName,'high_school_type','(Private) Sectarian');
 			$this->addChoice(self::EducationalBGTableName,'high_school_type','(Private) Vocational/Technical');
@@ -335,7 +349,11 @@ class Student_Information extends AdvancedInputsModel{
 			$this->addChoice(self::EducationalBGTableName,'high_school_type','(Public) Barangay');
 			$this->addChoice(self::EducationalBGTableName,'high_school_type','(Public) Tech/Voc');
 			
-			$this->addMCField(self::EducationalBGTableName,MCTypes::SINGLE,'high_school_gradnum','High School Number of Graduating Students ',true);
+			$this->addMCField(self::EducationalBGTableName,MCTypes::SINGLE,array(
+				'name'=>'high_school_gradnum',
+				'title'=>'High School Number of Graduating Students',
+				'input_required'=>true
+			));
 			$this->addChoice(self::EducationalBGTableName,'high_school_gradnum','less than 25');
 			$this->addChoice(self::EducationalBGTableName,'high_school_gradnum','25-99');
 			$this->addChoice(self::EducationalBGTableName,'high_school_gradnum','100-199');
@@ -348,12 +366,21 @@ class Student_Information extends AdvancedInputsModel{
 		if(!$this->db->table_exists(self::FinancialInfoTableName)){
 			$this->addTable(self::FinancialInfoTableName,'Financial Information');
 			
-			$this->addMCField(self::FinancialInfoTableName,MCTypes::SINGLE,'family_annual_income','Family\'s Annual Income',true);
+			$this->addMCField(self::FinancialInfoTableName,MCTypes::SINGLE,array(
+				'name'=>'family_annual_income',
+				'title'=>'Family\'s Annual Income',
+				'input_required'=>true
+			));
 			$this->addChoice(self::FinancialInfoTableName,'family_annual_income','0-40,500');
 			$this->addChoice(self::FinancialInfoTableName,'family_annual_income','40,501-49,500');
 			$this->addChoice(self::FinancialInfoTableName,'family_annual_income','49,501-58,500');
 			
-			$this->addMCField(self::FinancialInfoTableName,MCTypes::MULTIPLE,'family_income_sources','Family\'s Income Sources',true,'Check as many that applies');
+			$this->addMCField(self::FinancialInfoTableName,MCTypes::MULTIPLE,array(
+				'name'=>'family_income_sources',
+				'title'=>'Family\'s Income Sources',
+				'input_required'=>true,
+				'input_tip'=>'Check as many that applies'
+			));
 			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','Salaries/Wages/Commission');
 			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','Farming/Fishing');
 			$this->addChoice(self::FinancialInfoTableName,'family_income_sources','Own Business');
