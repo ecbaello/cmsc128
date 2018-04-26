@@ -440,8 +440,9 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 		return candidates;
 	}
 	
-	$scope.addChoice = function(fieldKey,isCustom){
-		if(fieldKey==-1){
+	$scope.addChoice = function(fieldID,isCustom){
+		var fieldKey = fieldID;
+		if(fieldID==-1){
 			if( (isCustom && $scope.newField.newCustom=='') || (!isCustom && $scope.newField.newChoice=='') ){
 				return;
 			}
@@ -453,23 +454,38 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 			$scope.newField.newChoice = '';
 			$scope.newField.newCustom = '';
 		}else{
-			if( (isCustom && $scope.newCustom[fieldKey]=='') || (!isCustom && $scope.newChoice[fieldKey]==''))
+			
+			for(var i = 0 ; i<$scope.currCategory.Fields.length ; i++){
+				if($scope.currCategory.Fields[i].ID == fieldID){
+					fieldKey = i;
+					break;
+				}
+			}
+			
+			if( (isCustom && $scope.newCustom[fieldID]=='') || (!isCustom && $scope.newChoice[fieldID]==''))
 				return;
-			if($scope.currCategory.Fields[fieldKey].MC[isCustom?'Custom':'Choices'].includes(isCustom?$scope.newCustom[fieldKey]:$scope.newChoice[fieldKey])){
+			if($scope.currCategory.Fields[fieldKey].MC[isCustom?'Custom':'Choices'].includes(isCustom?$scope.newCustom[fieldID]:$scope.newChoice[fieldID])){
 				$rootScope.customAlert('Error','Choices must be unique.');
 				return;
 			}
-			$scope.currCategory.Fields[fieldKey].MC[isCustom?'Custom':'Choices'].push(isCustom?$scope.newCustom[fieldKey]:$scope.newChoice[fieldKey]);
-			$scope.newCustom[fieldKey] = '';
-			$scope.newChoice[fieldKey] = '';
+			$scope.currCategory.Fields[fieldKey].MC[isCustom?'Custom':'Choices'].push(isCustom?$scope.newCustom[fieldID]:$scope.newChoice[fieldID]);
+			$scope.newCustom[fieldID] = '';
+			$scope.newChoice[fieldID] = '';
 		}
 		
 	}
 	
-	$scope.deleteChoice = function(fieldKey,isCustom,choiceIndex){
-		if(fieldKey==-1){
+	$scope.deleteChoice = function(fieldID,isCustom,choiceIndex){
+		var fieldKey=fieldID;
+		if(fieldID==-1){
 			$scope.newField.MC[isCustom?'Custom':'Choices'].splice(choiceIndex,1);
 		}else{
+			for(var i = 0 ; i<$scope.currCategory.Fields.length ; i++){
+				if($scope.currCategory.Fields[i].ID == fieldID){
+					fieldKey = i;
+					break;
+				}
+			}
 			$scope.currCategory.Fields[fieldKey].MC[isCustom?'Custom':'Choices'].splice(choiceIndex,1);
 		}
 	}

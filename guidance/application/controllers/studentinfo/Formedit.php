@@ -214,7 +214,52 @@ class Formedit extends StudentInfoController {
 		
 		if(isset($fieldData['Input Type'])){
 			if($fieldData['Input Type']=='MC'){
-				//if(!isset(''))
+				if(!isset($fieldData['Name'])){
+					$this->responseJSON(false,'Name not found.');
+					return;
+				}
+				if(!isset($fieldData['MC'])){
+					$this->responseJSON(false,'Multiple choice data not found.');
+					return;
+				}
+				if(!isset($fieldData['MC']['Type'])){
+					$this->responseJSON(false,'Multiple choice type not found.');
+					return;
+				}
+				
+				$tableName = $this->student_information->getFieldTableName($fieldID);
+				if($tableName == null){
+					$this->responseJSON(false,'No such field.');
+					return;
+				}
+				
+				$MCType = $fieldData['MC']['Type']==MCTypes::SINGLE ? MCTypes::SINGLE:MCTypes::MULTIPLE;
+				$this->student_information->editMCFieldType($fieldID,$MCType);
+				$this->student_information->deleteMCChoices($fieldID);
+				foreach($fieldData['MC'] as $key=>$choices){
+					if($key != 'Choices' && $key != 'Custom')
+						continue;
+					
+					foreach($fieldData['MC'][$key] as $choice){
+						$res = $this->student_information->addChoice($tableName,$fieldData['Name'],$choice,$key=='Choices'?false:true);
+						if($res !=null){
+							$this->responseJSON(false,$res);
+							return;
+						}
+					}
+				}
+				
+			}
+			if($fieldData['Input Type']=='FE'){
+				if(!isset($fieldData['FE'])){
+					$this->responseJSON(false,'Floating entity data not found.');
+					return;
+				}
+				$this->student_information->editFE($fieldID,array(
+					'fe_name'=>isset($fieldData['FE']['Table']['Name'])?$fieldData['FE']['Table']['Name']:null,
+					'cardinality_field_name'=>isset($fieldData['FE']['Cardinality Field Name'])?$fieldData['FE']['Cardinality Field Name']:null,
+					'default_cardinality'=>isset($fieldData['FE']['Default Cardinality'])?$fieldData['FE']['Default Cardinality']:null
+				));
 			}
 		}
 		

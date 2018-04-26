@@ -138,7 +138,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 										<input type="text" ng-model="value.MC.Choices[index]"/>
 									</md-input-container>
 									<div>
-										<md-button class="md-fab md-mini md-raised md-primary" layout-align="center center" ng-click="deleteChoice(key,false,index)"><i class="fas fa-times"></i></md-button>
+										<md-button class="md-fab md-mini md-raised md-primary" layout-align="center center" ng-click="deleteChoice(value.ID,false,index)"><i class="fas fa-times"></i></md-button>
 									</div>
 								</div>
 								<div layout="row" layout-align="center">
@@ -147,10 +147,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 									<md-input-container flex class="md-no-margin md-no-padding">
 										<label>Value </label>
-										<input type="text" form="newChoice" ng-model="newChoice[key]"/>
+										<input type="text" form="newChoice" ng-model="newChoice[value.ID]"/>
 									</md-input-container>
 									<div>
-										<md-button class="md-primary md-raised" type="submit" form="newChoice" ng-click="addChoice(key,false)">
+										<md-button class="md-primary md-raised" type="submit" form="newChoice" ng-click="addChoice(value.ID,false)">
 											Add Choice
 										</md-button>
 									</div>
@@ -167,7 +167,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 										<input type="text" ng-model="value.MC.Custom[index]"/>
 									</md-input-container>
 									<div>
-										<md-button class="md-fab md-mini md-raised md-primary" layout-align="center center" ng-click="deleteChoice(key,true,index)"><i class="fas fa-times"></i></md-button>
+										<md-button class="md-fab md-mini md-raised md-primary" layout-align="center center" ng-click="deleteChoice(value.ID,true,index)"><i class="fas fa-times"></i></md-button>
 									</div>
 								</div>
 								<div layout="row" layout-align="center">
@@ -176,10 +176,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 									<md-input-container flex class="md-no-margin md-no-padding">
 										<label>Value</label>
-										<input type="text" form="newCustom" ng-model="newCustom[key]"/>
+										<input type="text" form="newCustom" ng-model="newCustom[value.ID]"/>
 									</md-input-container>
 									<div>
-										<md-button class="md-primary md-raised" type="submit" form="newCustom" ng-click="addChoice(key,true)">
+										<md-button class="md-primary md-raised" type="submit" form="newCustom" ng-click="addChoice(value.ID,true)">
 											Add Choice
 										</md-button>
 									</div>
@@ -187,7 +187,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</fieldset>
 						</fieldset>
 						<div layout="row" layout-align="center center">
-							<md-button type="submit" class="md-raised md-primary md-no-margin" ng-disabled="busy" ng-click="changeField('edit',key)">
+							<md-button type="submit" class="md-raised md-primary md-no-margin" ng-disabled="busy" ng-click="changeField('edit',value.ID)">
 									Save Changes
 							</md-button>
 						</div>

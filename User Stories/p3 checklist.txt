@@ -10,12 +10,12 @@ delete table & fields - done 4/23/18
 
 add field
 	- text, number, date - done/4/23/18
-	- fe
-	- mc
+	- fe - done 4/26/18
+	- mc - done 4/26/18
 edit field
 	- text, number, date - done 4/23/18
-	- fe
-	- mc
+	- fe - done 4/26/18
+	- mc - done 4/26/18
 
 print student data
 test formula + test result

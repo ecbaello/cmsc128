@@ -320,6 +320,16 @@ class StudentInfoBaseModel extends CI_Model{
 		return $result[0][self::FieldRegistryPKName];
 	}
 	
+	public function getFieldTableName($fieldID){
+		$this->db->select(self::TableRegistryPKName);
+		$this->db->where(self::FieldRegistryPKName,$fieldID);
+		$res = $this->db->get(self::FieldRegistryTableName)->result_array();
+		if(count($res)!=1){
+			return;
+		}
+		return $this->db->get_where(self::TableRegistryTableName,array(self::TableRegistryPKName=>$res[0][self::TableRegistryPKName]))->result_array()[0][self::TableNameFieldName];
+	}
+	
 	public function getFieldTitle($tableName,$fieldName){
 		$tableID = $this->getTableID($tableName);
 		
@@ -625,6 +635,31 @@ class AdvancedInputsModel extends StudentInfoBaseModel{
 		$MCID = $res[0][self::MCRegistryPKName];
 		$this->db->where(self::MCRegistryPKName,$MCID);
 		$this->db->delete(self::ChoiceRegistryTableName);
+	}
+	
+	public function editFE($FEFieldID,$data){
+		//data => fe_name,cardinality_field_name,default_cardinality
+		$update = array();
+		if(!isset($data['fe_name'])){
+			return 'Floating Entity name not set.';
+		}
+		
+		$baseTableName = $this->getFieldTableName($FEFieldID);
+		if($baseTableName == null){
+			return 'No such field';
+		}
+		
+		$update[self::FEIDFieldName]=$this->getTableID($data['fe_name']);
+		
+		if(isset($data['cardinality_field_name'])){
+			$update[self::FECardinalityFieldIDFieldName]=$this->getFieldID($baseTableName,$data['cardinality_field_name']);
+		}
+		if(isset($data['default_cardinality'])){
+			$update[self::FEDefaultCardinalityFieldName]=$data['default_cardinality'];
+		}	
+		
+		$this->db->where(self::FieldRegistryPKName,$FEFieldID);
+		$this->db->update(self::FERegistryTableName,$update);
 	}
 	
 	public function editMCFieldType($MCFieldID,$MCType){
