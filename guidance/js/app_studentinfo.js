@@ -140,40 +140,13 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 	$scope.currCategoryKey = 0;
 	$scope.currCategory = {};
 	
-	$scope.newTable = {
-		'Title':'',
-		'Name':'',
-		'Floating':false,
-	};
-	$scope.newField = {
-		'Title':'',
-		'Name':'',
-		'Input Type':'text',
-		'Input Required':false,
-		'Input Regex':'',
-		'Input Regex Error Message':'',
-		'Input Order':0,
-		'Input Tip':'',
-		'FE':{
-			'Table':{
-				'Title':'',
-				'Name':''
-			},
-			'Cardinality Field Name':'',
-			'Default Cardinality':1
-		},
-		'MC':{
-			'Type':1,
-			'Choices':[],
-			'Custom':[]
-		}
-	};
+	$scope.newTable = {};
+	$scope.newField = {};
+	
 	$scope.newField.newChoice = '';
 	$scope.newField.newCustom = '';
 	$scope.newChoice = [];
 	$scope.newCustom = [];
-	
-	$scope.placeholder;
 	
 	$scope.fields = {};
 	/*
@@ -206,11 +179,42 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 					res = parseInt(a.order,10)-parseInt(b.order,10);
 					return res==0? parseInt(a.id,10)-parseInt(b.id,10):res;
 				});
-				console.log($scope.fields[key]);
 				updateOrder(false,key);
 			}
 			updateOrder(true);
+			$scope.initNewInput();
 		});
+	}
+	
+	$scope.initNewInput = function(){
+		$scope.newTable = {
+			'Title':'',
+			'Name':'',
+			'Floating':false,
+		};
+		$scope.newField = {
+			'Title':'',
+			'Name':'',
+			'Input Type':'text',
+			'Input Required':false,
+			'Input Regex':'',
+			'Input Regex Error Message':'',
+			'Input Order':0,
+			'Input Tip':'',
+			'FE':{
+				'Table':{
+					'Title':'',
+					'Name':''
+				},
+				'Cardinality Field Name':'',
+				'Default Cardinality':1
+			},
+			'MC':{
+				'Type':1,
+				'Choices':[],
+				'Custom':[]
+			}
+		};
 	}
 	
 	$scope.changeCategory = function(categoryKey){

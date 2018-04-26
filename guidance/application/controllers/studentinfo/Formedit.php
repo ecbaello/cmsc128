@@ -145,6 +145,34 @@ class Formedit extends StudentInfoController {
 				}
 				break;
 			case 'MC':
+				if(!isset($data['MC'])){
+					$this->responseJSON(false,'Missing multiple choice data.');
+					return;
+				}
+				if(!isset($data['MC']['Type'])){
+					$data['MC']['Type']=MCTypes::SINGLE;
+				}
+				
+				$data['MC']['Type'] = $data['MC']['Type']==MCTypes::SINGLE?MCTypes::SINGLE:MCTypes::MULTIPLE;
+				
+				$res = $this->student_information->addMCField($tableName,$data['MC']['Type'],$field);
+				if($res !=null){
+					$this->responseJSON(false,$res);
+					return;
+				}
+				foreach($data['MC'] as $key=>$choices){
+					if($key != 'Choices' && $key != 'Custom')
+						continue;
+					
+					foreach($data['MC'][$key] as $choice){
+						$res = $this->student_information->addChoice($tableName,$field['name'],$choice,$key=='Choices'?false:true);
+						if($res !=null){
+							$this->responseJSON(false,$res);
+							return;
+						}
+					}
+				}
+				
 				break;
 			default:
 				$this->responseJSON(false,'Invalid Input Type');

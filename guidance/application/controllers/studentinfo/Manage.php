@@ -65,7 +65,19 @@ class Manage extends StudentInfoController {
 					$FEData = array();
 					foreach($FEFields as $index=>$FEField){
 						foreach($FEField as $name=>$value){
-							$FEData[$index][$name]=$value;
+							
+							if($this->student_information->getMCType($FETableName,$name)==MCTypes::MULTIPLE){
+								$FEData[$index][$name]=array();
+								$MCData = json_decode($value,true);
+								foreach($MCData['Custom'] as $i2=>$val){
+									$FEData[$index][$name]['Custom'][$i2]=$val;
+								}
+								foreach($MCData['Normal'] as $i2=>$val){
+									$FEData[$index][$name][$i2]=$val;
+								}
+							}else{
+								$FEData[$index][$name]=$value;
+							}
 						}
 					}
 					$fields[$field[StudentInfoBaseModel::FieldNameFieldName]]=$FEData;

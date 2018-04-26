@@ -31,10 +31,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</md-button>
 			</div>
 		</div>
-		<form id="nfnewChoice"></form> <!--THESE FORMS ARE IMPORTANT-->
-		<form id="nfnewCustom"></form> <!--THESE FORMS ARE IMPORTANT-->
-		<form id="newChoice"></form> <!--THESE FORMS ARE IMPORTANT-->
-		<form id="newCustom"></form> <!--THESE FORMS ARE IMPORTANT-->
+		<form class="md-no-margin md-no-padding" id="nfnewChoice"></form> <!--THESE FORMS ARE IMPORTANT-->
+		<form class="md-no-margin md-no-padding" id="nfnewCustom"></form> <!--THESE FORMS ARE IMPORTANT-->
+		<form class="md-no-margin md-no-padding" id="newChoice"></form> <!--THESE FORMS ARE IMPORTANT-->
+		<form class="md-no-margin md-no-padding" id="newCustom"></form> <!--THESE FORMS ARE IMPORTANT-->
 		<div layout-fill class="md-no-padding">
 			<md-card layout="column" ng-repeat="(key,value) in currCategory.Fields | orderBy:'\u0022Input Order\u0022'" ng-if="value['Input Type']!='hidden'">
 				<md-toolbar layout="row" layout-align="space-between center" style="background-color:#014421;color:white">
