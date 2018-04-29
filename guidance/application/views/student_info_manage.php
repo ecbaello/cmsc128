@@ -10,7 +10,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 #tables td, #tables th {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 4px;
 }
 
 #tables tr:nth-child(even){background-color: #f2f2f2;}
@@ -66,16 +66,59 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<table id="tables">
 				<tr>
 					<th ng-repeat="(key,value) in params">
-						{{value.title}}
+						<md-button ng-click="sort(key)" class="md-no-margin">
+							{{value.title}}
+						</md-button>
 					</th>
 				</tr>
-				<tr ng-repeat="(k,v) in results">
+				<tr ng-repeat="(k,v) in results | limitTo:division:((currIndex-1)*division)">
 					<td ng-repeat="v2 in v">
 						<a ng-if="$first" class=" md-button md-no-margin" href="<?=base_url().'studentinfo/manage/student/'?>{{v2}}">{{v2}}</a>
 						<span ng-if="!$first">{{v2}}</span>
 					</td>
 				</tr>
 			</table>
+			<div layout="row" layout-align="space-between" layout-margin>
+				<div layout="row" layout-padding>
+					<span>Jump To:</span>
+					<md-select ng-model="currIndex" class="md-no-margin md-no-padding">
+						<md-option ng-repeat="v in getNumber(results.length/division) track by $index" ng-value="$index+1">
+							{{$index+1}}
+						</md-option>
+					</md-select>
+				</div>
+				<div layout="row" layout-align="center" layout-padding>
+					<md-button class="md-no-margin md-no-padding md-fab md-mini md-raised" ng-disabled="currIndex<=1" ng-click="nav(-1)">
+						<i class="fas fa-angle-left"></i>
+					</md-button>
+					<span>{{currIndex}}</span>
+					<md-button class="md-no-margin md-no-padding md-fab md-mini md-raised" ng-disabled="currIndex>=parseInt(results.length/division)" ng-click="nav(1)">
+						<i class="fas fa-angle-right"></i>
+					</md-button>
+				</div>
+				<div layout="row" layout-padding>
+					<span>
+						No. of Results Per Page:
+					</span>
+					<md-select ng-model="division" class="md-no-margin md-no-padding">
+						<md-option value=5>
+							5
+						</md-option>
+						<md-option value=10>
+							10
+						</md-option>
+						<md-option value=25>
+							25
+						</md-option>
+						<md-option value=50>
+							50
+						</md-option>
+						<md-option value=100>
+							100
+						</md-option>
+					</md-select>
+				</div>
+			</div>
 		</md-content>
 	</div>
 

@@ -98,20 +98,37 @@ app.controller('admin',function($scope,$rootScope,$http,$mdDialog,$window){
 		});
 	}
 	
-	$scope.changePassword = function(){
-		$rootScope.post(
-			$rootScope.baseURL+'admin/action/changepass/',
-			$scope.account,
-			function(response){
-				$rootScope.customConfirm('Success',response.msg,function(){
-					$window.location.reload();
-				},function(){
-					$window.location.reload();
-				});
-			},function(response){
-				$rootScope.customAlert('Error',response.msg);
-			}
-		);
+	$scope.change = function(mode){
+		var url='';
+		switch(mode){
+			case 0:
+				url=$rootScope.baseURL+'admin/action/changeuser/';
+				break;
+			case 1:
+				url = $rootScope.baseURL+'admin/action/changeemail';
+				break;
+			case 2:
+				url = $rootScope.baseURL+'admin/action/changepass';
+				break;
+			default:
+				return;
+		}
+		
+		$rootScope.customConfirm('Warning','Are you sure about this?',function (){
+			$rootScope.post(
+				url,
+				$scope.account,
+				function(response){
+					$rootScope.customConfirm('Success',response.msg,function(){
+						$window.location.reload();
+					},function(){
+						$window.location.reload();
+					});
+				},function(response){
+					$rootScope.customAlert('Error',response.msg);
+				}
+			)
+		},function(){});
 	}
 	
 });

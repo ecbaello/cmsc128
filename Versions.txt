@@ -6,3 +6,6 @@ Angular 1.6.7
 Angular Material 1.1.6
 Font Awesome 5.0.6
 Ion Auth 2.6.0
+
+ngTable 2.0.2
+ngTableToCSV - latest commit: Jan 22, 2017

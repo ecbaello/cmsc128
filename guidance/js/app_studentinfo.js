@@ -497,16 +497,17 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 });
 
 
-app.controller('student_search',function($scope,$rootScope,$window,$http){
+app.controller('student_search',function($scope,$rootScope,$window,$http,$filter){
 	
-	$scope.params = {};
+	var results = [];
+	$scope.params = [];
 	$scope.filters = [];
 	$scope.results = [];
+	$scope.reverse = [];
+	$scope.currIndex = 1;
+	$scope.division = 5;
 	
 	$scope.init = function(){
-		//alert('debug');
-		//console.log($rootScope.baseURL+'studentinfo/manage/get/params');
-		
 		$http.get($rootScope.baseURL+'studentinfo/manage/get/params')
 		.then(function(response){
 			$scope.params = response.data;
@@ -517,19 +518,16 @@ app.controller('student_search',function($scope,$rootScope,$window,$http){
 	$scope.addFilter = function(type){
 		
 		var toAdd = JSON.parse($scope.toAddFilter);
-		console.log(toAdd);
 		var filter = {
 			name:toAdd.name,
 			title:toAdd.title,
 			type:type
 		};
 		$scope.filters.push(filter);
-		//console.log($scope.filters);
 	}
 	
 	$scope.removeFilter = function(index){
 		$scope.filters.splice(index,1);
-		console.log($scope.filters);
 	}
 	
 	$scope.getLength = function(object){
@@ -542,13 +540,36 @@ app.controller('student_search',function($scope,$rootScope,$window,$http){
 			return;
 		}
 		$rootScope.busy = true;
-		console.log($rootScope.baseURL+'studentinfo/manage/get/search/'+encodeURIComponent(angular.toJson($scope.filters)));
 		$http.get($rootScope.baseURL+'studentinfo/manage/get/search/'+encodeURIComponent(angular.toJson($scope.filters)))
 		.then(function(response){
-			$scope.results = response.data;
-			console.log($scope.results);
+			results = response.data;
+			$scope.results = results;
+			console.log(results);
 			$rootScope.busy = false;
 		});
+	}
+	
+	$scope.sort = function(key){
+		if(typeof $scope.params[key] === 'undefined')
+			return;
+		if(typeof $scope.reverse[key]==='undefined')
+			$scope.reverse[key] = false;
+		else
+			$scope.reverse[key] = !$scope.reverse[key];
+		$scope.results = $filter('orderBy')(results,$scope.params[key].name,$scope.reverse[key]);
+	}
+	
+	$scope.getNumber = function(num) {
+		num = parseInt(Math.round(num),10);
+		return new Array(num);   
+	}
+	
+	$scope.parseInt = function(num){
+		return parseInt(Math.round(num),10);
+	}
+	
+	$scope.nav = function(amt){
+		$scope.currIndex+=amt;
 	}
 
 });

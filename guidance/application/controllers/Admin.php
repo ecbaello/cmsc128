@@ -40,28 +40,68 @@ class Admin extends BaseController {
 					$this->responseJSON(false,'Missing input.');
 					return;
 				}
-				if(!$this->ion_auth->hash_password_db($this->ion_auth->user()->id,$data['userPassword'])){
+				if(!$this->ion_auth->hash_password_db($this->ion_auth->user()->row()->id,$data['userPassword'])){
 					$this->responseJSON(false,'Wrong password.');
 					return;
 				}
-				$this->responseJSON(true,'Waw.');
+				
+				$res = $this->ion_auth->update(1,array(
+					'username'=>$data['newUsername']
+				));
+				
+				if(!$res){
+					$this->responseJSON(false,'Unsuccessful. Please choose a different username.');
 					return;
-				$this->changeUsername($data['newUsername']);
-				break;
+				}
+				
+				$this->responseJSON(true,'Username changed.');
+				return;
 			case 'changepass':
 				if(!isset($data['newPassword1'])||!isset($data['newPassword2'])||!isset($data['passPassword'])){
 					$this->responseJSON(false,'Missing input');
 					return;
 				}
-				$this->changePassword($data['newPassword1'],$data['newPassword2']);
-				break;
+				if($data['newPassword1']!==$data['newPassword2']){
+					$this->responseJSON(false,'Passwords don\'t match');
+					return;
+				}
+				if(!$this->ion_auth->hash_password_db($this->ion_auth->user()->row()->id,$data['passPassword'])){
+					$this->responseJSON(false,'Wrong password.');
+					return;
+				}
+				$res = $this->ion_auth->update(1,array(
+					'password'=>$data['newPassword1']
+				));
+				
+				if(!$res){
+					$this->responseJSON(false,'Unsuccessful. Please choose a different password.');
+					return;
+				}
+				
+				$this->responseJSON(true,'Password changed.');
+				return;
 			case 'changeemail':
 				if(!isset($data['newEmail'])||!isset($data['emailPassword'])){
 					$this->responseJSON(false,'Missing input.');
 					return;
 				}
-				$this->changeEmail($data['newEmail']);
-				break;
+				if(!$this->ion_auth->hash_password_db($this->ion_auth->user()->row()->id,$data['emailPassword'])){
+					$this->responseJSON(false,'Wrong password.');
+					return;
+				}
+				$res = $this->ion_auth->update(1,array(
+					'email'=>$data['newEmail']
+				));
+				
+				if(!$res){
+					$this->responseJSON(false,'Unsuccessful. Please choose a different email.');
+					return;
+				}
+				
+				$this->responseJSON(true,'Email changed.');
+				return;
+			default:
+				show_404();
 		}
 	}
 	

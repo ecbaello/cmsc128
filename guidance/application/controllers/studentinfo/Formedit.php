@@ -268,7 +268,7 @@ class Formedit extends StudentInfoController {
 	}
 	
 	private function addTable($data){
-		$res = $this->student_information->addTable($data['Name'],$data['Title'],$data['Floating']?Flags::FLOATING:Flags::DEF);
+		$res = $this->student_information->addTable(DB_PREFIX.$data['Name'],$data['Title'],$data['Floating']?Flags::FLOATING:Flags::DEF);
 		if($res !=null){
 			$this->responseJSON(false,$res);
 			return;

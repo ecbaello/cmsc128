@@ -18,7 +18,7 @@ edit field
 	- mc - done 4/26/18
 
 print student data
-test formula + test result
+test formula + test result - cancelled
 
 --
 Developer
@@ -31,22 +31,18 @@ specific student information db meta - done 4/14/18
 date formatting -done 4/14/18
 restructure multiple choice (store data as json) -done 4/18/18
 
-change admin account details
+change admin account details - 4/29/18
 	- change password
 	- change email
 	- change username
 	
-student results filters
-	- limit results number
+Student results filters - 4/29/18
 	
 archives
 	- table archives
 	- student record archives
-	- test archives
 	
 permanently delete
 	-tables & fields
 	-student records
-	-test results
-	-tests
 
