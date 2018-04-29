@@ -211,7 +211,7 @@ class StudentInfoBaseModel extends CI_Model{
 	
 	public function deleteField($fieldID,$permanent=false){
 		
-		$this->db->select(self::EssentialFieldName);
+		$this->db->select(self::TableRegistryPKName.','.self::FieldNameFieldName.','.self::EssentialFieldName);
 		$this->db->where(self::FieldRegistryPKName,$fieldID);
 		$res = $this->db->get(self::FieldRegistryTableName)->result_array();
 		
@@ -223,17 +223,27 @@ class StudentInfoBaseModel extends CI_Model{
 			return 'Field is essential.';
 		}
 		
+		$this->db->select(self::TableNameFieldName);
+		$this->db->where(self::TableRegistryPKName,$res[0][self::TableRegistryPKName]);
+		$tableName = $this->db->get(self::TableRegistryTableName)->result_array()[0][self::TableNameFieldName];
+		
 		if(!$permanent){
 			$this->db->where(self::FieldRegistryPKName,$fieldID);
 			$this->db->set(self::FlagFieldName,self::FlagFieldName.'|'.Flags::DELETED,false);
 			$this->db->update(self::FieldRegistryTableName);
+		}else{
+			if(!$this->dbforge->drop_column($tableName,$res[0][self::FieldNameFieldName])){
+				return 'Database error.';
+			}
+			$this->db->where(self::FieldRegistryPKName,$fieldID);
+			$this->db->delete(self::FieldRegistryTableName);
 		}
 		return null;
 	}
 	
 	public function deleteTable($tableID,$permanent=false){
 		
-		$this->db->select(self::EssentialFieldName);
+		$this->db->select(self::TableNameFieldName.','.self::EssentialFieldName);
 		$this->db->where(self::TableRegistryPKName,$tableID);
 		$res = $this->db->get(self::TableRegistryTableName)->result_array();
 		
@@ -249,6 +259,12 @@ class StudentInfoBaseModel extends CI_Model{
 			$this->db->where(self::TableRegistryPKName,$tableID);
 			$this->db->set(self::FlagFieldName,self::FlagFieldName.'|'.Flags::DELETED,false);
 			$this->db->update(self::TableRegistryTableName);
+		}else{
+			if(!$this->dbforge->drop_table($res[0][self::TableNameFieldName])){
+				return 'Database error.';
+			}
+			$this->db->where(self::TableRegistryPKName,$tableID);
+			$this->db->delete(self::TableRegistryTableName);
 		}
 		return null;
 	}
@@ -284,6 +300,13 @@ class StudentInfoBaseModel extends CI_Model{
 		return null;
 	}
 	
+	public function editInputOrder($fieldID,$order){
+		$this->db->where(self::FieldRegistryPKName,$fieldID);
+		$this->db->update(self::FieldRegistryTableName,array(
+			self::FieldInputOrderFieldName=>$order
+		));
+	}
+	
 	public function editTableTitle($tableID,$newTableTitle){
 		//Check for uniqueness
 		$this->db->where(self::TableTitleFieldName,$newTableTitle);
@@ -303,6 +326,54 @@ class StudentInfoBaseModel extends CI_Model{
 			self::TableTitleFieldName=>$newTableTitle
 		));
 		return null;
+	}
+	
+	public function getDeleted(){
+		$output = array();
+		
+		$this->db->where(self::FlagFieldName.'|'.Flags::DELETED,self::FlagFieldName,false);
+		$res = $this->db->get(self::TableRegistryTableName)->result_array();
+		$tables = array();
+		foreach($res as $r){
+			array_push($tables,array(
+				'ID'=>$r[self::TableRegistryPKName],
+				'Title'=>$r[self::TableTitleFieldName],
+				'Name'=>$r[self::TableNameFieldName]
+			));
+		}
+		$output['Tables']=$tables;
+		
+		$this->db->where(self::FlagFieldName.'|'.Flags::DELETED,self::FlagFieldName,false);
+		$res = $this->db->get(self::FieldRegistryTableName)->result_array();
+		$fields = array();
+		foreach($res as $r){
+			$this->db->select(self::TableTitleFieldName);
+			$this->db->where(self::TableRegistryPKName,$res[0][self::TableRegistryPKName]);
+			$tableTitle = $this->db->get(self::TableRegistryTableName)->result_array()[0][self::TableTitleFieldName];
+			array_push($fields,array(
+				'ID'=>$r[self::FieldRegistryPKName],
+				'Table Title'=>$tableTitle,
+				'Title'=>$r[self::FieldTitleFieldName],
+				'Name'=>$r[self::FieldNameFieldName],
+				'Input Type'=>$r[self::FieldInputTypeFieldName]
+			));
+		}
+		$output['Fields']=$fields;
+		
+		$this->db->where(self::FlagFieldName.'|'.Flags::DELETED,self::FlagFieldName,false);
+		$res = $this->db->get(self::BaseTableTableName)->result_array();
+		$records = array();
+		foreach($res as $r){
+			array_push($records,array(
+				'ID'=>$r[self::BaseTablePKName],
+				'Student Number'=>$r[self::StudentNumberFieldName],
+				'Last Name'=>$r[self::LastNameFieldName],
+				'First Name'=>$r[self::FirstNameFieldName],
+				'Middle Name'=>$r[self::MiddleNameFieldName]
+			));
+		}
+		$output['Records']=$records;
+		return $output;
 	}
 	
 	protected function getFieldID ($tableName,$fieldName){
@@ -423,11 +494,16 @@ class StudentInfoBaseModel extends CI_Model{
 		
 	}
 	
-	public function editInputOrder($fieldID,$order){
+	public function restoreField($fieldID){
 		$this->db->where(self::FieldRegistryPKName,$fieldID);
-		$this->db->update(self::FieldRegistryTableName,array(
-			self::FieldInputOrderFieldName=>$order
-		));
+		$this->db->set(self::FlagFieldName,self::FlagFieldName.'&'.Flags::DEF,false);
+		$this->db->update(self::FieldRegistryTableName);
+	}
+	
+	public function restoreTable($tableID){
+		$this->db->where(self::TableRegistryPKName,$tableID);
+		$this->db->set(self::FlagFieldName,self::FlagFieldName.'&'.Flags::DEF,false);
+		$this->db->update(self::TableRegistryTableName);
 	}
 	
 }

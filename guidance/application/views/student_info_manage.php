@@ -78,7 +78,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</td>
 				</tr>
 			</table>
-			<div layout="row" layout-align="space-between" layout-margin>
+			<div layout="row" layout-align="space-between center" layout-margin>
 				<div layout="row" layout-padding>
 					<span>Jump To:</span>
 					<md-select ng-model="currIndex" class="md-no-margin md-no-padding">

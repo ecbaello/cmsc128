@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
-<div flex layout="row" layout-align="center" layout-padding layout-margin>
+<div flex layout="row" layout-align="center center" layout-padding layout-margin>
 	<span class="md-headline">Welcome to the Guidance Office Homepage.</span>
 </div>
 <div layout="row" layout-align="center start" flex>

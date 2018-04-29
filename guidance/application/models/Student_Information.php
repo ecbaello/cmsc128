@@ -72,6 +72,17 @@ class Student_Information extends AdvancedInputsModel{
 		}
 	}
 	
+	public function deleteStudent($permanent=false,$studentNumber){
+		if(!$permanent){
+			$this->db->where(self::StudentNumberFieldName,$studentNumber);
+			$this->db->set(self::FlagFieldName,self::FlagFieldName.'|'.Flags::DELETED,false);
+			$this->db->update(self::BaseTableTableName);
+		}else{
+			$this->db->where(self::StudentNumberFieldName,$studentNumber);
+			$this->db->delete(self::BaseTableTableName);
+		}
+	}
+	
 	public function initDefaults(){
 		
 		//Bacgkround Information 
@@ -438,6 +449,12 @@ class Student_Information extends AdvancedInputsModel{
 		return isset($result[0])?$result[0]:null;
 	}
 	
+	public function restoreStudent($studentNumber){
+		$this->db->where(self::StudentNumberFieldName,$studentNumber);
+		$this->db->set(self::FlagFieldName,self::FlagFieldName.'&'.Flags::DEF,false);
+		$this->db->update(self::BaseTableTableName);
+	}
+	
 	public function searchStudents($whereQuery = array()){
 	
 		//whereQuery: type=>and/or,query=> (field=>data)
@@ -451,6 +468,7 @@ class Student_Information extends AdvancedInputsModel{
 		}
 		
 		$this->db->select(implode(' , ',$fields));
+		$this->db->where(self::FlagFieldName.'|'.Flags::DELETED.' != ',self::FlagFieldName,false);
 		foreach($whereQuery as $query){
 			if($query['type']=='and')
 				$this->db->like($query['query']);

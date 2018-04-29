@@ -496,6 +496,16 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 	
 });
 
+app.controller('student_recbin',function($scope,$rootScope,$window,$http,$mdDialog){
+	$scope.archives = {};
+	$scope.currCategory = 'Tables';
+	$scope.init = function(){
+		$http.get($rootScope.baseURL+'studentinfo/archives').then(function(response){
+			$scope.archives = response.data;
+			console.log($scope.archives);
+		});
+	}
+})
 
 app.controller('student_search',function($scope,$rootScope,$window,$http,$filter){
 	
@@ -560,12 +570,12 @@ app.controller('student_search',function($scope,$rootScope,$window,$http,$filter
 	}
 	
 	$scope.getNumber = function(num) {
-		num = parseInt(Math.round(num),10);
+		num = parseInt(Math.ceil(num),10);
 		return new Array(num);   
 	}
 	
 	$scope.parseInt = function(num){
-		return parseInt(Math.round(num),10);
+		return parseInt(Math.ceil(num),10);
 	}
 	
 	$scope.nav = function(amt){

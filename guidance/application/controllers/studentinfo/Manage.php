@@ -33,6 +33,21 @@ class Manage extends StudentInfoController {
 		
 	}
 	
+	public function deleteStudent(){
+		$data = $this->input->post('data');
+		if($data == null){
+			$this->responseJSON(false,'Missing data');
+			return;
+		}
+		$res = $this->student_information->deleteStudent($data);
+		if($res != null){
+			$this->responseJSON(false,$res);
+			return;
+		}
+		$this->responseJSON(true,'Student Record deleted.');
+		return;
+	}
+	
 	private function getStudentData($studentNumber){
 		
 		$tables = $this->student_information->getTables();

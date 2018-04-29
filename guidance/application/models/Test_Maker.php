@@ -421,7 +421,7 @@ class Test_Maker extends CI_Model{
 	
 	public function generatePasswords($mode,$arg){
 		$this->db->select(StudentInfoBaseModel::StudentNumberFieldName);
-		$this->db->where(StudentInfoBaseModel::FlagFieldName.' !=',Flags::DELETED);
+		$this->db->where(StudentInfoBaseModel::FlagFieldName.'|'.Flags::DELETED.' != ',self::FlagFieldName,false);
 		if($mode == 0){
 			$this->db->like(StudentInfoBaseModel::StudentNumberFieldName,$arg,'after');
 		}else{

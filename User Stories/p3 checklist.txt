@@ -38,11 +38,10 @@ change admin account details - 4/29/18
 	
 Student results filters - 4/29/18
 	
-archives
-	- table archives
-	- student record archives
+recycle bin
+	- table 
+	- student record
 	
 permanently delete
 	-tables & fields
 	-student records
-

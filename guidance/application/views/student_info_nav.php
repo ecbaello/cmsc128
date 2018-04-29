@@ -1,8 +1,12 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
-<div flex layout="row" layout-align="center center" layout-padding>
-	<span class="md-headline">Student Information</span>
+<div flex layout="row" layout-align="space-around center">
+	<div flex="10"></div>
+	<span flex="80" class="md-headline" layout="row" layout-align="center center">Student Information</span>
+	<div flex="10">
+		<a href="<?= base_url().'studentinfo/bin'?>" class="md-button md-fab md-raised md-primary" layout="column" layout-align="center" title="Recycle Bin"><i class="fa fa-trash fa-2x" title="Recycle Bin"></i></a>
+	</div>
 </div>
 <div layout="row" layout-align="center start" flex>
 	<md-content>

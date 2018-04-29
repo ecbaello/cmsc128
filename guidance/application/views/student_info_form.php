@@ -23,6 +23,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<a ng-if="'<?=$mode?>'=='manage'" class="md-button md-primary md-raised" href="<?=base_url().'studentinfo/manage/printstudent/'.(isset($student_number)?$student_number:'')?>">Print</a>
 			<md-button ng-disabled="busy" class="md-raised md-primary" ng-click="submit('<?=$mode?>','<?=isset($student_id)? $student_id: ""?>')">Submit</md-button>
 		</div>
+		<div>
+		<md-button class=" md-raised md-primary">
+			Delete Record
+		</md-button>
+		</div>
 		<div layout-margin ng-if="'<?=$mode?>'!='add'">
 			<h2>Test Results: </h2>
 		</div>
