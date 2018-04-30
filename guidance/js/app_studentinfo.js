@@ -607,6 +607,19 @@ app.controller('student_recbin',function($scope,$rootScope,$window,$http,$mdDial
 	$scope.closeDialog = function(){
 		$mdDialog.hide();
 	}
+	
+	$scope.getNumber = function(num) {
+		num = parseInt(Math.ceil(num),10);
+		return new Array(num);   
+	}
+	
+	$scope.parseInt = function(num){
+		return parseInt(Math.ceil(num),10);
+	}
+	
+	$scope.nav = function(amt){
+		$scope.filters[$scope.currType].Index+=amt;
+	}
 })
 
 app.controller('student_search',function($scope,$rootScope,$window,$http,$filter){

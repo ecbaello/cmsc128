@@ -57,10 +57,56 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</tr>
 				<tr ng-repeat="d in filters[currType].Data">
 					<td ng-repeat="(k,v) in d" ng-click="showDialog(currType,d.ID)">
-						{{v}}
+						<span ng-if="k!='Student Number'">{{v}}</span>
+						<span ng-if="k=='Student Number'">
+							<a class="md-button md-no-margin" href="<?=base_url().'studentinfo/manage/student/'?>{{v}}">
+								{{v}}
+							</a>
+						</span>
 					</td>
 				</tr>
 			</table>
+			<div layout="row" layout-align="space-between center" layout-margin>
+				<div layout="row" layout-padding>
+					<span>Jump To:</span>
+					<md-select ng-model="filters[currType].Index" class="md-no-margin md-no-padding">
+						<md-option ng-repeat="v in getNumber(filters[currType].Data.length/filters[currType].Division) track by $index" ng-value="$index+1">
+							{{$index+1}}
+						</md-option>
+					</md-select>
+				</div>
+				<div layout="row" layout-align="center" layout-padding>
+					<md-button class="md-no-margin md-no-padding md-fab md-mini md-raised" ng-disabled="filters[currType].Index<=1" ng-click="nav(-1)">
+						<i class="fas fa-angle-left"></i>
+					</md-button>
+					<span>{{filters[currType].Index}}</span>
+					<md-button class="md-no-margin md-no-padding md-fab md-mini md-raised" ng-disabled="filters[currType].Index>=parseInt(filters[currType].Data.length/filters[currType].Division)" ng-click="nav(1)">
+						<i class="fas fa-angle-right"></i>
+					</md-button>
+				</div>
+				<div layout="row" layout-padding>
+					<span>
+						No. of Results Per Page:
+					</span>
+					<md-select ng-model="filters[currType].Division" class="md-no-margin md-no-padding">
+						<md-option value=5>
+							5
+						</md-option>
+						<md-option value=10>
+							10
+						</md-option>
+						<md-option value=25>
+							25
+						</md-option>
+						<md-option value=50>
+							50
+						</md-option>
+						<md-option value=100>
+							100
+						</md-option>
+					</md-select>
+				</div>
+			</div>
 		</div>
 	</md-content>
 	<div style="visibility: hidden">

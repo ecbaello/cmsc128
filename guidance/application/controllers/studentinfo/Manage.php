@@ -9,8 +9,11 @@ class Manage extends StudentInfoController {
 		//$this->load->view('student_info_form');
 	}
 	
-	public function student($studentNumber){
+	public function student($studentNumber = null){
 		
+		if($studentNumber == null){
+			show_404();
+		}
 		$studentNumber = urldecode($studentNumber);
 		
 		$studentInfo = $this->getStudentData($studentNumber);
@@ -21,8 +24,10 @@ class Manage extends StudentInfoController {
 		
 	}
 	
-	public function printStudent($studentNumber){
-		
+	public function printStudent($studentNumber=null){
+		if($studentNumber == null){
+			show_404();
+		}
 		$studentNumber = urldecode($studentNumber);
 		
 		$studentInfo = $this->getStudentData($studentNumber);
