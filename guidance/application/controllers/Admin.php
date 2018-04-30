@@ -113,5 +113,28 @@ class Admin extends BaseController {
 		echo json_encode($output);
 	}
 
+	public function db(){
+		$this->permissionRestrict();
+		$this->load->view('header');
+		$this->load->view('database_init');
+		$this->load->view('footer');
+	}
+	
+	public function initDB(){
+		$this->permissionRestrict();
+		$data = $this->input->post('data');
+		if($data==null){
+			$this->responseJSON(false,'Missing password.');
+			return;
+		}
+		if(!$this->ion_auth->hash_password_db($this->ion_auth->user()->row()->id,$data)){
+			$this->responseJSON(false,'Wrong password.');
+			return;
+		}
+		$this->load->model('student_information');
+		$this->student_information->initDefaults();
+		$this->responseJSON(true,'Initialized');
+		return;
+	}
 	
 }

@@ -131,4 +131,23 @@ app.controller('admin',function($scope,$rootScope,$http,$mdDialog,$window){
 		},function(){});
 	}
 	
+	$scope.initDB = function(){
+		$rootScope.busy=true;
+		$rootScope.post(
+			$rootScope.baseURL+'admin/initDB',
+			$scope.initdbpassword,
+			function(res){
+				$rootScope.customAlert('Success',res.msg);
+				$rootScope.busy=false;
+				$scope.initdbpassword='';
+				return;
+			},
+			function(res){
+				$rootScope.customAlert('Fail',res.msg);
+				$rootScope.busy=false;
+				return;
+			}
+		);
+	}
+	
 });

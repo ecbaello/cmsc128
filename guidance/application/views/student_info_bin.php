@@ -55,7 +55,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						{{h}}
 					</th>
 				</tr>
-				<tr ng-repeat="d in filters[currType].Data">
+				<tr ng-repeat="d in filters[currType].Data | limitTo:filters[currType].Division:((filters[currType].Index-1)*filters[currType].Division)">
 					<td ng-repeat="(k,v) in d" ng-click="showDialog(currType,d.ID)">
 						<span ng-if="k!='Student Number'">{{v}}</span>
 						<span ng-if="k=='Student Number'">
