@@ -42,6 +42,6 @@ recycle bin - 4/30/18
 	- table 
 	- student record
 	
-permanently delete
+permanently delete 4/30/18
 	-tables & fields
 	-student records
