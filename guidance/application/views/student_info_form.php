@@ -24,7 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<md-button ng-disabled="busy" class="md-raised md-primary" ng-click="submit('<?=$mode?>','<?=isset($student_id)? $student_id: ""?>')">Submit</md-button>
 		</div>
 		<div>
-		<md-button class=" md-raised md-primary">
+		<md-button ng-if="'<?=$mode?>'=='manage'" class=" md-raised md-primary" ng-click="deleteRecord('<?=isset($student_id)? $student_id: ""?>')">
 			Delete Record
 		</md-button>
 		</div>

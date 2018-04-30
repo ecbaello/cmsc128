@@ -10,8 +10,8 @@ class Bin extends StudentInfoController {
 	
 	public function getDeleted(){
 		$output = $this->student_information->getDeleted();
-		print_r($output);
-		return json_encode($output,JSON_NUMERIC_CHECK);
+		echo json_encode($output,JSON_NUMERIC_CHECK);
+		return;
 	}
 	
 	public function action($mode=null,$type=null){
@@ -28,7 +28,7 @@ class Bin extends StudentInfoController {
 		switch($mode){
 			case 'restore':
 				switch($type){
-					case 'table':
+					case 'Tables':
 						$res = $this->student_information->restoreTable($data);
 						if($res != null){
 							$this->responseJSON(false,$res);
@@ -36,7 +36,7 @@ class Bin extends StudentInfoController {
 						}
 						$this->responseJSON(true,'Table restored successfully.');
 						return;
-					case 'field':
+					case 'Fields':
 						$res = $this->student_information->restoreField($data);
 						if($res != null){
 							$this->responseJSON(false,$res);
@@ -44,7 +44,7 @@ class Bin extends StudentInfoController {
 						}
 						$this->responseJSON(true,'Field restored successfully.');
 						return;
-					case 'record':
+					case 'Records':
 						$res = $this->student_information->restoreStudent($data);
 						if($res != null){
 							$this->responseJSON(false,$res);
@@ -58,7 +58,7 @@ class Bin extends StudentInfoController {
 				return;
 			case 'delete':
 				switch($type){
-					case 'table':
+					case 'Tables':
 						$res = $this->student_information->deleteTable($data,true);
 						if($res != null){
 							$this->responseJSON(false,$res);
@@ -66,7 +66,7 @@ class Bin extends StudentInfoController {
 						}
 						$this->responseJSON(true,'Table permanently deleted.');
 						return;
-					case 'field':
+					case 'Fields':
 						$res = $this->student_information->deleteField($data,true);
 						if($res != null){
 							$this->responseJSON(false,$res);
@@ -74,7 +74,7 @@ class Bin extends StudentInfoController {
 						}
 						$this->responseJSON(true,'Field permanently deleted.');
 						return;
-					case 'record':
+					case 'Records':
 						$res = $this->student_information->deleteStudent($data,true);
 						if($res != null){
 							$this->responseJSON(false,$res);

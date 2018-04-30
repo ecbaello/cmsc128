@@ -20,9 +20,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 #tables th {
     padding-top: 12px;
     padding-bottom: 12px;
-    text-align: left;
+    text-align: center;
     background-color: #800000;
     color: white;
+}
+
+#tables th:hover{
+	cursor:pointer;
 }
 </style>
 
@@ -65,10 +69,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<md-content>
 			<table id="tables">
 				<tr>
-					<th ng-repeat="(key,value) in params">
-						<md-button ng-click="sort(key)" class="md-no-margin">
-							{{value.title}}
-						</md-button>
+					<th ng-repeat="(key,value) in params" ng-click="sort(key)">
+						{{value.title}}
 					</th>
 				</tr>
 				<tr ng-repeat="(k,v) in results | limitTo:division:((currIndex-1)*division)">

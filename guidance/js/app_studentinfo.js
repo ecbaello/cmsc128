@@ -10,11 +10,13 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 	$scope.currTestKey = 0;
 	
 	$scope.init = function(info=''){
+		$rootScope.busy = true;
 		$http.get($rootScope.baseURL+'studentinfo/add/get/form')
 		.then(function(response){
+			
 			$scope.tableData = response.data;
 			$scope.currCategory = response.data[$scope.currCategoryKey];
-			console.log($scope.tableData);
+			$rootScope.busy= false;
 		});
 		
 		if(info!=''){
@@ -70,6 +72,26 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		$scope.isTests =true;
 		$scope.currTestKey = testKey;
 		$scope.currTest = $scope.tests[testKey];
+	}
+	
+	$scope.deleteRecord = function(studentID=''){
+		if(!studentID)
+			return;
+		$rootScope.customConfirm('Warning','Are you sure you want to do this?',
+			function(){
+				$rootScope.post(
+					$rootScope.baseURL+'studentinfo/manage/deleteStudent',
+					studentID,
+					function(res){
+						$rootScope.customAlert('Success',res.msg);
+					},
+					function(res){
+						$rootScope.customAlert('Fail',res.msg);
+					}
+				);
+			},
+			function(){}
+		);
 	}
 	
 	$scope.getLength = function(object){
@@ -160,6 +182,7 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 	*/
 	
 	$scope.init = function(){
+		$rootScope.busy=true;
 		$http.get($rootScope.baseURL+'studentinfo/formedit/get/form/false').then(function(response){
 			$scope.tables = response.data;
 			$scope.currCategory = $scope.tables[$scope.currCategoryKey];
@@ -183,6 +206,7 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 			}
 			updateOrder(true);
 			$scope.initNewInput();
+			$rootScope.busy =false;
 		});
 	}
 	
@@ -496,14 +520,92 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 	
 });
 
-app.controller('student_recbin',function($scope,$rootScope,$window,$http,$mdDialog){
-	$scope.archives = {};
-	$scope.currCategory = 'Tables';
+app.controller('student_recbin',function($scope,$rootScope,$window,$http,$mdDialog,$filter){
+	$scope.bin = {};
+	$scope.currType = 'Tables';
+	$scope.filters = {
+		Tables:{
+			Reverse:false,
+			Data:[],
+			Index:1,
+			Division:10,
+			Headers:[]
+		},
+		Fields:{
+			Reverse:false,
+			Data:[],
+			Index:1,
+			Division:10,
+			Headers:[],
+		},
+		Records:{
+			Reverse:false,
+			Data:[],
+			Index:1,
+			Division:10,
+			Headers:[]
+		}
+	};
+	
 	$scope.init = function(){
-		$http.get($rootScope.baseURL+'studentinfo/archives').then(function(response){
-			$scope.archives = response.data;
-			console.log($scope.archives);
+		$rootScope.busy = true;
+		$http.get($rootScope.baseURL+'studentinfo/bin/getdeleted').then(function(response){
+			$scope.bin = response.data;
+			console.log($scope.bin);
+			$scope.filters.Tables.Data=$scope.bin.Tables;
+			$scope.filters.Tables.Headers=$scope.bin.Tables.length>0?Object.getOwnPropertyNames($scope.bin.Tables[0]):[];
+			$scope.filters.Fields.Data=$scope.bin.Fields;
+			$scope.filters.Fields.Headers=$scope.bin.Fields.length>0?Object.getOwnPropertyNames($scope.bin.Fields[0]):[];
+			$scope.filters.Records.Data=$scope.bin.Records;
+			$scope.filters.Records.Headers=$scope.bin.Records.length>0?Object.getOwnPropertyNames($scope.bin.Records[0]):[];
+			$rootScope.busy = false;
 		});
+	}
+	
+	$scope.action = function(mode,type,id){
+		if(mode!='restore'&&mode!='delete')
+			return;
+		if(type!='Tables' && type!='Fields' && type!='Records')
+			return;
+		
+		yes = function(){
+			$rootScope.busy=true;
+			$rootScope.post(
+				$rootScope.baseURL+'studentinfo/bin/action/'+mode+'/'+type,
+				id,
+				function (response){
+					$rootScope.busy = false;
+					$rootScope.customConfirm('Success',response.msg,function(){
+						$scope.init();
+					},function(){});
+				},
+				function(response){
+					$rootScope.customAlert('Error',response.msg);
+					$rootScope.busy = false;
+				}
+			);
+		}
+		$rootScope.customConfirm('Warning','Are you sure you want to do this?',yes,function(){});
+	}
+	
+	$scope.sort = function(type,header){
+		if(type!='Tables' && type!='Fields' && type!='Records')
+			return;
+		if($scope.filters[type].Headers.indexOf(header)==-1)
+			return;
+		$scope.filters[type].Data = $filters('orderBy')($scope.bin[type],header,$scope.filters[type].Data.Reverse);
+		$scope.filters[type].Data.Reverse = !$scope.filters[type].Data.Reverse;
+	}
+	
+	$scope.showDialog = function(type,id){
+		$scope.dialogID = id;
+		$mdDialog.show({
+			contentElement: '#action',
+			clickOutsideToClose: true
+		});
+	}
+	$scope.closeDialog = function(){
+		$mdDialog.hide();
 	}
 })
 
@@ -515,7 +617,7 @@ app.controller('student_search',function($scope,$rootScope,$window,$http,$filter
 	$scope.results = [];
 	$scope.reverse = [];
 	$scope.currIndex = 1;
-	$scope.division = 5;
+	$scope.division = 10;
 	
 	$scope.init = function(){
 		$http.get($rootScope.baseURL+'studentinfo/manage/get/params')
@@ -564,9 +666,9 @@ app.controller('student_search',function($scope,$rootScope,$window,$http,$filter
 			return;
 		if(typeof $scope.reverse[key]==='undefined')
 			$scope.reverse[key] = false;
-		else
-			$scope.reverse[key] = !$scope.reverse[key];
+			
 		$scope.results = $filter('orderBy')(results,$scope.params[key].name,$scope.reverse[key]);
+		$scope.reverse[key] = !$scope.reverse[key];
 	}
 	
 	$scope.getNumber = function(num) {

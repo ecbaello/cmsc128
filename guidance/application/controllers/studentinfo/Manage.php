@@ -50,7 +50,9 @@ class Manage extends StudentInfoController {
 	
 	private function getStudentData($studentNumber){
 		
-		$tables = $this->student_information->getTables();
+		$tables = $this->student_information->getTables(array(
+			StudentInfoBaseModel::FlagFieldName.'!=' => StudentInfoBaseModel::FlagFieldName.'|'.Flags::DELETED
+		));
 		$data = array();
 		
 		foreach($tables as $table){
@@ -58,9 +60,6 @@ class Manage extends StudentInfoController {
 			if($table[StudentInfoBaseModel::FlagFieldName] == Flags::FLOATING)
 				continue;
 			$studentData = $this->student_information->getStudentData($table[StudentInfoBaseModel::TableNameFieldName],$studentNumber);
-			if($studentData == null){
-				show_404();
-			}
 				
 			$fields = array();
 			
@@ -71,7 +70,9 @@ class Manage extends StudentInfoController {
 				$fields[$index]=$student;
 			}
 			
-			$fieldsTemp = $this->student_information->getFields($table[StudentInfoBaseModel::TableNameFieldName]);
+			$fieldsTemp = $this->student_information->getFields($table[StudentInfoBaseModel::TableNameFieldName],array(
+				StudentInfoBaseModel::FlagFieldName.'!=' => StudentInfoBaseModel::FlagFieldName.'|'.Flags::DELETED
+			));
 			foreach($fieldsTemp as $i=>$field){
 				
 				if($field[StudentInfoBaseModel::FieldInputTypeFieldName]=='FE'){

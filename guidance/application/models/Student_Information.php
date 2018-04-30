@@ -17,7 +17,7 @@ class Student_Information extends AdvancedInputsModel{
 	public function __construct(){
 		parent::__construct();
 		$this->createBaseTable();
-		$this->initDefaults();
+		//$this->initDefaults();
 	}
 	
 	private function createBaseTable(){
@@ -72,13 +72,13 @@ class Student_Information extends AdvancedInputsModel{
 		}
 	}
 	
-	public function deleteStudent($permanent=false,$studentNumber){
+	public function deleteStudent($studentID,$permanent=false){
 		if(!$permanent){
-			$this->db->where(self::StudentNumberFieldName,$studentNumber);
+			$this->db->where(self::BaseTablePKName,$studentID);
 			$this->db->set(self::FlagFieldName,self::FlagFieldName.'|'.Flags::DELETED,false);
 			$this->db->update(self::BaseTableTableName);
 		}else{
-			$this->db->where(self::StudentNumberFieldName,$studentNumber);
+			$this->db->where(self::BaseTablePKName,$studentID);
 			$this->db->delete(self::BaseTableTableName);
 		}
 	}
@@ -449,8 +449,8 @@ class Student_Information extends AdvancedInputsModel{
 		return isset($result[0])?$result[0]:null;
 	}
 	
-	public function restoreStudent($studentNumber){
-		$this->db->where(self::StudentNumberFieldName,$studentNumber);
+	public function restoreStudent($studentID){
+		$this->db->where(self::BaseTablePKName,$studentID);
 		$this->db->set(self::FlagFieldName,self::FlagFieldName.'&'.Flags::DEF,false);
 		$this->db->update(self::BaseTableTableName);
 	}
