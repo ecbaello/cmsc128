@@ -402,6 +402,7 @@ class Test_Maker extends CI_Model{
 		$passwords = array();
 		foreach($res as $r){
 			$this->db->select(StudentInfoBaseModel::LastNameFieldName.','.StudentInfoBaseModel::FirstNameFieldName.','.StudentInfoBaseModel::MiddleNameFieldName);
+			$this->db->where(StudentInfoBaseModel::FlagFieldName.'|'.Flags::DELETED.' != ',StudentInfoBaseModel::FlagFieldName,false);
 			$this->db->where(StudentInfoBaseModel::StudentNumberFieldName,$r['username']);
 			$result=$this->db->get(StudentInfoBaseModel::BaseTableTableName)->result_array();
 			if(count($result)==0){
@@ -421,7 +422,7 @@ class Test_Maker extends CI_Model{
 	
 	public function generatePasswords($mode,$arg){
 		$this->db->select(StudentInfoBaseModel::StudentNumberFieldName);
-		$this->db->where(StudentInfoBaseModel::FlagFieldName.'|'.Flags::DELETED.' != ',self::FlagFieldName,false);
+		$this->db->where(StudentInfoBaseModel::FlagFieldName.'|'.Flags::DELETED.' != ',StudentInfoBaseModel::FlagFieldName,false);
 		if($mode == 0){
 			$this->db->like(StudentInfoBaseModel::StudentNumberFieldName,$arg,'after');
 		}else{
