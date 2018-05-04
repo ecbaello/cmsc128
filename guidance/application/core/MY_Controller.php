@@ -55,8 +55,9 @@ class StudentInfoController extends BaseController {
 
 	public function __construct(){
 		parent::__construct();
-		$this->load->model('test_maker');
+		
 		$this->load->model('student_information');
+		$this->load->model('test_maker');
 		$this->permissionRestrict();
 	}
 	

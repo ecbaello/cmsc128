@@ -8,9 +8,12 @@ class Main extends surveyController {
 		$this->load->view('survey_form');
 	}
 	
-	public function submit($sn){
+	public function submit($sn=null){
 		
-		
+		if($sn==null){
+			$this->responseJSON(false,'Empty Input');
+			return;
+		}
 		$input = $this->input->post('data');
 		
 		if($input == null){
@@ -23,6 +26,16 @@ class Main extends surveyController {
 			return;
 		}
 		
-		$this->test_maker->submitResults($sn,$input);
+		$res = $this->test_maker->submitResults($sn,$data);
+		if($res != null){
+			$this->responseJSON(false,$res);
+			return;
+		}
+		$this->responseJSON(true,'Answers successfully submitted');
+		return;
+	}
+	
+	public function getResults($sn=null){
+		print('<pre>');print_r($this->test_maker->getResults($sn));print('</pre>');die();
 	}
 }

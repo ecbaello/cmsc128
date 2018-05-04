@@ -135,15 +135,16 @@ app.controller('survey_form',function($scope,$rootScope,$mdDialog,$window){
 		$scope.ALLresult.VRFL = VRFLresult();
 		
 		console.log($scope.ALLresult);
-		
+		$rootScope.busy=true;
 		$rootScope.post(
 			$rootScope.baseURL+'survey/main/submit/'+sn,
 			$scope.ALLresult,
 			function(response){
-				$rootScope.customAlert('Success',response.msg);
-				$window.location.reload();
+				$rootScope.busy = false;
+				$rootScope.customConfirm('Success',response.msg,function(){$window.location.reload();},function(){$window.location.reload();});
 			},
 			function(response){
+				$rootScope.busy= false;
 				$rootScope.customAlert('Error',response.msg);
 			}
 		);

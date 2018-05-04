@@ -123,9 +123,9 @@ class Test_Maker extends CI_Model{
 	public function createSurveyModel(){
 		
 		$this->dbforge->add_field(self::StudentNumber.' varchar(11)');
-		$this->dbforge->add_field(self::IA.' int not null default 0');
-		$this->dbforge->add_field(self::IB.' int not null default 0');
-		$this->dbforge->add_field(self::II.' int not null default 0');
+		$this->dbforge->add_field(self::IA.' varchar(30) not null default 0');
+		$this->dbforge->add_field(self::IB.' varchar(30) not null default 0');
+		$this->dbforge->add_field(self::II.' varchar(30) not null default 0');
 		$this->dbforge->add_field(self::III1.' varchar(3)');
 		$this->dbforge->add_field(self::III2.' varchar(50)');
 		$this->dbforge->add_field(self::III3.' varchar(50)');
@@ -135,9 +135,9 @@ class Test_Maker extends CI_Model{
 		$this->dbforge->add_field(self::III6_5.' varchar(50)');
 		$this->dbforge->add_field(self::III7.' varchar(3)');
 		$this->dbforge->add_field(self::III7_5.' varchar(50)');
-		$this->dbforge->add_field(self::III.' int not null default 0');
-		$this->dbforge->add_field(self::IV.' int not null default 0');
-		$this->dbforge->add_field('foreign key ('.self::StudentNumber.') references upbguidance_student (student_number) on update cascade on delete cascade');
+		$this->dbforge->add_field(self::III.' varchar(30) not null default 0');
+		$this->dbforge->add_field(self::IV.' varchar(30) not null default 0');
+		$this->dbforge->add_field('foreign key ('.self::StudentNumber.') references '.StudentInfoBaseModel::BaseTableTableName.'('.StudentInfoBaseModel::StudentNumberFieldName.') on update cascade on delete cascade');
 		
 		$this->dbforge->create_table(self::surveytablename,true);
 		
@@ -147,6 +147,12 @@ class Test_Maker extends CI_Model{
 		
 		$this->db->where(self::StudentNumber,$sn);
 		$res = $this->db->get(self::surveytablename)->result_array();
+		
+		if(count($res)!=1){
+			return null;
+		}
+		
+		$res = $res[0];
 		
 		$output = array(
 			'Demographic Factors: Risks'=>$res[self::IA],
@@ -170,18 +176,24 @@ class Test_Maker extends CI_Model{
 	}
 	
 	public function submitResults($sn,$results){
+		
+		$this->db->where(StudentInfoBaseModel::StudentNumberFieldName,$sn);
+		$res = $this->db->get(StudentInfoBaseModel::BaseTableTableName)->result_array();
+		if(count($res)!=1){
+			return 'No such student number found.';
+		}
 		$input = array(
 			self::StudentNumber=>$sn,
 			self::IA=>$results['DFRF'],
 			self::IB=>$results['DFPF'],
-			self::III1=>$results['ATMP'][0],
+			self::III1=>$results['ATMP'][0] ? 'yes':'no',
 			self::III2=>$results['ATMP'][1],
 			self::III3=>$results['ATMP'][2],
 			self::III4=>$results['ATMP'][3],
-			self::III5=>$results['ATMP'][4],
-			self::III6=>$results['ATMP'][5],
+			self::III5=>$results['ATMP'][4] ? 'yes':'no',
+			self::III6=>$results['ATMP'][5] ? 'yes':'no',
 			self::III6_5=>$results['ATMP'][6],
-			self::III7=>$results['ATMP'][7],
+			self::III7=>$results['ATMP'][7] ? 'yes':'no',
 			self::III7_5=>$results['ATMP'][8],
 			self::II=>$results['IDTN'],
 			self::IV=>$results['VRFL']
