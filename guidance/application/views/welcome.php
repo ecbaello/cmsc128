@@ -22,7 +22,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<md-button href="<?= base_url().'tests'?>">
 			<md-card>
 				<md-card-title  class="md-no-margin md-no-padding" layout-padding layout="row" layout-align="center center" style="background-color:maroon">
-					<md-content style="min-width:200px;background-color:inherit;color:white">Tests</md-content>
+					<md-content style="min-width:200px;background-color:inherit;color:white">Survey</md-content>
 				</md-card-title>
 				<md-card-content class="md-primary">
 					<div layout-padding>

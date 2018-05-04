@@ -12,7 +12,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 .tables td, .tables th {
     border: 1px solid #ddd;
-    padding: 4px;
+    padding: 10px;
 }
 
 .tables tr:nth-child(even){background-color: #f2f2f2;}
@@ -32,7 +32,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 }
 </style>
 
-<div ng-controller="survey_form" layout="row" layout-align="center start" layout-padding layout-margin>
+<div ng-controller="survey_form" layout="column" layout-align="center start" layout-padding layout-margin>
+	
+	<div>
+		LOGGED-IN AS: <?=$this->ion_auth->user()->row()->username?>
+	</div>
 	
 	<form method="post">
 		<table class="tables">
@@ -43,80 +47,102 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<td>In the past six months, I have:</td>
 			</tr>
 			<tr>
-				<td>felt so hopeless that there are no solution to my problems</td>
+				<td><span style="padding-left:0.25in;">felt so hopeless that there are no solution to my problems</span></td>
 				<td>
-					<input type="radio" value="1" name="DFRF1">Yes
-					<input type="radio" value="0" name="DFRF1">No
+					<md-radio-group ng-model="DFRF[0]" layout="row" ng-required>
+						<md-radio-button value="1">Yes</md-radio-button>
+						<md-radio-button value="0">No</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>felt so alone that there is no one to help me</td>
+				<td><span style="padding-left:0.25in;">felt so alone that there is no one to help me</span></td>
 				<td>
-					<input type="radio" value="1" name="DFRF2">Yes
-					<input type="radio" value="0" name="DFRF2">No
+					<md-radio-group ng-model="DFRF[1]" layout="row">
+						<md-radio-button value="1">Yes</md-radio-button>
+						<md-radio-button value="0">No</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>experienced financial difficulties</td>
+				<td><span style="padding-left:0.25in;">experienced financial difficulties</span></td>
 				<td>
-					<input type="radio" value="1" name="DFRF3">Yes
-					<input type="radio" value="0" name="DFRF3">No
+					<md-radio-group ng-model="DFRF[2]" layout="row">
+						<md-radio-button value="1">Yes</md-radio-button>
+						<md-radio-button value="0">No</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>experienced personal and/or family health challenges</td>
+				<td><span style="padding-left:0.25in;">experienced personal and/or family health challenges</span></td>
 				<td>
-					<input type="radio" value="1" name="DFRF4">Yes
-					<input type="radio" value="0" name="DFRF4">No
+					<md-radio-group ng-model="DFRF[3]" layout="row">
+						<md-radio-button value="1">Yes</md-radio-button>
+						<md-radio-button value="0">No</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>experienced death in the family</td>
+				<td><span style="padding-left:0.25in;">experienced death in the family</span></td>
 				<td>
-					<input type="radio" value="1" name="DFRF5">Yes
-					<input type="radio" value="0" name="DFRF5">No
+					<md-radio-group ng-model="DFRF[4]" layout="row">
+						<md-radio-button value="1">Yes</md-radio-button>
+						<md-radio-button value="0">No</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>thought of suicide</td>
+				<td><span style="padding-left:0.25in;">thought of suicide</span></td>
 				<td>
-					<input type="radio" value="1" name="DFRF6">Yes
-					<input type="radio" value="0" name="DFRF6">No
+					<md-radio-group ng-model="DFRF[5]" layout="row">
+						<md-radio-button value="1">Yes</md-radio-button>
+						<md-radio-button value="0">No</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>experienced parental disengagement</td>
+				<td><span style="padding-left:0.25in;">experienced parental disengagement</span></td>
 				<td>
-					<input type="radio" value="1" name="DFRF7">Yes
-					<input type="radio" value="0" name="DFRF7">No
+					<md-radio-group ng-model="DFRF[6]" layout="row">
+						<md-radio-button value="1">Yes</md-radio-button>
+						<md-radio-button value="0">No</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>unresolved family issues</td>
+				<td><span style="padding-left:0.25in;">unresolved family issues</span></td>
 				<td>
-					<input type="radio" value="1" name="DFRF8">Yes
-					<input type="radio" value="0" name="DFRF8">No
+					<md-radio-group ng-model="DFRF[7]" layout="row">
+						<md-radio-button value="1">Yes</md-radio-button>
+						<md-radio-button value="0">No</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>experienced poor school/academic performance</td>
+				<td><span style="padding-left:0.25in;">experienced poor school/academic </span></td>
 				<td>
-					<input type="radio" value="1" name="DFRF9">Yes
-					<input type="radio" value="0" name="DFRF9">No
+					<md-radio-group ng-model="DFRF[8]" layout="row">
+						<md-radio-button value="1">Yes</md-radio-button>
+						<md-radio-button value="0">No</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>poor peer/social relationship</td>
+				<td><span style="padding-left:0.25in;">poor peer/social relationship</span></td>
 				<td>
-					<input type="radio" value="1" name="DFRF10">Yes
-					<input type="radio" value="0" name="DFRF10">No
+					<md-radio-group ng-model="DFRF[9]" layout="row">
+						<md-radio-button value="1">Yes</md-radio-button>
+						<md-radio-button value="0">No</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>romantic relationship problems</td>
+				<td><span style="padding-left:0.25in;">romantic relationship problems</span></td>
 				<td>
-					<input type="radio" value="1" name="DFRF11">Yes
-					<input type="radio" value="0" name="DFRF11">No
+					<md-radio-group ng-model="DFRF[10]" layout="row">
+						<md-radio-button value="1">Yes</md-radio-button>
+						<md-radio-button value="0">No</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
@@ -126,59 +152,73 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<td>I believe that I have:</td>
 			</tr>
 			<tr>
-				<td>Strong family connectedness and support</td>
+				<td><span style="padding-left:0.25in;">Strong family connectedness and support</span></td>
 				<td>
-					<input type="radio" value="0" name="DFPF1">Not true of me
-					<input type="radio" value="1" name="DFPF1">Sometimes true of me
-					<input type="radio" value="2" name="DFPF1">Always true of me
+					<md-radio-group ng-model="DFPF[0]" layout="row">
+						<md-radio-button value="0">Not true of me</md-radio-button>
+						<md-radio-button value="1">Sometimes true of me</md-radio-button>
+						<md-radio-button value="2">Always true of me</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>enhanced social support</td>
+				<td><span style="padding-left:0.25in;">enhanced social support</span></td>
 				<td>
-					<input type="radio" value="0" name="DFPF2">Not true of me
-					<input type="radio" value="1" name="DFPF2">Sometimes true of me
-					<input type="radio" value="2" name="DFPF2">Always true of me
+					<md-radio-group ng-model="DFPF[1]" layout="row">
+						<md-radio-button value="0">Not true of me</md-radio-button>
+						<md-radio-button value="1">Sometimes true of me</md-radio-button>
+						<md-radio-button value="2">Always true of me</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>positive coping skills</td>
-				<<td>
-					<input type="radio" value="0" name="DFPF3">Not true of me
-					<input type="radio" value="1" name="DFPF3">Sometimes true of me
-					<input type="radio" value="2" name="DFPF3">Always true of me
+				<td><span style="padding-left:0.25in;">positive coping skills</span></td>
+				<td>
+					<md-radio-group ng-model="DFPF[2]" layout="row">
+						<md-radio-button value="0">Not true of me</md-radio-button>
+						<md-radio-button value="1">Sometimes true of me</md-radio-button>
+						<md-radio-button value="2">Always true of me</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>positive problem-solving skills</td>
+				<td><span style="padding-left:0.25in;">positive problem-solving skills</span></td>
 				<td>
-					<input type="radio" value="0" name="DFPF4">Not true of me
-					<input type="radio" value="1" name="DFPF4">Sometimes true of me
-					<input type="radio" value="2" name="DFPF4">Always true of me
+					<md-radio-group ng-model="DFPF[3]" layout="row">
+						<md-radio-button value="0">Not true of me</md-radio-button>
+						<md-radio-button value="1">Sometimes true of me</md-radio-button>
+						<md-radio-button value="2">Always true of me</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>excellent conflict resolution and non-violent handling of disputes</td>
+				<td><span style="padding-left:0.25in;">excellent conflict resolution and non-violent handling of disputes</span></td>
 				<td>
-					<input type="radio" value="0" name="DFPF5">Not true of me
-					<input type="radio" value="1" name="DFPF5">Sometimes true of me
-					<input type="radio" value="2" name="DFPF5">Always true of me
+					<md-radio-group ng-model="DFPF[4]" layout="row">
+						<md-radio-button value="0">Not true of me</md-radio-button>
+						<md-radio-button value="1">Sometimes true of me</md-radio-button>
+						<md-radio-button value="2">Always true of me</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>personal, social, cultural and religious beliefs that support life preservation</td>
+				<td><span style="padding-left:0.25in;">personal, social, cultural and religious beliefs that support life preservation</span></td>
 				<td>
-					<input type="radio" value="0" name="DFPF6">Not true of me
-					<input type="radio" value="1" name="DFPF6">Sometimes true of me
-					<input type="radio" value="2" name="DFPF6">Always true of me
+					<md-radio-group ng-model="DFPF[5]" layout="row">
+						<md-radio-button value="0">Not true of me</md-radio-button>
+						<md-radio-button value="1">Sometimes true of me</md-radio-button>
+						<md-radio-button value="2">Always true of me</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
-				<td>confidence in the importance of help-seeking behavior</td>
+				<td><span style="padding-left:0.25in;">confidence in the importance of help-seeking behavior</span></td>
 				<td>
-					<input type="radio" value="0" name="DFPF7">Not true of me
-					<input type="radio" value="1" name="DFPF7">Sometimes true of me
-					<input type="radio" value="2" name="DFPF7">Always true of me
+					<md-radio-group ng-model="DFPF[6]" layout="row">
+						<md-radio-button value="0">Not true of me</md-radio-button>
+						<md-radio-button value="1">Sometimes true of me</md-radio-button>
+						<md-radio-button value="2">Always true of me</md-radio-button>
+					<md-radio-group>
 				</td>
 			</tr>
 			<tr>
@@ -188,91 +228,111 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<tr>
 				<td>Thoughts of dying</td>
 				<td>
-					<input type="radio" value="0" name="IDTN1">Not true
-					<input type="radio" value="1" name="IDTN1">Sometimes true
-					<input type="radio" value="2" name="IDTN1">Often true
-					<input type="radio" value="3" name="IDTN1">Always true
+					<md-radio-group ng-model="IDTN[0]" layout="row">
+						<md-radio-button value="0">Not true</md-radio-button>
+						<md-radio-button value="1">Sometimes true</md-radio-button>
+						<md-radio-button value="2">Often true</md-radio-button>
+						<md-radio-button value="3">Always true</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>Wishing I am dead</td>
 				<td>
-					<input type="radio" value="0" name="IDTN2">Not true
-					<input type="radio" value="1" name="IDTN2">Sometimes true
-					<input type="radio" value="2" name="IDTN2">Often true
-					<input type="radio" value="3" name="IDTN2">Always true
+					<md-radio-group ng-model="IDTN[1]" layout="row">
+						<md-radio-button value="0">Not true</md-radio-button>
+						<md-radio-button value="1">Sometimes true</md-radio-button>
+						<md-radio-button value="2">Often true</md-radio-button>
+						<md-radio-button value="3">Always true</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>Thinking about the chances of committing suicide</td>
 				<td>
-					<input type="radio" value="0" name="IDTN3">Not true
-					<input type="radio" value="1" name="IDTN3">Sometimes true
-					<input type="radio" value="2" name="IDTN3">Often true
-					<input type="radio" value="3" name="IDTN3">Always true
+					<md-radio-group ng-model="IDTN[2]" layout="row">
+						<md-radio-button value="0">Not true</md-radio-button>
+						<md-radio-button value="1">Sometimes true</md-radio-button>
+						<md-radio-button value="2">Often true</md-radio-button>
+						<md-radio-button value="3">Always true</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>Thinking about how I would be gone</td>
 				<td>
-					<input type="radio" value="0" name="IDTN4">Not true
-					<input type="radio" value="1" name="IDTN4">Sometimes true
-					<input type="radio" value="2" name="IDTN4">Often true
-					<input type="radio" value="3" name="IDTN4">Always true
+					<md-radio-group ng-model="IDTN[3]" layout="row">
+						<md-radio-button value="0">Not true</md-radio-button>
+						<md-radio-button value="1">Sometimes true</md-radio-button>
+						<md-radio-button value="2">Often true</md-radio-button>
+						<md-radio-button value="3">Always true</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>Thinking about writing down my last wishes before I die</td>
 				<td>
-					<input type="radio" value="0" name="IDTN5">Not true
-					<input type="radio" value="1" name="IDTN5">Sometimes true
-					<input type="radio" value="2" name="IDTN5">Often true
-					<input type="radio" value="3" name="IDTN5">Always true
+					<md-radio-group ng-model="IDTN[4]" layout="row">
+						<md-radio-button value="0">Not true</md-radio-button>
+						<md-radio-button value="1">Sometimes true</md-radio-button>
+						<md-radio-button value="2">Often true</md-radio-button>
+						<md-radio-button value="3">Always true</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>Thinking of giving away my possessions</td>
 				<td>
-					<input type="radio" value="0" name="IDTN6">Not true
-					<input type="radio" value="1" name="IDTN6">Sometimes true
-					<input type="radio" value="2" name="IDTN6">Often true
-					<input type="radio" value="3" name="IDTN6">Always true
+					<md-radio-group ng-model="IDTN[5]" layout="row">
+						<md-radio-button value="0">Not true</md-radio-button>
+						<md-radio-button value="1">Sometimes true</md-radio-button>
+						<md-radio-button value="2">Often true</md-radio-button>
+						<md-radio-button value="3">Always true</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>Thinking about how to prepare the things I need to carry out plans of dying</td>
 				<td>
-					<input type="radio" value="0" name="IDTN7">Not true
-					<input type="radio" value="1" name="IDTN7">Sometimes true
-					<input type="radio" value="2" name="IDTN7">Often true
-					<input type="radio" value="3" name="IDTN7">Always true
+					<md-radio-group ng-model="IDTN[6]" layout="row">
+						<md-radio-button value="0">Not true</md-radio-button>
+						<md-radio-button value="1">Sometimes true</md-radio-button>
+						<md-radio-button value="2">Often true</md-radio-button>
+						<md-radio-button value="3">Always true</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>Thinking about the best time and day to die</td>
 				<td>
-					<input type="radio" value="0" name="IDTN8">Not true
-					<input type="radio" value="1" name="IDTN8">Sometimes true
-					<input type="radio" value="2" name="IDTN8">Often true
-					<input type="radio" value="3" name="IDTN8">Always true
+					<md-radio-group ng-model="IDTN[7]" layout="row">
+						<md-radio-button value="0">Not true</md-radio-button>
+						<md-radio-button value="1">Sometimes true</md-radio-button>
+						<md-radio-button value="2">Often true</md-radio-button>
+						<md-radio-button value="3">Always true</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>Wishing that I have the courage to be gone</td>
 				<td>
-					<input type="radio" value="0" name="IDTN9">Not true
-					<input type="radio" value="1" name="IDTN9">Sometimes true
-					<input type="radio" value="2" name="IDTN9">Often true
-					<input type="radio" value="3" name="IDTN9">Always true
+					<md-radio-group ng-model="IDTN[8]" layout="row">
+						<md-radio-button value="0">Not true</md-radio-button>
+						<md-radio-button value="1">Sometimes true</md-radio-button>
+						<md-radio-button value="2">Often true</md-radio-button>
+						<md-radio-button value="3">Always true</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>Thinking of how I can be successful in carrying-out my plans of dying</td>
 				<td>
-					<input type="radio" value="0" name="IDTN10">Not true
-					<input type="radio" value="1" name="IDTN10">Sometimes true
-					<input type="radio" value="2" name="IDTN10">Often true
-					<input type="radio" value="3" name="IDTN10">Always true
+					<md-radio-group ng-model="IDTN[9]" layout="row">
+						<md-radio-button value="0">Not true</md-radio-button>
+						<md-radio-button value="1">Sometimes true</md-radio-button>
+						<md-radio-button value="2">Often true</md-radio-button>
+						<md-radio-button value="3">Always true</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
@@ -281,43 +341,87 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<tr>
 				<td>Have you ever tried inflicting injury upon yourself?</td>
 				<td>
-					<input type="radio" value="Yes" name="ATMP1">Yes
-					<input type="radio" value="No" name="ATMP1">No
+					<md-radio-group ng-model="ATMP[0]" layout="row">
+						<md-radio-button value="0">Yes</md-radio-button>
+						<md-radio-button value="1">No</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>If yes, what was the method/s used?</td>
-				<td><input type="text" name="suimeth"></td>
+				<td>
+					<div layout="column" layout-align="center">
+						<md-input-container class="md-no-margin" layout="row" layout-align="start center">
+							<input type="text" ng-model="ATMP[1]">
+						</md-input-container>
+					</div>
+				</td>
 			</tr>
 			<tr>
 				<td>How many times have you attempted suicide?</td>
-				<td><input type="number" name="suicount"></td>
+				<td>
+					<div layout="column" layout-align="center">
+						<md-input-container class="md-no-margin" layout="row" layout-align="start center">
+							<input type="text" ng-model="ATMP[2]">
+						</md-input-container>
+					</div>
+				</td>
 			</tr>
 			<tr>
 				<td>When was the most recent attempt</td>
-				<td><input type="text" name="suiat"></td>
+				<td>
+					<div layout="column" layout-align="center">
+						<md-input-container class="md-no-margin" layout="row" layout-align="start center">
+							<input type="text" ng-model="ATMP[3]">
+						</md-input-container>
+					</div>
+				</td>
 			</tr>
 			<tr>
 				<td>Did you require medical attention after the attempt?</td>
 				<td>
-					<input type="radio" value="Yes" name="ATMP2">Yes
-					<input type="radio" value="No" name="ATMP2">No
+					<md-radio-group ng-model="ATMP[4]" layout="row">
+						<md-radio-button value="0">Yes</md-radio-button>
+						<md-radio-button value="1">No</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>Did you tell anyone about the attempt?</td>
 				<td>
-					<input type="radio" value="Yes" name="ATMP3">Yes
-					<input type="text" name="suitell">
-					<input type="radio" value="No" name="ATMP3">No
+					<md-radio-group ng-model="ATMP[5]" layout="row">
+						<md-radio-button value="0">Yes</md-radio-button>
+						<md-radio-button value="1">No</md-radio-button>
+					</md-radio-group>
+				</td>
+			</tr>
+			<tr>
+				<td><span style="padding-left:0.25in">If yes, who?</td>
+				<td>
+					<div layout="column" layout-align="center">
+						<md-input-container class="md-no-margin" layout="row" layout-align="start center">
+							<input type="text" ng-model="ATMP[6]">
+						</md-input-container>
+					</div>
 				</td>
 			</tr>
 			<tr>
 				<td>Did you talk to a councelor or some other person after your attempt?</td>
 				<td>
-					<input type="radio" value="Yes" name="ATMP4">Yes
-					<input type="text" name="suitalk">
-					<input type="radio" value="No" name="ATMP4">No
+					<md-radio-group ng-model="ATMP[7]" layout="row">
+						<md-radio-button value="0">Yes</md-radio-button>
+						<md-radio-button value="1">No</md-radio-button>
+					</md-radio-group>
+				</td>
+			</tr>
+			<tr>
+				<td><span style="padding-left:0.25in">If yes, who?</td>
+				<td>
+					<div layout="column" layout-align="center">
+						<md-input-container class="md-no-margin" layout="row" layout-align="start center">
+							<input type="text" ng-model="ATMP[8]">
+						</md-input-container>
+					</div>
 				</td>
 			</tr>
 			<tr>
@@ -329,85 +433,108 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<tr>
 				<td>I am afraid of the actual act of killing myself (the pain, the blood, the violence)</td>
 				<td>
-					<input type="radio" value="0" name="VRFL1">Not at all important
-					<input type="radio" value="1" name="VRFL1">Somewhat unimportant
-					<input type="radio" value="2" name="VRFL1">Somewhat important
-					<input type="radio" value="3" name="VRFL1">Extremely important
+					<md-radio-group ng-model="VRFL[0]" layout="row">
+						<md-radio-button value="0">Not at all important</md-radio-button>
+						<md-radio-button value="1">Somewhat unimportant</md-radio-button>
+						<md-radio-button value="2">Somewhat important</md-radio-button>
+						<md-radio-button value="3">Extremely important</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>I believe I can cope with my problems</td>
 				<td>
-					<input type="radio" value="0" name="VRFL2">Not at all important
-					<input type="radio" value="1" name="VRFL2">Somewhat unimportant
-					<input type="radio" value="2" name="VRFL2">Somewhat important
-					<input type="radio" value="3" name="VRFL2">Extremely important
+					<md-radio-group ng-model="VRFL[1]" layout="row">
+						<md-radio-button value="0">Not at all important</md-radio-button>
+						<md-radio-button value="1">Somewhat unimportant</md-radio-button>
+						<md-radio-button value="2">Somewhat important</md-radio-button>
+						<md-radio-button value="3">Extremely important</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>I believe I am completely worthy of love</td>
 				<td>
-					<input type="radio" value="0" name="VRFL3">Not at all important
-					<input type="radio" value="1" name="VRFL3">Somewhat unimportant
-					<input type="radio" value="2" name="VRFL3">Somewhat important
-					<input type="radio" value="3" name="VRFL3">Extremely important
+					<md-radio-group ng-model="VRFL[2]" layout="row">
+						<md-radio-button value="0">Not at all important</md-radio-button>
+						<md-radio-button value="1">Somewhat unimportant</md-radio-button>
+						<md-radio-button value="2">Somewhat important</md-radio-button>
+						<md-radio-button value="3">Extremely important</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>I believe suicide is not the only way to solve my problems</td>
 				<td>
-					<input type="radio" value="0" name="VRFL4">Not at all important
-					<input type="radio" value="1" name="VRFL4">Somewhat unimportant
-					<input type="radio" value="2" name="VRFL4">Somewhat important
-					<input type="radio" value="3" name="VRFL4">Extremely important
+					<md-radio-group ng-model="VRFL[3]" layout="row">
+						<md-radio-button value="0">Not at all important</md-radio-button>
+						<md-radio-button value="1">Somewhat unimportant</md-radio-button>
+						<md-radio-button value="2">Somewhat important</md-radio-button>
+						<md-radio-button value="3">Extremely important</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>I believe only God has the right to end a life</td>
 				<td>
-					<input type="radio" value="0" name="VRFL5">Not at all important
-					<input type="radio" value="1" name="VRFL5">Somewhat unimportant
-					<input type="radio" value="2" name="VRFL5">Somewhat important
-					<input type="radio" value="3" name="VRFL5">Extremely important
+					<md-radio-group ng-model="VRFL[4]" layout="row">
+						<md-radio-button value="0">Not at all important</md-radio-button>
+						<md-radio-button value="1">Somewhat unimportant</md-radio-button>
+						<md-radio-button value="2">Somewhat important</md-radio-button>
+						<md-radio-button value="3">Extremely important</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>I believe I can endure the pain and life changes</td>
 				<td>
-					<input type="radio" value="0" name="VRFL6">Not at all important
-					<input type="radio" value="1" name="VRFL6">Somewhat unimportant
-					<input type="radio" value="2" name="VRFL6">Somewhat important
-					<input type="radio" value="3" name="VRFL6">Extremely important
+					<md-radio-group ng-model="VRFL[5]" layout="row">
+						<md-radio-button value="0">Not at all important</md-radio-button>
+						<md-radio-button value="1">Somewhat unimportant</md-radio-button>
+						<md-radio-button value="2">Somewhat important</md-radio-button>
+						<md-radio-button value="3">Extremely important</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>I value my family too much and could not bear to leave them</td>
 				<td>
-					<input type="radio" value="0" name="VRFL7">Not at all important
-					<input type="radio" value="1" name="VRFL7">Somewhat unimportant
-					<input type="radio" value="2" name="VRFL7">Somewhat important
-					<input type="radio" value="3" name="VRFL7">Extremely important
+					<md-radio-group ng-model="VRFL[6]" layout="row">
+						<md-radio-button value="0">Not at all important</md-radio-button>
+						<md-radio-button value="1">Somewhat unimportant</md-radio-button>
+						<md-radio-button value="2">Somewhat important</md-radio-button>
+						<md-radio-button value="3">Extremely important</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>I believe I am not a burden to my family</td>
 				<td>
-					<input type="radio" value="0" name="VRFL8">Not at all important
-					<input type="radio" value="1" name="VRFL8">Somewhat unimportant
-					<input type="radio" value="2" name="VRFL8">Somewhat important
-					<input type="radio" value="3" name="VRFL8">Extremely important
+					<md-radio-group ng-model="VRFL[7]" layout="row">
+						<md-radio-button value="0">Not at all important</md-radio-button>
+						<md-radio-button value="1">Somewhat unimportant</md-radio-button>
+						<md-radio-button value="2">Somewhat important</md-radio-button>
+						<md-radio-button value="3">Extremely important</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 			<tr>
 				<td>Other people would think I am weak and selfish</td>
 				<td>
-					<input type="radio" value="0" name="VRFL9">Not at all important
-					<input type="radio" value="1" name="VRFL9">Somewhat unimportant
-					<input type="radio" value="2" name="VRFL9">Somewhat important
-					<input type="radio" value="3" name="VRFL9">Extremely important
+					<md-radio-group ng-model="VRFL[8]" layout="row">
+						<md-radio-button value="0">Not at all important</md-radio-button>
+						<md-radio-button value="1">Somewhat unimportant</md-radio-button>
+						<md-radio-button value="2">Somewhat important</md-radio-button>
+						<md-radio-button value="3">Extremely important</md-radio-button>
+					</md-radio-group>
 				</td>
 			</tr>
 		</table>
+		<div layout="row" layout-align="center center" layout-margin>
+			<md-button class="md-raised md-primary" type="submit" ng-click="submit('<?=$this->ion_auth->user()->row()->username?>')">
+				Submit
+			</md-button>
+		</div>
 	</form>
 	
 </div>

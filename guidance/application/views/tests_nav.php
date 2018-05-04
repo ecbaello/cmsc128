@@ -9,11 +9,10 @@ if(!$this->ion_auth->is_admin()){
 	<div flex layout="row" layout-align="center center" layout-padding>
 		<span class="md-headline">UPB Guidance Survey</span> 
 		<span>
-		<?php if($this->ion_auth->is_admin()): ?>
-		<md-button title="Add Tests" class="md-primary md-raised md-fab" ng-click="addDialog()"><i class="fas fa-plus"></i></md-button>
-		<?php endif; ?>
+		
 		</span>
 	</div>
+	<div layout="row" layout-align="center center" layout-padding>
 	<?php if($this->ion_auth->is_admin()): ?>
 	<div layout="row" layout-align="center center">
 		<a class="md-primary md-button md-no-margin md-raised" href="<?=base_url().'tests/passwords'?>">Student Passwords</a>
@@ -21,6 +20,7 @@ if(!$this->ion_auth->is_admin()){
 	<?php endif; ?>
 	<div layout="row" layout-align="center center">
 		<a class="md-primary md-button md-no-margin md-raised" href="<?=base_url().'survey'?>">Go To Survey</a>
+	</div>
 	</div>
 	<div>
 		<md-content layout="row" layout-wrap layout-align="center center" layout-margin>

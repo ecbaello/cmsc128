@@ -437,7 +437,7 @@ class surveyController extends BaseController {
 
 	public function __construct(){
 		parent::__construct();
-		$this->load->model('survey');
+		$this->load->model('test_maker');
 	}
 
 }

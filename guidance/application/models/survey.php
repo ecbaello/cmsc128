@@ -20,8 +20,6 @@ class survey extends CI_Model{
 	const III7_5 = 'attempt7_5';
 	const IV = 'validation';
 	
-	public $ModelTitle = 'survey';
-	
 	public function __construct(){
 		parent::__construct();
 		$this->load->database();

@@ -40,13 +40,29 @@ class Test_Maker extends CI_Model{
 	const UAAChoicesValueName = 'uaa_choice_value';
 	const UAAChoicesIsAnswerName = 'uaa_choice_is_answer';
 	
-	public $ModelTitle = 'Tests';
+	const surveytablename = DB_PREFIX.'survey_ans';
+	const StudentNumber = 'stdnum';
+	const IA = 'demog_factor_risk';
+	const IB = 'demog_factor_protective';
+	const II = 'ideation';
+	const III = 'attempt';
+	const III1 = 'attempt1';
+	const III2 = 'attempt2';
+	const III3 = 'attempt3';
+	const III4 = 'attempt4';
+	const III5 = 'attempt5';
+	const III6 = 'attempt6';
+	const III6_5 = 'attempt6_5';
+	const III7 = 'attempt7';
+	const III7_5 = 'attempt7_5';
+	const IV = 'validation';
 	
 	public function __construct(){
 		parent::__construct();
 		$this->load->database();
 		$this->load->dbforge();
-		$this->createModel();
+		//$this->createModel();
+		$this->createSurveyModel();
 	}
 	
 	public function createModel(){
@@ -102,6 +118,75 @@ class Test_Maker extends CI_Model{
 		$this->dbforge->add_field('foreign key ('.self::UAAPKName.') references '.self::UAATableName.'('.self::UAAPKName.') on update cascade on delete cascade');
 		
 		$this->dbforge->create_table(self::UAAChoicesTableName,true);
+	}
+	
+	public function createSurveyModel(){
+		
+		$this->dbforge->add_field(self::StudentNumber.' varchar(11)');
+		$this->dbforge->add_field(self::IA.' int not null default 0');
+		$this->dbforge->add_field(self::IB.' int not null default 0');
+		$this->dbforge->add_field(self::II.' int not null default 0');
+		$this->dbforge->add_field(self::III1.' varchar(3)');
+		$this->dbforge->add_field(self::III2.' varchar(50)');
+		$this->dbforge->add_field(self::III3.' varchar(50)');
+		$this->dbforge->add_field(self::III4.' varchar(50)');
+		$this->dbforge->add_field(self::III5.' varchar(3)');
+		$this->dbforge->add_field(self::III6.' varchar(3)');
+		$this->dbforge->add_field(self::III6_5.' varchar(50)');
+		$this->dbforge->add_field(self::III7.' varchar(3)');
+		$this->dbforge->add_field(self::III7_5.' varchar(50)');
+		$this->dbforge->add_field(self::III.' int not null default 0');
+		$this->dbforge->add_field(self::IV.' int not null default 0');
+		$this->dbforge->add_field('foreign key ('.self::StudentNumber.') references upbguidance_student (student_number) on update cascade on delete cascade');
+		
+		$this->dbforge->create_table(self::surveytablename,true);
+		
+	}
+	
+	public function getResults($sn){
+		
+		$this->db->where(self::StudentNumber,$sn);
+		$res = $this->db->get(self::surveytablename)->result_array();
+		
+		$output = array(
+			'Demographic Factors: Risks'=>$res[self::IA],
+			'Demographic Factors: Protective'=>$res[self::IB],
+			'Ideation'=>$res[self::II],
+			'Attempt'=>array(
+				'Have you ever tried inflicting injury upon yourself?'=>$res[self::III1],
+				'If yes, what was the method/s used?'=>$res[self::III2],
+				'How many times have you attempted suicide?'=>$res[self::III3],
+				'When was the most recent attempt'=>$res[self::III4],
+				'Did you require medical attention after the attempt?'=>$res[self::III5],
+				'Did you tell anyone about the attempt?'=>$res[self::III6],
+				'(confidant) If yes, who?'=>$res[self::III6_5],
+				'Did you talk to a councelor or some other person after your attempt?'=>$res[self::III7],
+				'(councelor) If yes, who?'=>$res[self::III7_5],
+			),
+			'Validation: Reasons for Living'=>$res[self::IV]
+		);
+		
+		return $output;
+	}
+	
+	public function submitResults($sn,$results){
+		$input = array(
+			self::StudentNumber=>$sn,
+			self::IA=>$results['DFRF'],
+			self::IB=>$results['DFPF'],
+			self::III1=>$results['ATMP'][0],
+			self::III2=>$results['ATMP'][1],
+			self::III3=>$results['ATMP'][2],
+			self::III4=>$results['ATMP'][3],
+			self::III5=>$results['ATMP'][4],
+			self::III6=>$results['ATMP'][5],
+			self::III6_5=>$results['ATMP'][6],
+			self::III7=>$results['ATMP'][7],
+			self::III7_5=>$results['ATMP'][8],
+			self::II=>$results['IDTN'],
+			self::IV=>$results['VRFL']
+		);
+		$this->db->insert(self::surveytablename,$input);
 	}
 	
 	public function addTest($testTitle,$testDesc=''){
