@@ -32,9 +32,13 @@ class Manage extends StudentInfoController {
 		
 		$studentInfo = $this->getStudentData($studentNumber);
 		
-		$this->load->view('header');
+		//$this->load->view('header');
+		$this->load->view('student_info_print',array(
+			'student_info'=>json_encode($studentInfo,JSON_HEX_APOS|JSON_NUMERIC_CHECK),
+			'student_number'=>$studentNumber
+		));
 		//$this->load->view('student_info_print',array('mode'=>'manage','student_id'=>$this->student_information->getBasePK($studentNumber),'student_number'=>$studentNumber,'student_info'=>json_encode($studentInfo,JSON_HEX_APOS|JSON_NUMERIC_CHECK)));
-		$this->load->view('footer');
+		//$this->load->view('footer');
 		
 	}
 	

@@ -1,10 +1,10 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
-<div flex layout="row" layout-align="center center" layout-padding layout-margin>
+<div layout="row" layout-align="center center" layout-padding layout-margin>
 	<span class="md-headline">Welcome to the Guidance Office Homepage.</span>
 </div>
-<div layout="row" layout-align="center start" flex>
+<div layout="row" layout-align="center start">
 	<md-content>
 		<md-button href="<?= base_url().'studentinfo'?>">
 			<md-card>

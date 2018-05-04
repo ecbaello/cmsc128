@@ -112,14 +112,16 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		}else{
 			return;
 		}
-		$rootScope.busy = true;
 		action =function(){
+			$rootScope.busy = true;
 			success = function(response) {
 				$rootScope.customConfirm('Success',response.msg,function(){
 					$window.location.reload();
+					$rootScope.busy = false;
 				},
 				function(){
 					$window.location.reload();
+					$rootScope.busy = false;
 				});
 			}
 			error = function(response){
@@ -697,4 +699,20 @@ app.controller('student_search',function($scope,$rootScope,$window,$http,$filter
 		$scope.currIndex+=amt;
 	}
 
+});
+
+app.controller('student_print',function($scope,$rootScope,$http){
+	$scope.data = {};
+	$scope.form = {};
+	$scope.init = function(StudentData){
+		$scope.data = StudentData;
+		$rootScope.busy =true;
+		$http.get($rootScope.baseURL+'studentinfo/manage/get/form').then(function(response){
+			$scope.form = response.data;
+			$rootScope.busy = false;
+		})
+	}
+	$scope.getNumber = function(num){
+		return new Array(num);
+	}
 });

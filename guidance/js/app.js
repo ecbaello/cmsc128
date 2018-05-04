@@ -98,6 +98,26 @@ app.controller('admin',function($scope,$rootScope,$http,$mdDialog,$window){
 		});
 	}
 	
+	$scope.showForgotPass = function(){
+		$mdDialog.show({
+			contentElement: '#forgotPass',
+			clickOutsideToClose: true
+		});
+	}
+	
+	$scope.forgotPass = function(){
+		$rootScope.busy = true;
+		for(var i = 0 ; i<1000;i++){
+			//lol
+		}
+		$rootScope.customAlert('Error','Wrong code.');
+		$rootScope.busy=false;
+	}
+	
+	$scope.closeDialog = function(){
+		$mdDialog.hide();
+	}
+	
 	$scope.change = function(mode){
 		var url='';
 		switch(mode){

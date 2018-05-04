@@ -17,7 +17,7 @@ edit field
 	- fe - done 4/26/18
 	- mc - done 4/26/18
 
-print student data
+print student data - presentation ready
 test formula + test result - cancelled
 
 --
@@ -45,3 +45,5 @@ recycle bin - 4/30/18
 permanently delete 4/30/18
 	-tables & fields
 	-student records
+
+forgot password email - presentation ready
