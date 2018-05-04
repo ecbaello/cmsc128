@@ -12,6 +12,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" href="<?= base_url().'css/fontawesome-all.min.css' ?>"/>
 	<link rel="stylesheet" href="<?= base_url().'css/roboto.css' ?>"/>
 	<link rel="stylesheet" href="<?= base_url().'css/angular-material.min.css' ?>"/>
+	<link rel="stylesheet" href="<?= base_url().'css/ostrich-sans.css' ?>"/>
 
 	<script src="<?= base_url().'js/angular.min.js' ?>"></script>
 	<script src="<?= base_url().'js/angular-animate.min.js' ?>"></script>
@@ -56,7 +57,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div layout="row">
 					<div flex>
 						<div layout="row">
-							<span flex class="md-display-1" style="font-size:2em;font-family: 'Ostrich Sans'; color:white">University of the Philippines Baguio</span>
+							<span flex class="md-display-1" style="font-size:2.25em;font-family: 'Ostrich Sans'; color:white;font-weight:bold">University of the Philippines Baguio</span>
 						</div>
 						<span style="padding:5px; font-family: 'Century Gothic'; color:white;">Guidance Homepage</span>
 					</div>
