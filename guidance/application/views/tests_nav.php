@@ -1,9 +1,13 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+
+if(!$this->ion_auth->is_admin()){
+	header("Location: ".base_url()."survey");
+}
 ?><!DOCTYPE html>
 <div ng-controller="tests_nav" ng-init="init()" flex>
 	<div flex layout="row" layout-align="center center" layout-padding>
-		<span class="md-headline">UPB Guidance Tests</span> 
+		<span class="md-headline">UPB Guidance Survey</span> 
 		<span>
 		<?php if($this->ion_auth->is_admin()): ?>
 		<md-button title="Add Tests" class="md-primary md-raised md-fab" ng-click="addDialog()"><i class="fas fa-plus"></i></md-button>
@@ -15,6 +19,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<a class="md-primary md-button md-no-margin md-raised" href="<?=base_url().'tests/passwords'?>">Student Passwords</a>
 	</div>
 	<?php endif; ?>
+	<div layout="row" layout-align="center center">
+		<a class="md-primary md-button md-no-margin md-raised" href="<?=base_url().'survey'?>">Go To Survey</a>
+	</div>
 	<div>
 		<md-content layout="row" layout-wrap layout-align="center center" layout-margin>
 			<md-card ng-repeat="(i,v) in tests" flex="25">
@@ -42,9 +49,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<div style="visibility: hidden">
 		<div class="md-dialog-container" id="addDialog">
 			<md-dialog flex="40">
-				<md-toolbar style="background-color:maroon" layout-padding>
+				<!--<md-toolbar style="background-color:maroon" layout-padding>
 					<h4 class="md-no-margin" style="color:white">ADD TEST</h4>
-				</md-toolbar>
+				</md-toolbar>-->
 				<md-dialog-content layout="column" layout-padding>
 				<form>
 					<div layout="column">

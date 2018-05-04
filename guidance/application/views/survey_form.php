@@ -4,12 +4,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!DOCTYPE html>
 
 
-<div ng-controller="survey_form" layout="row" layout-align="center start">
+<style>
+.tables {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tables td, .tables th {
+    border: 1px solid #ddd;
+    padding: 4px;
+}
+
+.tables tr:nth-child(even){background-color: #f2f2f2;}
+
+.tables tr:hover {background-color: #ddd;}
+
+.tables th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #800000;
+    color: white;
+}
+
+.tables th:hover{
+	cursor:pointer;
+}
+</style>
+
+<div ng-controller="survey_form" layout="row" layout-align="center start" layout-padding layout-margin>
 	
 	<form method="post">
-		<table>
+		<table class="tables">
 			<tr>
-				<td><h3>Demographic Factor: Risk Factors</h3></td>
+				<td colspan="2"><h3>Demographic Factor: Risk Factors</h3></td>
 			</tr>
 			<tr>
 				<td>In the past six months, I have:</td>
@@ -92,7 +120,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</td>
 			</tr>
 			<tr>
-				<td><h3>Demographic Factor: Protective Factors</h3></td>
+				<td colspan="2"><h3>Demographic Factor: Protective Factors</h3></td>
 			</tr>
 			<tr>
 				<td>I believe that I have:</td>
@@ -154,7 +182,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</td>
 			</tr>
 			<tr>
-				<td><h3>Ideation</h3></td>
+				<td colspan="2"><h3>Ideation</h3></td>
 				<td></td>
 			</tr>
 			<tr>
@@ -248,7 +276,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</td>
 			</tr>
 			<tr>
-				<td><h3>Attempt</h3></td>
+				<td colspan="2"><h3>Attempt</h3></td>
 			</tr>
 			<tr>
 				<td>Have you ever tried inflicting injury upon yourself?</td>
@@ -293,7 +321,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</td>
 			</tr>
 			<tr>
-				<td><h3>Validation: Reasons for living</h3></td>
+				<td colspan="2"><h3>Validation: Reasons for living</h3></td>
 			</tr>
 			<tr>
 				<td>Please choose an answer that corresponds to indicate the importance of each statement for NOT killing yourself</td>

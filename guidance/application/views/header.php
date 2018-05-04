@@ -23,6 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script src="<?= base_url().'js/app.js' ?>"></script>
 	<script src="<?= base_url().'js/app_studentinfo.js' ?>"></script>
 	<script src="<?= base_url().'js/app_tests.js' ?>"></script>
+	<script src="<?= base_url().'js/app_survey.js' ?>"></script>
 	
 	<style>
 		.md-no-margin{
@@ -66,7 +67,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<md-content layout="row" layout-align="start center" style="background-color:inherit;font-size:0.8em;color:white">
 					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#014421" href="<?=base_url().'studentinfo'?>">Student Info</a>
 					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#014421" href="<?=base_url()?>">Home</a>
-					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#014421" href="<?=base_url().'tests'?>">Tests</a>
+					<a class="md-button" style="width:30%;font-size:0.7em;background-color:#014421" href="<?=base_url().'tests'?>">Survey</a>
 				</md-content>
 			</div>
 			
