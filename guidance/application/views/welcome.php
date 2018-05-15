@@ -19,7 +19,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</md-card>
 		</md-button>
 
-		<md-button href="<?= base_url().'tests'?>">
+		<md-button href="<?= base_url().'survey'?>">
 			<md-card>
 				<md-card-title  class="md-no-margin md-no-padding" layout-padding layout="row" layout-align="center center" style="background-color:maroon">
 					<md-content style="min-width:200px;background-color:inherit;color:white">Survey</md-content>

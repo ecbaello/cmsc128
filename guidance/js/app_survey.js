@@ -1,4 +1,4 @@
-app.controller('survey_form',function($scope,$rootScope,$mdDialog,$window){
+app.controller('survey_form',function($scope,$rootScope,$mdDialog,$window,$http){
 	
 	$scope.ALLresult = {};
 	$scope.DFRF = [
@@ -92,7 +92,48 @@ app.controller('survey_form',function($scope,$rootScope,$mdDialog,$window){
 		return score;
 	}
 	
+	$scope.survey = [];
+	$scope.answers = {};
+	
+	$scope.init = function(){
+		$rootScope.busy = true;
+		$http.get($rootScope.baseURL+'survey/take/getsurveyform').then(function(response){
+			$scope.survey = response.data;
+			for(var i = 0 ; i<$scope.survey.length ; i++){
+				$scope.answers[$scope.survey[i].Category.ID] = {};
+				for(var j = 0 ; j<$scope.survey[i].Questions.length ; j++){
+					$scope.answers[$scope.survey[i].Category.ID][$scope.survey[i].Questions[j]['Question ID']]='';
+				}
+			}
+			$rootScope.busy = false;
+		});
+	}
+	
+	$scope.checkDependency = function(sectionIndex,questionIndex){
+		//false if dependency is not satisfied
+		//true otherwise
+		if($scope.survey[sectionIndex].Questions[questionIndex].Dependent == null){
+			return true;
+		}else{
+			for(var i = 0 ; i<$scope.survey[sectionIndex].Questions.length ; i++){
+				var q = $scope.survey[sectionIndex].Questions[questionIndex];
+				var a = $scope.answers[$scope.survey[sectionIndex].Category.ID];
+				if(!a.hasOwnProperty(q.Dependent)){
+					return false;
+				}else{
+					if(a[q.Dependent] == q['Dependent AID'])
+						return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	$scope.submit = function(sn){
+		
+		console.log($scope.answers);
+		return;
 		//1,3,6,8
 		for(var i = 0 ; i<$scope.DFRF.length ; i++){
 			if($scope.DFRF[i] == ''){
@@ -148,5 +189,48 @@ app.controller('survey_form',function($scope,$rootScope,$mdDialog,$window){
 				$rootScope.customAlert('Error',response.msg);
 			}
 		);
+	}
+});
+
+app.controller('survey_passwords',function($scope,$rootScope,$window,$mdDialog,$http){
+	$scope.disp={};
+	$scope.gen={};
+	$scope.passwords={};
+
+	$scope.submit = function(type){
+		post = function(){
+			$rootScope.busy = true;
+			console.log($rootScope.baseURL+'survey/passwords/action/'+type);
+			$rootScope.post(
+				$rootScope.baseURL+'survey/passwords/action/'+type
+				,{
+					'mode':type==0 ? $scope.disp.option : $scope.gen.option,
+					'value':type==0 ? $scope.disp.value : $scope.gen.value
+				}
+				,function(response){
+					$rootScope.busy = false;
+					if(type==1)
+						$rootScope.customAlert('Success','Passwords generated successfully');
+					$scope.passwords = response.data;
+				}
+				,function(response){
+					$rootScope.customAlert('Error',response.msg);
+					$rootScope.busy = false;
+				}
+			)
+		}
+		
+		if(type==0){
+			if($scope.disp.option == '' || $scope.disp.value == '')
+				$rootScope.customAlert('Error','Please fill-up the required fields');
+			post();
+		}else if(type==1){
+			if($scope.gen.option == '' || $scope.gen.value == '')
+				$rootScope.customAlert('Error','Please fill-up the required fields');
+			$rootScope.customConfirm('Warning','Generating passwords will overwrite previous passwords. Do you want to continue?',post,function(){});
+		}else{
+			return;
+		}
+		
 	}
 });

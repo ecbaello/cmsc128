@@ -1,18 +1,19 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Passwords extends TestsController {
-
+class Passwords extends BaseController{
+	
 	public function __construct(){
 		parent::__construct();
 		$this->permissionRestrict();
 	}
 	
 	public function body(){
-		$this->load->view('tests_password');
+		$this->load->view('survey_passwords');
 	}
 	
 	public function action($mode=null){
+		
 		//$mode: 0=>get, 1=>generate
 		if($mode===null){
 			$this->responseJSON(false,'Missing arguments.');
@@ -50,7 +51,7 @@ class Passwords extends TestsController {
 			return;
 		}
 				
-		$result = $mode==0 ? $this->test_maker->getPasswords($data['mode'],$data['value']) : $this->test_maker->generatePasswords($data['mode'],$data['value']);
+		$result = $mode==0 ? $this->survey_maker->getPasswords($data['mode'],$data['value']) : $this->survey_maker->generatePasswords($data['mode'],$data['value']);
 		
 		echo json_encode(array(
 			'success'=>true,
@@ -60,5 +61,4 @@ class Passwords extends TestsController {
 		return;
 		
 	}
-	
 }

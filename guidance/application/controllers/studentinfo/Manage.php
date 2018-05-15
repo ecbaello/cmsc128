@@ -6,7 +6,6 @@ class Manage extends StudentInfoController {
 	public function body()
 	{
 		$this->load->view('student_info_manage');
-		//$this->load->view('student_info_form');
 	}
 	
 	public function student($studentNumber = null){
@@ -17,6 +16,9 @@ class Manage extends StudentInfoController {
 		$studentNumber = urldecode($studentNumber);
 		
 		$studentInfo = $this->getStudentData($studentNumber);
+		if(count($studentInfo)<1){
+			show_404();
+		}
 		
 		$this->load->view('header');
 		$this->load->view('student_info_form',array('mode'=>'manage','student_id'=>$this->student_information->getBasePK($studentNumber),'student_number'=>$studentNumber,'student_info'=>json_encode($studentInfo,JSON_HEX_APOS|JSON_NUMERIC_CHECK)));
@@ -128,11 +130,9 @@ class Manage extends StudentInfoController {
 			$data[$table[StudentInfoBaseModel::TableNameFieldName]]=$fields;
 		}
 		
-		$data['Test Answers'] = array();
-		
-		$testAnswers = $this->test_maker->getAnswers($studentNumber);
+		$testAnswers = $this->survey_maker->getResults($studentNumber);
 		if($testAnswers !== null)
-			$data['Test Answers']=$testAnswers;
+			$data['Survey Answers']=$testAnswers;
 		
 		//return json_encode($data,JSON_NUMERIC_CHECK);
 		//print('<pre>');print_r($data);print('</pre>');

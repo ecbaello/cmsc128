@@ -1,0 +1,41 @@
+--
+Category
+--
+ID (fk)
+Title
+Tip
+Auto-Compute?
+
+--
+Question
+--
+Category ID (fk)
+Question ID (pk)
+Question
+Is Custom
+Question Dep (fk) - question id that this question needs answered in order to appear 
+Question Dep AID - answer that this question needs in dependent question
+
+--
+Answers
+--
+Category ID (fk)
+Answer ID (pk)
+Answer Weight
+Answer Value
+
+--
+Student Answers
+--
+Student ID (fk)
+Question ID (fk)
+Answer ID (fk)
+Answer Custom
+
+--
+Student Results
+--
+Student ID (fk)
+Category ID (fk)
+Raw Result
+Interpretation

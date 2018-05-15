@@ -16,6 +16,8 @@ class BaseController extends CI_Controller{
 		$this->load->model("ion_auth_init");
 		$this->load->add_package_path(APPPATH.'third_party/ion_auth/');
 		$this->load->library('ion_auth');
+		$this->load->model('student_information');
+		$this->load->model('survey_maker');
 	}
 	
 	protected function permissionRestrict(){
@@ -55,9 +57,6 @@ class StudentInfoController extends BaseController {
 
 	public function __construct(){
 		parent::__construct();
-		
-		$this->load->model('student_information');
-		$this->load->model('test_maker');
 		$this->permissionRestrict();
 	}
 	
@@ -117,13 +116,24 @@ class StudentInfoController extends BaseController {
 		}
 		
 		$toInsert = array();
+		
+		//Check first if base table is filled-up
+		if(!isset($data[StudentInfoBaseModel::BaseTableTableName])){
+			$baseTableTitle = $this->student_information->getTableTitle(StudentInfoBaseModel::BaseTableTableName);
+			$this->responseJSON(false,'Incomplete Data. Please fill-up at least one field in the category: '.$baseTableTitle);
+			return;
+		}
+		
 		$tableData = $this->getForm(true);
 		foreach($tableData as $table){
 			
 			if(!isset($data[$table['Table']['Name']])){
+				continue;
+			}
+			/*if(!isset($data[$table['Table']['Name']])){
 				$this->responseJSON(false,'Incomplete Data. Please fill-up at least one field in the category: '.$table['Table']['Title']);
 				return;
-			}
+			}*/
 			$toInsert = $this->prepareAndValidateInput($toInsert,$table,$data[$table['Table']['Name']]);
 		}
 		
@@ -404,41 +414,6 @@ class StudentInfoController extends BaseController {
 		echo json_encode($result,JSON_NUMERIC_CHECK);
 		return $result;
 		
-	}
-
-}
-
-class TestsController extends BaseController {
-
-	public function __construct(){
-		parent::__construct();
-		$this->load->model('test_maker');
-	}
-	
-	protected function getTestData($testTitle){
-		$testID = $this->test_maker->getTestID($testTitle);
-		if($testID == null){
-			return null;
-		}
-		
-		$output = array();
-		$output['Questions'] = $this->test_maker->getQuestions($testTitle);
-		$output['Title']=$testTitle;
-		$output['ID']=$this->test_maker->getTestID($testTitle);
-		$output['Desc']=$this->test_maker->getTestDescription($testTitle);
-		
-		//echo json_encode($output,JSON_NUMERIC_CHECK);
-		//return json_encode($output,JSON_NUMERIC_CHECK);
-		return $output;
-	}
-
-}
-
-class surveyController extends BaseController {
-
-	public function __construct(){
-		parent::__construct();
-		$this->load->model('test_maker');
 	}
 
 }

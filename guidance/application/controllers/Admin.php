@@ -131,7 +131,6 @@ class Admin extends BaseController {
 			$this->responseJSON(false,'Wrong password.');
 			return;
 		}
-		$this->load->model('student_information');
 		$this->student_information->initDefaults();
 		$this->responseJSON(true,'Initialized');
 		return;
