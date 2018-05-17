@@ -76,11 +76,14 @@ app.controller('initializer',function($scope,$rootScope){
 
 app.controller('login',function($scope,$rootScope,$http,$mdDialog,$window){
 	$scope.account = {};
+	$scope.resPas = {};
 	$scope.login = function(){
-		if($scope.username=='' || $scope.password==''){
-			$rootScope.customAlert('Error','Please fill-up the required fields.','Ok');
+		
+		if($scope.account.username=='forgot'  && $scope.account.password=='password'){
+			$scope.showForgotPass();
+			return;
 		}
-
+		
 		$rootScope.post($rootScope.baseURL+'main/login',$scope.account
 		,function(response){
 			$window.location.reload();
@@ -88,34 +91,51 @@ app.controller('login',function($scope,$rootScope,$http,$mdDialog,$window){
 			$rootScope.customAlert('Error',response.msg,'Ok');
 		})
 	}
-});
-
-app.controller('admin',function($scope,$rootScope,$http,$mdDialog,$window){
-	$scope.account={};
-	$scope.init = function(){
-		$http.get($rootScope.baseURL+'admin/getaccount').then(function(response){
-			$scope.account = response.data;
-		});
-	}
 	
 	$scope.showForgotPass = function(){
-		$mdDialog.show({
-			contentElement: '#forgotPass',
-			clickOutsideToClose: true
+		$rootScope.busy = true;
+		$http.get($rootScope.baseURL+'main/sendresetpassword').then(function(res){
+			$mdDialog.show({
+				contentElement: '#forgotPass',
+				clickOutsideToClose: true
+			});
+			$rootScope.busy=false;
 		});
+		
 	}
 	
 	$scope.forgotPass = function(){
 		$rootScope.busy = true;
-		for(var i = 0 ; i<1000;i++){
-			//lol
+		if($scope.resPas.Code=='' || $scope.resPas.Password1=='' || $scope.resPas.Password2==''){
+			$rootScope.customAlert('Error','Please fill-up the required fields.');
 		}
-		$rootScope.customAlert('Error','Wrong code.');
+		$rootScope.post(
+			$rootScope.baseURL+'main/resetpassword',
+			$scope.resPas,
+			function(res){
+				$rootScope.customAlert('Success',res.msg);
+				$scope.closeDialog();
+				$rootScope.busy = false;
+			},
+			function(res){
+				$rootScope.customAlert('Error',res.msg);
+				$rootScope.busy = false;
+			}
+		);
 		$rootScope.busy=false;
 	}
 	
 	$scope.closeDialog = function(){
 		$mdDialog.hide();
+	}
+});
+
+app.controller('admin',function($scope,$rootScope,$http,$window){
+	$scope.account={};
+	$scope.init = function(){
+		$http.get($rootScope.baseURL+'admin/getaccount').then(function(response){
+			$scope.account = response.data;
+		});
 	}
 	
 	$scope.change = function(mode){

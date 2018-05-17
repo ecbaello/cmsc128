@@ -462,7 +462,7 @@ class Survey_Maker extends CI_Model{
 			array(
 				self::CategoryID=>4,
 				self::QuestionID=>32,
-				self::Question=>'When was the most recent attempt?',
+				self::Question=>'When was the most recent attempt? (Enter "n/a" if not applicable)',
 				self::QuestionDep=>29,
 				self::QuestionDepAID=>10,
 				self::QuestionCustom=>true
@@ -584,6 +584,58 @@ class Survey_Maker extends CI_Model{
 	}
 	
 	public function getResults($studentNumber){
+		
+		$this->db->select(StudentInfoBaseModel::BaseTablePKName);
+		$this->db->where(StudentInfoBaseModel::StudentNumberFieldName,$studentNumber);
+		$res = $this->db->get(StudentInfoBaseModel::BaseTableTableName)->result_array();
+		if(count($res)!=1){
+			return null;
+		}
+		$studentID = $res[0][StudentInfoBaseModel::BaseTablePKName];
+		
+		$this->db->from(self::StudentAnswerTableName);
+		$this->db->order_by(self::QuestionID,'asc');
+		$this->db->where(StudentInfoBaseModel::BaseTablePKName,$studentID);
+		$res = $this->db->get()->result_array();
+		if(count($res)<1){
+			return null;
+		}
+		
+		$surveyForm = $this->getSurvey();
+		$output = array();
+		foreach($surveyForm as $section){
+			$this->db->where(StudentInfoBaseModel::BaseTablePKName,$studentID);
+			$this->db->where(self::CategoryID,$section['Category']['ID']);
+			$res2 = $this->db->get(self::StudentResultTableName)->result_array();
+			if(count($res)!=1)
+				return null;
+			$output[$section['Category']['Title']]['Raw Result'] = $res2[0][self::SRRawResult];
+			$output[$section['Category']['Title']]['Interpretation'] = $res2[0][self::SRInterpretation];
+			$output[$section['Category']['Title']]['Answers']=array();
+			foreach($section['Questions'] as $question){
+				foreach($res as $saIndex=>$studentAnswer){
+					if($studentAnswer[self::QuestionID] == $question['Question ID']){
+						$answer = 'error';
+						if($question['Custom']){
+							$answer = $studentAnswer[self::SAnswerCustom];
+						}else{
+							foreach($section['Answers'] as $ans){
+								if($studentAnswer[self::AnswerID]==$ans['Answer ID']){
+									$answer = $ans['Value'];
+								}
+							}
+						}
+						array_push($output[$section['Category']['Title']]['Answers'],array(
+							'Question'=>$question['Question'],
+							'Answer' => $answer
+						));
+					}
+				}
+			}
+		}
+		
+		return $output;
+		
 	}
 	
 	public function getSurvey(){
@@ -631,6 +683,18 @@ class Survey_Maker extends CI_Model{
 		return $survey;
 	}
 	
+	public function hasAnswered($sn){
+		$this->db->select(StudentInfoBaseModel::BaseTablePKName);
+		$this->db->where(StudentInfoBaseModel::StudentNumberFieldName,$sn);
+		$res = $this->db->get(StudentInfoBaseModel::BaseTableTableName)->result_array();
+		if(count($res)!=1){
+			return false;
+		}
+		$this->db->where(StudentInfoBaseModel::BaseTablePKName,$res[0][StudentInfoBaseModel::BaseTablePKName]);
+		$res = $this->db->get(self::StudentAnswerTableName)->result_array();
+		return count($res)>0 ? true:false;
+	}
+	
 	public function setInterpretation($studentID, $categoryID, $interpretation){
 		$this->db->where(StudentInfoBaseModel::BaseTablePKName,$studentID);
 		$this->db->where(self::CategoryID,$categoryID);
@@ -639,16 +703,133 @@ class Survey_Maker extends CI_Model{
 		));
 	}
 	
-	public function submitAnswers($answers){
+	public function submitAnswers($sn,$answers){
 		/*
 		answers = array(
-			question id => answer
+			Normal=array(
+				question id => answer id
+			)
+			Custom = array(
+				question id => answer
+			)
 		)
 		*/
 		
-		$surveyForm = $this->getSurvey;
+		//check if student number is registered
+		$this->db->select(StudentInfoBaseModel::BaseTablePKName);
+		$this->db->where(StudentInfoBaseModel::StudentNumberFieldName,$sn);
+		$res = $this->db->get(StudentInfoBaseModel::BaseTableTableName)->result_array();
+		if(count($res)!=1){
+			return 'Student Number not registered.';
+		}
+		$studentID = $res[0][StudentInfoBaseModel::BaseTablePKName];
 		
+		$categories = $this->db->get(self::CategoryTableName)->result_array();
+		foreach($categories as $category){
+			
+			if($category[self::CategoryAC]){
+				$this->db->where(self::CategoryID,$category[self::CategoryID]);
+				$questions = $this->db->get(self::QuestionTableName)->result_array();
+				$rawResult = 0;
+				$interpretation = null;
+				foreach($questions as $question){
+					if(isset($answers['Normal'][$question[self::QuestionID]])){
+						$this->db->select(self::AnswerWeight);
+						$this->db->where(self::AnswerID,$answers['Normal'][$question[self::QuestionID]]);
+						$res = $this->db->get(self::AnswerTableName)->result_array();
+						if(count($res)!=1){
+							return 'No such answer';
+						}
+						$rawResult = $rawResult+$res[0][self::AnswerWeight];
+					}
+				}
+				
+				switch($category[self::CategoryID]){
+					case 1:
+						if($rawResult>=0 && $rawResult<=3){
+							$interpretation='Low Risk Factors';
+						}
+						if($rawResult>=4 && $rawResult<=7){
+							$interpretation='Moderate Risk Factors';
+						}else{
+							$interpretation='High Risk Factors';
+						}
+						break;
+					case 2:
+						if($rawResult>=0 && $rawResult<=4){
+							$interpretation='Low Protective Factors';
+						}
+						if($rawResult>=5 && $rawResult<=9){
+							$interpretation='Moderate Protective Factors';
+						}else{
+							$interpretation='High Protective Factors';
+						}
+						break;
+					case 3:
+						if($rawResult>=0 && $rawResult<=6){
+							$interpretation='Very Low Ideation';
+						}
+						if($rawResult>=7 && $rawResult<=14){
+							$interpretation='Low Ideation';
+						}
+						if($rawResult>=15 && $rawResult<=22){
+							$interpretation='Moderate Ideation';
+						}else{
+							$interpretation='High Ideation';
+						}
+						break;
+					case 5:
+						if($rawResult>=0 && $rawResult<=5){
+							$interpretation='Very Low';
+						}
+						if($rawResult>=6 && $rawResult<=12){
+							$interpretation='Low';
+						}
+						if($rawResult>=13 && $rawResult<=19){
+							$interpretation='Moderate';
+						}else{
+							$interpretation='High';
+						}
+						break;
+					default:
+						break;
+				}
+				$this->db->insert(self::StudentResultTableName,array(
+					StudentInfoBaseModel::BaseTablePKName=>$studentID,
+					self::CategoryID=>$category[self::CategoryID],
+					self::SRRawResult=>$rawResult,
+					self::SRInterpretation=>$interpretation
+				));
+			}
+		}
 		
+		foreach($answers['Normal'] as $qID=>$aID){
+			$this->db->insert(self::StudentAnswerTableName,array(
+				StudentInfoBaseModel::BaseTablePKName=>$studentID,
+				self::QuestionID=>$qID,
+				self::AnswerID=>$aID
+			));
+		}
+		foreach($answers['Custom'] as $qID=>$answer){
+			$this->db->insert(self::StudentAnswerTableName,array(
+				StudentInfoBaseModel::BaseTablePKName=>$studentID,
+				self::QuestionID=>$qID,
+				self::SAnswerCustom=>$answer
+			));
+		}
+	}
+	
+	public function unsetAnswers($sn){
+		$this->db->select(StudentInfoBaseModel::BaseTablePKName);
+		$this->db->where(StudentInfoBaseModel::StudentNumberFieldName,$sn);
+		$res = $this->db->get(StudentInfoBaseModel::BaseTableTableName)->result_array();
+		if(count($res)!=1){
+			return 'No such student.';
+		}
+		$this->db->where(StudentInfoBaseModel::BaseTablePKName,$res[0][StudentInfoBaseModel::BaseTablePKName]);
+		$this->db->delete(self::StudentAnswerTableName);
+		$this->db->where(StudentInfoBaseModel::BaseTablePKName,$res[0][StudentInfoBaseModel::BaseTablePKName]);
+		$this->db->delete(self::StudentResultTableName);
 	}
 	
 	public function getPasswords($mode,$arg){

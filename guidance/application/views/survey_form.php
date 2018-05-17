@@ -7,6 +7,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	LOGGED-IN AS: <?=$this->ion_auth->user()->row()->username?><span class="md-subhead"> ( <a style="font-color:black" href="<?=base_url().'main/logout'?>">Logout</a> )</span>	
 </div>
 
+<?php if ($answered!=null): ?>
+<div layout-padding layout-margin>
+	Survey already answered.
+</div>
+
+<?php else: ?>
 <div ng-controller="survey_form" layout="column" layout-align="center start" layout-padding layout-margin ng-init="init()">
 
 	<div layout="column" layout-align="center center">
@@ -29,13 +35,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						{{$index+1}}.) {{question.Question}}
 					</span>
 					<div layout-margin flex>
-						<md-radio-group ng-model="answers[section.Category.ID][question['Question ID']]" ng-if="question.Custom==0" layout="row">
+						<md-radio-group required ng-model="answers[question['Question ID']]" ng-if="question.Custom==0" layout="row">
 							<md-radio-button ng-repeat="answer in section.Answers" value="{{answer['Answer ID']}}">
 								{{answer['Value']}}
 							</md-radio-button>
 						</md-radio-group>
 						<md-input-container ng-if="question.Custom==1" class="md-no-margin md-no-padding" layout-fill>
-							<input type="text" ng-model="answers[section.Category.ID][question['Question ID']]"></input>
+							<input type="text" required ng-model="answers[question['Question ID']]"></input>
 						</md-input-container>
 					</div>
 				</div>
@@ -49,3 +55,4 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</form>
 	
 </div>
+<?php endif;?>

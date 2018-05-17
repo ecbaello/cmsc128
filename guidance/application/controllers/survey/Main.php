@@ -9,7 +9,7 @@ class Main extends BaseController {
 			if($this->ion_auth->is_admin()){
 				$this->load->view('survey_nav');
 			}else{
-				$this->load->view('survey_form');
+				$this->load->view('survey_form',array('answered'=>$this->survey_maker->hasAnswered($this->ion_auth->user()->row()->username)));
 			}
 		}else{
 			$this->load->view('login');

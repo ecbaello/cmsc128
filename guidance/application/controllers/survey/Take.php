@@ -1,11 +1,13 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Take extends StudentInfoController {
+class Take extends BaseController {
 	
 	public function body(){
 		if($this->ion_auth->logged_in()){
-			$this->load->view('survey_form');
+			$this->load->view('survey_form',array(
+				'answered'=>$this->survey_maker->hasAnswered($this->ion_auth->user()->row()->username)
+			));
 		}else{
 			$this->load->view('login');
 		}
@@ -16,7 +18,6 @@ class Take extends StudentInfoController {
 	}
 	
 	public function submit($sn=null){
-		
 		if($sn==null){
 			$this->responseJSON(false,'Empty Input');
 			return;
@@ -33,7 +34,70 @@ class Take extends StudentInfoController {
 			return;
 		}
 		
-		$res = $this->survey_maker->submitResults($sn,$data);
+		if($this->survey_maker->hasAnswered($sn)){
+			$this->responseJSON(false,'Student has already answered the survey.');
+			return;
+		}
+		
+		//Validate Input
+		$surveyForm = $this->survey_maker->getSurvey();
+		$validated = array(
+			'Normal'=>array(),
+			'Custom'=>array()
+		);
+		
+		foreach($surveyForm as $section){
+			foreach($section['Questions'] as $question){
+				foreach($data as $qID=>$studentAnswer){
+					if($qID == $question['Question ID']){
+						if($question['Dependent']==null){
+							if(!$question['Custom']){
+								$isAnswerValid = false;
+								foreach($section['Answers'] as $sectionAnswer){
+									if($studentAnswer == $sectionAnswer['Answer ID'])
+										$isAnswerValid = true;
+								}
+								if(!$isAnswerValid){
+									$this->responseJSON(false,'Invalid answer.');
+									return;
+								}
+							}
+							
+							$validated[$question['Custom']? 'Custom':'Normal'][$qID.""]=$studentAnswer;
+						}else{
+							//recursive check for dependencies
+							$currQ = $question;
+							$nextQ = null;
+							$valid=false;
+							while(true){
+								if($currQ['Dependent']==null){
+									$valid = true;
+									break;
+								}
+								foreach($section['Questions'] as $q){
+									if($q['Question ID'] == $currQ['Dependent']){
+										$nextQ = $q;
+									}
+								}
+								if($nextQ==null){
+									break;
+								}else{
+									if(!isset($data[$nextQ['Question ID']]) || $data[$nextQ['Question ID']]!=$currQ['Dependent AID']){
+										break;
+									}
+									$currQ = $nextQ;
+								}
+							
+							}
+							if($valid)
+								$validated[$question['Custom']? 'Custom':'Normal'][$qID.""]=$studentAnswer;
+						}
+					}
+				}
+			}
+		}
+		
+		$res = $this->survey_maker->submitAnswers($sn,$validated);
 		if($res != null){
 			$this->responseJSON(false,$res);
 			return;
