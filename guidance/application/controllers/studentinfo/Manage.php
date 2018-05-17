@@ -10,6 +10,8 @@ class Manage extends StudentInfoController {
 	
 	public function student($studentNumber = null){
 		
+		//print('<pre>');print_r($this->survey_maker->getResults($studentNumber));print('</pre>');die();
+		
 		if($studentNumber == null){
 			show_404();
 		}
@@ -130,9 +132,9 @@ class Manage extends StudentInfoController {
 			$data[$table[StudentInfoBaseModel::TableNameFieldName]]=$fields;
 		}
 		
-		$testAnswers = $this->survey_maker->getResults($studentNumber);
-		if($testAnswers !== null)
-			$data['Survey Answers']=$testAnswers;
+		$surveyAnswers = $this->survey_maker->getResults($studentNumber);
+		if($surveyAnswers !== null)
+			$data['Survey Answers']=$surveyAnswers;
 		
 		//return json_encode($data,JSON_NUMERIC_CHECK);
 		//print('<pre>');print_r($data);print('</pre>');

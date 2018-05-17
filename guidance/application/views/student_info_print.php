@@ -21,7 +21,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script src="<?= base_url().'js/ng-table-to-csv.min.js' ?>"></script>
 	<script src="<?= base_url().'js/app.js' ?>"></script>
 	<script src="<?= base_url().'js/app_studentinfo.js' ?>"></script>
-	<script src="<?= base_url().'js/app_tests.js' ?>"></script>
+	<script src="<?= base_url().'js/app_survey.js' ?>"></script>
 
 	<link rel="stylesheet" href="<?= base_url().'css/paper.css' ?>"/>
 	<style>@page { size: legal }</style>
@@ -63,6 +63,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div>
 		
 		<div style="margin:0.25in 0in 0.25in 0in;">
+			
+			<fieldset layout="column" style="font-size:0.9em">
+				<p ng-repeat="(qaIndex,qa) in data['Survey Answers']">
+					<span style="font-weight:bold">{{qa.Category.Title}}</span>
+					<span>{{qa.Interpretation}}</span>
+				</p>
+			</fieldset>
 			
 			<div ng-repeat="(fIndex,f) in form" style="margin:0.5">
 				<div layout="row" layout-align="center center" layout-margin style="border-style:dashed;border-width:1px 0 1px 0;">

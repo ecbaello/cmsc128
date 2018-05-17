@@ -4,10 +4,10 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 	$scope.currCategory = {};
 	$scope.tableData = {};
 	$scope.input = {};
-	$scope.tests = {};
-	$scope.isTests = false;
-	$scope.currTest = {};
-	$scope.currTestKey = 0;
+	$scope.survey = [];
+	$scope.isSurvey = false;
+	$scope.currSurvey = {};
+	$scope.currSurveyKey = 0;
 	
 	$scope.init = function(info=''){
 		$rootScope.busy = true;
@@ -21,7 +21,8 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		
 		if(info!=''){
 			$scope.input = info;
-			$scope.tests = info['Test Answers'];
+			$scope.survey = info['Survey Answers'];
+			$scope.currSurvey = $scope.survey[$scope.currSurveyKey];
 		}
 	}
 
@@ -65,13 +66,13 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 	$scope.changeCategory = function(categoryKey){
 		$scope.currCategoryKey = categoryKey;
 		$scope.currCategory = $scope.tableData[categoryKey];
-		$scope.isTests = false;
+		$scope.isSurvey = false;
 	}
 	
-	$scope.changeTest = function(testKey){
-		$scope.isTests =true;
-		$scope.currTestKey = testKey;
-		$scope.currTest = $scope.tests[testKey];
+	$scope.changeSurvey = function(surveyKey){
+		$scope.isSurvey =true;
+		$scope.currSurveyKey = surveyKey;
+		$scope.currSurvey = $scope.survey[surveyKey];
 	}
 	
 	$scope.deleteRecord = function(studentID=''){
@@ -152,9 +153,17 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		console.log($scope.tableData);
 	}
 	
-	$scope.test = function(index){
-		
-		console.log($scope.input);
+	$scope.editInterpretation = function(sid,surveyID){
+		$rootScope.post(
+			$rootScope.baseURL+'survey/main/changeInterpretation',
+			{SID:sid,ID:surveyID,Interpretation:$scope.currSurvey.Interpretation},
+			function(response){
+				$rootScope.customAlert('Success','Interpretation changed successfully');
+			},
+			function(response){
+				$rootScope.customAlert('Error',response.msg);
+			}
+		);
 	}
 });
 

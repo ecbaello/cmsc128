@@ -607,11 +607,10 @@ class Survey_Maker extends CI_Model{
 			$this->db->where(StudentInfoBaseModel::BaseTablePKName,$studentID);
 			$this->db->where(self::CategoryID,$section['Category']['ID']);
 			$res2 = $this->db->get(self::StudentResultTableName)->result_array();
-			if(count($res)!=1)
-				return null;
-			$output[$section['Category']['Title']]['Raw Result'] = $res2[0][self::SRRawResult];
-			$output[$section['Category']['Title']]['Interpretation'] = $res2[0][self::SRInterpretation];
-			$output[$section['Category']['Title']]['Answers']=array();
+			if(count($res2)!=1)
+				continue;
+			
+			$categoryAnswers = array();
 			foreach($section['Questions'] as $question){
 				foreach($res as $saIndex=>$studentAnswer){
 					if($studentAnswer[self::QuestionID] == $question['Question ID']){
@@ -625,16 +624,26 @@ class Survey_Maker extends CI_Model{
 								}
 							}
 						}
-						array_push($output[$section['Category']['Title']]['Answers'],array(
+						array_push($categoryAnswers,array(
 							'Question'=>$question['Question'],
 							'Answer' => $answer
 						));
 					}
 				}
 			}
+			array_push($output,array(
+				'Category'=>array(
+					'Title'=>$section['Category']['Title'],
+					'ID'=>$section['Category']['ID'],
+					'Tip'=>$section['Category']['Tip']
+				),
+				'Raw Result'=>$res2[0][self::SRRawResult],
+				'Interpretation'=>$res2[0][self::SRInterpretation],
+				'Answers'=>$categoryAnswers
+			));
 		}
 		
-		return $output;
+		return count($output)<1 ? null:$output;
 		
 	}
 	
@@ -727,11 +736,12 @@ class Survey_Maker extends CI_Model{
 		$categories = $this->db->get(self::CategoryTableName)->result_array();
 		foreach($categories as $category){
 			
+			$rawResult = null;
+			$interpretation = null;
 			if($category[self::CategoryAC]){
 				$this->db->where(self::CategoryID,$category[self::CategoryID]);
 				$questions = $this->db->get(self::QuestionTableName)->result_array();
 				$rawResult = 0;
-				$interpretation = null;
 				foreach($questions as $question){
 					if(isset($answers['Normal'][$question[self::QuestionID]])){
 						$this->db->select(self::AnswerWeight);
@@ -794,13 +804,14 @@ class Survey_Maker extends CI_Model{
 					default:
 						break;
 				}
-				$this->db->insert(self::StudentResultTableName,array(
-					StudentInfoBaseModel::BaseTablePKName=>$studentID,
-					self::CategoryID=>$category[self::CategoryID],
-					self::SRRawResult=>$rawResult,
-					self::SRInterpretation=>$interpretation
-				));
+				
 			}
+			$this->db->insert(self::StudentResultTableName,array(
+				StudentInfoBaseModel::BaseTablePKName=>$studentID,
+				self::CategoryID=>$category[self::CategoryID],
+				self::SRRawResult=>$rawResult,
+				self::SRInterpretation=>$interpretation
+			));
 		}
 		
 		foreach($answers['Normal'] as $qID=>$aID){

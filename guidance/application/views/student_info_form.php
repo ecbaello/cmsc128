@@ -16,7 +16,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		?>
 		</div>
-		<md-button layout-fill style="text-align:left" ng-repeat="(key,value) in tableData"  ng-click="changeCategory(key)" ng-class="{'md-primary md-raised':key == currCategoryKey&&!isTests}">
+		<md-button layout-fill style="text-align:left" ng-repeat="(key,value) in tableData"  ng-click="changeCategory(key)" ng-class="{'md-primary md-raised':key == currCategoryKey&&!isSurvey}" title="{{value.Table.Title}}">
 			<span layout-padding>{{value.Table.Title}}</span>
 		</md-button>
 		<div layout="row">
@@ -29,14 +29,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</md-button>
 		</div>
 		<div layout-margin ng-if="'<?=$mode?>'!='add'">
-			<h2>Test Results: </h2>
+			<h2>Survey Results: </h2>
 		</div>
-		<md-button layout-fill style="text-align:left" ng-repeat="(key,value) in tests"  ng-click="changeTest(key)" ng-class="{'md-primary md-raised':key ==currTestKey&&isTests}">
-			<span layout-padding>{{value.Title}}</span>
+		<md-button layout-fill style="text-align:left" ng-repeat="(key,value) in survey"  ng-click="changeSurvey(key)" ng-class="{'md-primary md-raised':key ==currSurveyKey&&isSurvey}" title="{{value.Category.Title}}">
+			<span layout-padding>{{value.Category.Title}}</span>
 		</md-button>
 	</md-content>
 	
-	<div layout="column" layout-align="start start" flex layout-padding layout-fill  ng-if="!isTests">
+	<div layout="column" layout-align="start start" flex layout-padding layout-fill  ng-if="!isSurvey">
 		<div>
 			<h2 class="md-headline">
 				<span>Student Information: {{currCategory.Table.Title}}<span>
@@ -88,23 +88,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div>
 	</div>
 	
-	<div layout="column" layout-align="start start" flex layout-padding layout-fill  ng-if="isTests">
+	<div layout="column" layout-align="start start" flex layout-padding layout-fill  ng-if="isSurvey">
 	
 		<div>
 			<h2 class="md-headline">
-				<span>Test Results: {{currTest.Title}}<span>
+				<span>Survey Results: {{currSurvey.Category.Title}}<span>
 			</h2>
 		</div>
+		<fieldset layout-fill layout="column">
+			<span layout-margin>Raw Result: {{currSurvey['Raw Result']}}</span>
+			<form layout="column">
+				<div layout="row" layout-align="start center">
+					<span layout-margin>Interpretation: </span>
+					<md-input-container class="md-no-margin md-no-padding" layout="row" layout-fill>
+						<input type="text" ng-model="currSurvey['Interpretation']"/>
+					</md-input-container>
+				</div>
+				<div>
+				<md-button class="md-primary md-raised" ng-click="editInterpretation('<?=isset($student_id)? $student_id: ""?>',currSurvey.Category.ID)" type="submit">Edit Interpretation</md-button>
+				</div>
+			</form>
+		</fieldset>
+		<div ng-if="currSurvey.Category.Tip != null">
+			<span>{{currSurvey.Category.Tip}}</span>
+		</div>
 		<div layout-fill layout="column">
-			<fieldset ng-repeat="(key,value) in tests[currTestKey].Questions" layout-margin>
-				<legend>#{{$index+1}}. {{value.Title}}</legend>
-				<md-radio-group ng-model="value.Answer" ng-disabled="true">
-					<md-radio-button ng-repeat="(cindex,cvalue) in value.Choices" value="{{cvalue.Value}}">
-						{{cvalue.Value}}
-					</md-radio-button>
-				</md-radio-group>
-			</fieldset>
-			
+			<div ng-repeat="(qaIndex,qa) in currSurvey.Answers">
+				<p style="margin-left:0.25in">{{qa.Question}}: {{qa.Answer}}</p>
+			</div>
 		</div>
 	
 	</div>
