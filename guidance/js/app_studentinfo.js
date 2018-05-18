@@ -34,7 +34,6 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 				break;
 			}
 		}
-		console.log($scope.currCategory.Fields[fieldIndex]);
 		var cardinalityField = $scope.currCategory.Fields[fieldIndex].FE['Cardinality Field Name'];
 		var defaultCardinality = $scope.currCategory.Fields[fieldIndex].FE['Default Cardinality'];
 		
@@ -100,7 +99,6 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 	}
 	
 	$scope.submit = function(type,studentid){
-		console.log($scope.input);
 		var url = '';
 		
 		if(type=='add'){
@@ -150,7 +148,6 @@ app.controller('student_form',function($scope,$rootScope,$http,$window){
 		}
 		$scope.currCategoryKey = index;
 		$scope.currCategory = $scope.tableData[index];
-		console.log($scope.tableData);
 	}
 	
 	$scope.editInterpretation = function(sid,surveyID){
@@ -197,7 +194,6 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 		$http.get($rootScope.baseURL+'studentinfo/formedit/get/form/false').then(function(response){
 			$scope.tables = response.data;
 			$scope.currCategory = $scope.tables[$scope.currCategoryKey];
-			console.log($scope.tables);
 			
 			for(key in $scope.tables){
 				$scope.fields[key] = [];
@@ -405,8 +401,7 @@ app.controller('student_form_edit',function($scope,$rootScope,$window,$http,$mdD
 		var currValue = $scope.fields[$scope.currCategoryKey][currIndex];
 		$scope.fields[$scope.currCategoryKey].splice(currIndex,1);
 		$scope.fields[$scope.currCategoryKey].splice(desIndex,0,currValue); 
-		
-		console.log('Orders: '+currIndex+' '+desIndex);
+
 		updateOrder();
 	}
 	
@@ -562,7 +557,6 @@ app.controller('student_recbin',function($scope,$rootScope,$window,$http,$mdDial
 		$rootScope.busy = true;
 		$http.get($rootScope.baseURL+'studentinfo/bin/getdeleted').then(function(response){
 			$scope.bin = response.data;
-			console.log($scope.bin);
 			$scope.filters.Tables.Data=$scope.bin.Tables;
 			$scope.filters.Tables.Headers=$scope.bin.Tables.length>0?Object.getOwnPropertyNames($scope.bin.Tables[0]):[];
 			$scope.filters.Fields.Data=$scope.bin.Fields;
@@ -647,7 +641,6 @@ app.controller('student_search',function($scope,$rootScope,$window,$http,$filter
 		$http.get($rootScope.baseURL+'studentinfo/manage/get/params')
 		.then(function(response){
 			$scope.params = response.data;
-			console.log($scope.params);
 		});
 	}
 	
@@ -680,7 +673,6 @@ app.controller('student_search',function($scope,$rootScope,$window,$http,$filter
 		.then(function(response){
 			results = response.data;
 			$scope.results = results;
-			console.log(results);
 			$rootScope.busy = false;
 		});
 	}

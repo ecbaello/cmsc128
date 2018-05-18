@@ -105,12 +105,24 @@ class Main extends BaseController {
 	
 	public function sendResetPassword(){
 		$resetCode = bin2hex(openssl_random_pseudo_bytes(12));
+		
 		$this->load->database();
 		$this->db->where('id',1);
 		$this->db->update(Ion_Auth_Init::UsersTableName,array(
 			'forgotten_password_code'=>$resetCode
 		));
-		//email
+		
+		$this->db->select('email');
+		$this->db->where('id',1);
+		$email = $this->db->get(Ion_Auth_Init::UsersTableName)->result_array()[0]['email'];
+		
+		/*$this->load->library('email');
+		$this->email->from('your@example.com', 'Reset Password Bot');
+		$this->email->to($email);
+		$this->email->subject('UPB Guidance Reset Password');
+		$this->email->message('Code: '.$resetCode);
+		$this->email->send();*/
+		
 		return;
 	}
 }

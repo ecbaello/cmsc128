@@ -18,7 +18,6 @@ app.run(function($rootScope,$http,$httpParamSerializer,$mdDialog){
 		success = function(response) {
 			var responseData = {};
 			responseData = response.data;
-			console.log(responseData+"asd");
 			if(!('success' in responseData) || !('msg' in responseData)){
 				$rootScope.customAlert('ERROR','Something is missing');
 				return;

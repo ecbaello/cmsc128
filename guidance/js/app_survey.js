@@ -43,8 +43,6 @@ app.controller('survey_form',function($scope,$rootScope,$mdDialog,$window,$http)
 	}
 	
 	$scope.submit = function(sn){
-		
-		console.log($scope.answers);
 
 		cont = function(){
 			$rootScope.busy = true;
@@ -94,7 +92,6 @@ app.controller('survey_passwords',function($scope,$rootScope,$window,$mdDialog,$
 	$scope.submit = function(type){
 		post = function(){
 			$rootScope.busy = true;
-			console.log($rootScope.baseURL+'survey/passwords/action/'+type);
 			$rootScope.post(
 				$rootScope.baseURL+'survey/passwords/action/'+type
 				,{
