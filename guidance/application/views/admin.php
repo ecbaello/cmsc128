@@ -4,6 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div ng-controller="admin" ng-init="init()">
 	<div layout-margin>
 		<a class="md-button md-raised" href="<?=base_url().'manual.pdf'?>" style="font-weight:bold">User Manual</a>
+		<a class="md-button md-raised" href="<?=base_url().'docu.pdf'?>" style="font-weight:bold">Documentation</a>
 	</div>
 	<div layout="column" layout-padding>
 		<h2>Change Admin Account Details</h2>
