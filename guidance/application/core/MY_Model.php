@@ -192,8 +192,8 @@ class StudentInfoBaseModel extends CI_Model{
 		//Create field registry table
 		$this->dbforge->add_field(self::TableRegistryPKName.' int unsigned not null');
 		$this->dbforge->add_field(self::FieldRegistryPKName.' int unsigned not null auto_increment unique');
-		$this->dbforge->add_field(self::FieldTitleFieldName.' varchar(50) not null');
-		$this->dbforge->add_field(self::FieldNameFieldName.' varchar(50) not null');
+		$this->dbforge->add_field(self::FieldTitleFieldName.' varchar(100) not null');
+		$this->dbforge->add_field(self::FieldNameFieldName.' varchar(100) not null');
 		$this->dbforge->add_field(self::FlagFieldName.' int unsigned not null default '.Flags::DEF);
 		$this->dbforge->add_field(self::FieldInputTypeFieldName.' varchar(15) not null default "hidden"');
 		$this->dbforge->add_field(self::FieldInputRegexFieldName.' varchar(30)');

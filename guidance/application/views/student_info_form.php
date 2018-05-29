@@ -88,14 +88,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div>
 	</div>
 	
-	<div layout="column" layout-align="start start" flex layout-padding layout-fill  ng-if="isSurvey">
+	<div layout="column" layout-align="start stretch" flex layout-padding layout-fill  ng-if="isSurvey">
 	
 		<div>
 			<h2 class="md-headline">
 				<span>Survey Results: {{currSurvey.Category.Title}}<span>
 			</h2>
 		</div>
-		<fieldset layout-fill layout="column">
+		<fieldset layout="column" >
 			<span layout-margin>Raw Result: {{currSurvey['Raw Result']}}</span>
 			<form layout="column">
 				<div layout="row" layout-align="start center">
@@ -112,7 +112,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<div ng-if="currSurvey.Category.Tip != null">
 			<span>{{currSurvey.Category.Tip}}</span>
 		</div>
-		<div layout-fill layout="column">
+		<div layout="column">
 			<div ng-repeat="(qaIndex,qa) in currSurvey.Answers">
 				<p style="margin-left:0.25in">{{qa.Question}}: {{qa.Answer}}</p>
 			</div>
